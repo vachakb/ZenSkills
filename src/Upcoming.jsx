@@ -1,6 +1,6 @@
 function Upcoming(){
     return <h1>
-        Eugiebear and Kittycha
+        Sessions
     </h1>
 }
 export default Upcoming;

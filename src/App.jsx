@@ -3,12 +3,19 @@ import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
 import { Button } from 'react-bootstrap'
 import { Outlet } from 'react-router-dom'
+import Header from './Header'
 
 function App() {
-  
+
 
   return (
-    <Outlet/>
+    <>
+      <Header />
+      <div className='p-3'>
+      <Outlet />
+      </div>
+    </>
+
   )
 }
 
