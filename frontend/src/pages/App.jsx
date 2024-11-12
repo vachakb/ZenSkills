@@ -1,14 +1,16 @@
 import { Outlet, useLocation } from 'react-router-dom'
 import Header from '../components/Header'
 
+const excludedRoutes = ["/login", "/register"];
+
 function App() {
 
 const path = useLocation().pathname;
   return (
     <>
-      {path == "/register" ? null: <Header/>}
-      <div className={path == "/register" ? '' : 'p-3'}>
-      <Outlet />
+      {excludedRoutes.includes(path) ? null: <Header/>}
+      <div className={excludedRoutes.includes(path) ? '' : 'p-3'}>
+        <Outlet />
       </div>
     </>
 

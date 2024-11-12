@@ -7,6 +7,8 @@ import '../styles/custom.scss'
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 import Upcoming from './Upcoming.jsx'
 import Register from './Register.jsx'
+import Login from './Login.jsx'
+
 const router = createBrowserRouter([
   {
     path:'/',
@@ -19,6 +21,10 @@ const router = createBrowserRouter([
       {
         path:'register',
         element: <Register/>
+      },
+      {
+        path: 'login',
+        element: <Login />
       }
     ]
   }
