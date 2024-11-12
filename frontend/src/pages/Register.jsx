@@ -1,5 +1,5 @@
 import { Col, Container, Row, Form } from 'react-bootstrap'
-import Authcard from '../components/authcard';
+import Authcard from '../components/Authcard';
 import * as yup from 'yup';
 import { Formik } from 'formik';
 
