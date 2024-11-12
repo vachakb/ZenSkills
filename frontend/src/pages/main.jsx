@@ -1,11 +1,12 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import App from './App.jsx'
-import 'bootstrap/dist/css/bootstrap.min.css'
-import './style.css'
-import './custom.scss'
+import '../../node_modules/bootstrap/dist/css/bootstrap.min.css'
+import '../styles/style.css'
+import '../styles/custom.scss'
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 import Upcoming from './Upcoming.jsx'
+import Register from './Register.jsx'
 const router = createBrowserRouter([
   {
     path:'/',
@@ -14,6 +15,10 @@ const router = createBrowserRouter([
       {
         path:'upcoming',
         element: <Upcoming/>
+      },
+      {
+        path:'register',
+        element: <Register/>
       }
     ]
   }
