@@ -1,7 +1,3 @@
-import { useState } from 'react'
-import reactLogo from '../assets/react.svg'
-import viteLogo from '../../public/vite.svg'
-import { Button } from 'react-bootstrap'
 import { Outlet, useLocation } from 'react-router-dom'
 import Header from '../components/Header'
 
