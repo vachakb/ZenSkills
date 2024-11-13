@@ -8,6 +8,9 @@ import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 import Upcoming from './Upcoming.jsx'
 import Register from './Register.jsx'
 import Login from './Login.jsx'
+import RegisterUserInfo from './RegisterUserInfo.jsx'
+import RegisterProfession from './RegisterProfession.jsx'
+import RegisterBio from './RegisterBio.jsx'
 
 const router = createBrowserRouter([
   {
@@ -25,7 +28,20 @@ const router = createBrowserRouter([
       {
         path: 'login',
         element: <Login />
+      },
+      {
+        path: 'register/1',
+        element: <RegisterUserInfo />
+      },
+      {
+        path: 'register/2',
+        element: <RegisterProfession />
+      },
+      {
+        path: 'register/3',
+        element: <RegisterBio />
       }
+
     ]
   }
 ]);

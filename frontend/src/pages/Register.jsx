@@ -4,9 +4,12 @@ import TextField from "../components/TextField";
 import * as yup from "yup";
 import { Formik } from "formik";
 import { useState } from "react";
+import { useNavigate } from 'react-router-dom'
 
 function Register() {
   const [isMentor, setIsMentor] = useState(false);
+
+  const navigate = useNavigate();
 
   const schema = yup.object({
     email: yup
@@ -36,7 +39,7 @@ function Register() {
               confirmPassword: "",
             }}
             onSubmit={(data) => {
-              console.log("Data:", data);
+              navigate("/register/1", { state: { ...data, isMentor: isMentor } });
             }}
           >
             {(formikProps) => (
