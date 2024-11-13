@@ -1,7 +1,13 @@
 import { Outlet, useLocation } from 'react-router-dom'
 import Header from '../components/Header'
 
-const excludedRoutes = ["/login", "/register"];
+const excludedRoutes = [
+  "/login",
+  "/register",
+  "/register/1",
+  "/register/2",
+  "/register/3",
+];
 
 function App() {
 
