@@ -16,8 +16,16 @@ function RegisterProfession() {
       return yup.object({
         company: yup.string().required("This is a required field"),
         title: yup.string().required("This is a required field"),
-        years: yup.number().required("This is a required field"),
-        months: yup.number().required("This is a required field"),
+        years: yup
+          .number()
+          .integer("This field must be an integer")
+          .min(0, "This field must be equal or greater than 0")
+          .required("This is a required field"),
+        months: yup
+          .number()
+          .integer("This field must be an integer")
+          .min(0, "This field must be equal or greater than 0")
+          .required("This is a required field"),
       });
     } else {
       return yup.object({
@@ -110,48 +118,58 @@ function RegisterProfession() {
                   required
                 />
                 {prevForm.isMentor ? (
-                  <Form.Group>
+                  <div>
                     <Form.Label>
                       Professional Experience
                       <span style={{ color: "red" }}> *</span>
                     </Form.Label>
                     <div className="d-flex gap-4">
-                      <Form.Control
-                        style={{ borderColor: "#465FF180" }}
-                        name="years"
-                        type="number"
-                        value={formikProps.values.years}
-                        onChange={formikProps.handleChange}
-                        onBlur={formikProps.handleBlur}
-                        isValid={
-                          formikProps.touched.years && !formikProps.errors.years
-                        }
-                        isInvalid={
-                          formikProps.touched.years &&
-                          !!formikProps.errors.years
-                        }
-                      />
-                      <Form.Control
-                        style={{ borderColor: "#465FF180" }}
-                        name="months"
-                        type="number"
-                        value={formikProps.values.months}
-                        onChange={formikProps.handleChange}
-                        onBlur={formikProps.handleBlur}
-                        isValid={
-                          formikProps.touched.months &&
-                          !formikProps.errors.months
-                        }
-                        isInvalid={
-                          formikProps.touched.months &&
-                          !!formikProps.errors.months
-                        }
-                      />
+                      <Form.Group>
+                        <Form.Control
+                          style={{ borderColor: "#465FF180" }}
+                          name="years"
+                          type="number"
+                          min="0"
+                          value={formikProps.values.years}
+                          onChange={formikProps.handleChange}
+                          onBlur={formikProps.handleBlur}
+                          isValid={
+                            formikProps.touched.years &&
+                            !formikProps.errors.years
+                          }
+                          isInvalid={
+                            formikProps.touched.years &&
+                            !!formikProps.errors.years
+                          }
+                        />
+                        <Form.Control.Feedback type="invalid">
+                          {formikProps.errors.years}
+                        </Form.Control.Feedback>
+                      </Form.Group>
+                      <Form.Group>
+                        <Form.Control
+                          style={{ borderColor: "#465FF180" }}
+                          name="months"
+                          type="number"
+                          min="0"
+                          value={formikProps.values.months}
+                          onChange={formikProps.handleChange}
+                          onBlur={formikProps.handleBlur}
+                          isValid={
+                            formikProps.touched.months &&
+                            !formikProps.errors.months
+                          }
+                          isInvalid={
+                            formikProps.touched.months &&
+                            !!formikProps.errors.months
+                          }
+                        />
+                        <Form.Control.Feedback type="invalid">
+                          {formikProps.errors.months}
+                        </Form.Control.Feedback>
+                      </Form.Group>
                     </div>
-                    <Form.Control.Feedback type="invalid">
-                      {formikProps.errors.years ?? formikProps.errors.months}
-                    </Form.Control.Feedback>
-                  </Form.Group>
+                  </div>
                 ) : null}
                 <Button
                   type="submit"
