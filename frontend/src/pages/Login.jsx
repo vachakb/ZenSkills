@@ -4,6 +4,7 @@ import TextField from "../components/TextField";
 import * as yup from "yup";
 import { Formik } from "formik";
 import { useState } from "react";
+import { GoogleLogin } from '@react-oauth/google';
 
 function Login() {
   const [isMentor, setIsMentor] = useState(false);
@@ -42,7 +43,7 @@ function Login() {
                     onClick={() => setIsMentor(true)}
                     style={{
                       backgroundColor: isMentor ? "#2E2F5B" : "#C6C2F9",
-                      borderColor:  isMentor ? "#2E2F5B" : "#C6C2F9",
+                      borderColor: isMentor ? "#2E2F5B" : "#C6C2F9",
                       color: isMentor ? "white" : "#958CC4",
                     }}
                   >
@@ -54,7 +55,7 @@ function Login() {
                     style={{
                       backgroundColor: isMentor ? "#C6C2F9" : "#2E2F5B",
                       borderColor: isMentor ? "#C6C2F9" : "#2E2F5B",
-                      color: isMentor ?  "#958CC4" : "white",
+                      color: isMentor ? "#958CC4" : "white",
                     }}
                   >
                     Mentee
@@ -111,6 +112,14 @@ function Login() {
                   <p className="m-0 mx-4">OR</p>
                   <div style={{ borderTop: "2px black solid" }} className="flex-grow-1"></div>
                 </div>
+                <GoogleLogin
+                  onSuccess={credentialResponse => {
+                    console.log(credentialResponse);
+                  }}
+                  onError={() => {
+                    console.log('Login Failed');
+                  }}
+                />
                 <p className="m-0 mx-auto">Don't have an account? <a className="text-decoration-none" href="/register">Register</a></p>
               </Form>
             )}

@@ -11,6 +11,7 @@ import Login from './Login.jsx'
 import RegisterUserInfo from './RegisterUserInfo.jsx'
 import RegisterProfession from './RegisterProfession.jsx'
 import RegisterBio from './RegisterBio.jsx'
+import { GoogleOAuthProvider } from '@react-oauth/google';
 
 const router = createBrowserRouter([
   {
@@ -49,6 +50,8 @@ const router = createBrowserRouter([
 createRoot(document.getElementById('root')).render(
 
   <StrictMode>
+    <GoogleOAuthProvider clientId="http://172493269774-4qr965tabedoqajcv49jpu2btps6sg8v.apps.googleusercontent.com">
     <RouterProvider router={router}/>
+      </GoogleOAuthProvider>;
   </StrictMode>,
 )
