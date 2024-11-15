@@ -5,9 +5,12 @@ import * as yup from "yup";
 import { Formik } from "formik";
 import { useLocation } from "react-router-dom";
 import { useMemo } from "react";
+import { useState } from "react";
+import { useNavigate } from 'react-router-dom'
 
 function RegisterBio() {
   const prevForm = useLocation().state;
+  const navigate = useNavigate();
 
   const schema = useMemo(() => {
     if (prevForm.isMentor) {
@@ -36,6 +39,10 @@ function RegisterBio() {
             }}
             onSubmit={(data) => {
               console.log({ ...prevForm, ...data });
+              if (!prevForm.isMentor) {
+                navigate("/mentee_welcome", { state: { ...prevForm, ...data} });
+                
+              }
             }}
           >
             {(formikProps) => (

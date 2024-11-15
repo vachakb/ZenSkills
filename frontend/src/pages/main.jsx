@@ -12,6 +12,7 @@ import RegisterUserInfo from './RegisterUserInfo.jsx'
 import RegisterProfession from './RegisterProfession.jsx'
 import RegisterBio from './RegisterBio.jsx'
 import { GoogleOAuthProvider } from '@react-oauth/google';
+import MenteeWelcome from './MenteeWelcome.jsx'
 
 const router = createBrowserRouter([
   {
@@ -41,6 +42,10 @@ const router = createBrowserRouter([
       {
         path: 'register/3',
         element: <RegisterBio />
+      },
+      {
+        path:'mentee_welcome',
+        element: <MenteeWelcome/>
       }
 
     ]
