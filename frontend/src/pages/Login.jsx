@@ -5,9 +5,13 @@ import * as yup from "yup";
 import { Formik } from "formik";
 import { useState } from "react";
 import { GoogleLogin } from '@react-oauth/google';
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 function Login() {
   const [isMentor, setIsMentor] = useState(false);
+
+  const navigate = useNavigate();
 
   const schema = yup.object({
     email: yup
@@ -113,8 +117,13 @@ function Login() {
                   <div style={{ borderTop: "2px black solid" }} className="flex-grow-1"></div>
                 </div>
                 <GoogleLogin
-                  onSuccess={credentialResponse => {
-                    console.log(credentialResponse);
+                  onSuccess={async (credentialResponse) => {
+                    try {
+                      console.log(credentialResponse);
+                      const response = await axios.post("http://localhost:5000/");  //TODO Send google credentials to backend
+                    } catch (error) {
+                      console.log('Login Failed 1');
+                    }
                   }}
                   onError={() => {
                     console.log('Login Failed');
