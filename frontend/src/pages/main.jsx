@@ -47,6 +47,10 @@ const router = createBrowserRouter([
         path: "mentee_welcome",
         element: <MenteeWelcome />,
       },
+      {
+        path: "explore",
+        element: <MenteeWelcome />,
+      },
     ],
   },
 ]);
