@@ -1,64 +1,68 @@
 import {
-  Col,
-  Container,
-  Row,
-  Form,
-  Button,
-  Card,
-  ProgressBar,
-} from "react-bootstrap";
-import { useMemo, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { useLocation } from "react-router-dom";
-import { GiHand } from "react-icons/gi";
-import { MdKeyboardArrowRight, MdClose } from "react-icons/md";
-import { PiPlantFill } from "react-icons/pi";
-import { Link } from "react-router-dom";
-import { MdOutlineKeyboardDoubleArrowRight } from "react-icons/md";
-import { RiCopperCoinLine } from "react-icons/ri";
-import EventCard from "../components/Events";
-import MentorCard from "../components/MentorCard"
-
-function MenteeWelcome() {
-  const location = useLocation();
-
-  const userName = location.state?.name || "User";
-
-  const sessiondata = [
-    /*{name:"test1",date:new Date()},
-        {name:"test2",date:new Date()},*/
-  ];
-
-  const [tasks, setTasks] = useState([
-    { label: "Complete your profile", done: false },
-    { label: "Book your first session", done: false },
+    Col,
+    Container,
+    Row,
+    Form,
+    Button,
+    Card,
+    ProgressBar,
+  } from "react-bootstrap";
+  import { useMemo, useState } from "react";
+  import { useNavigate } from "react-router-dom";
+  import { useLocation } from "react-router-dom";
+  import { GiHand } from "react-icons/gi";
+  import { MdKeyboardArrowRight, MdClose } from "react-icons/md";
+  import { PiPlantFill } from "react-icons/pi";
+  import { Link } from "react-router-dom";
+  import { MdOutlineKeyboardDoubleArrowRight } from "react-icons/md";
+  import { RiCopperCoinLine } from "react-icons/ri";
+  import EventCard from "../components/Events";
+  import MentorCard from "../components/MentorCard"
+  import "../styles/style.css";
+export default function MentorWelcome(){
     
-  ]);
-   const [isVisible, setIsVisible] = useState(true);
+    const location = useLocation();
 
-  const progress = useMemo(() => {
-    let done = 0;
-
-    for (let i = 0; i < tasks.length; i++) {
-      if (tasks[i].done) {
-        done++;
+    const userName = location.state?.name || "User";
+  
+    const sessiondata = [
+      /*{name:"test1",date:new Date()},
+          {name:"test2",date:new Date()},*/
+    ];
+  
+    const [tasks, setTasks] = useState([
+        { label: "Complete your profile", done: false },
+        { label: "Setup your calendar", done: false },
+        { label: "Create your first session", done: false },
+      
+      
+      
+    ]);
+     const [isVisible, setIsVisible] = useState(true);
+  
+    const progress = useMemo(() => {
+      let done = 0;
+  
+      for (let i = 0; i < tasks.length; i++) {
+        if (tasks[i].done) {
+          done++;
+        }
       }
-    }
-
-    return (done / tasks.length) * 100;
-  }, [tasks]);
-  const handleClose = () => {
-    setIsVisible(false);
-  };
-  const allCompleted = tasks.every(task => task.done);
-
-
-  const profilestatus = "Beginner";
-
-  const navigate = useNavigate();
-
-  return (
-    <Container className="d-flex flex-column gap-4" fluid>
+  
+      return (done / tasks.length) * 100;
+    }, [tasks]);
+    const handleClose = () => {
+      setIsVisible(false);
+    };
+    const allCompleted = tasks.every(task => task.done);
+  
+  
+    const profilestatus = "Beginner";
+  
+    const navigate = useNavigate();
+  
+    return(
+<Container className="d-flex flex-column gap-4" fluid>
       <div className="pt-0">
         <div className="d-flex align-items-center gap-2">
           <h2 className="fw-bold">Hello, {userName}!</h2>
@@ -129,23 +133,7 @@ function MenteeWelcome() {
         </Card>
       )}
     </>
-          <div>
-            <h3 className="fw-bold">Recommended Mentors</h3>
-            <h6 style={{ color: "#436DA7" }} className="m-0">
-              Find the right mentor for your goals—handpicked by our AI,
-              perfectly tailored to your needs!
-            </h6>
-          </div>
-          <div className="d-flex flex-wrap justify-content-flex-start" style={{
-              maxWidth: "100%",
-              columnGap:'163px'
-             
-            }}><MentorCard></MentorCard>
-          <MentorCard></MentorCard>
-          <MentorCard></MentorCard>
-          <MentorCard></MentorCard>
-          <MentorCard></MentorCard>
-          <MentorCard></MentorCard></div>
+          
           <div>
             <h3 className="fw-bold">Events</h3>
             <h6 style={{ color: "#436DA7" }} className="m-0">
@@ -164,31 +152,12 @@ function MenteeWelcome() {
         
       
         <div className="flex-grow-0 ms-auto" style={{position:'fixed', right:'15px'}}>
-          <Card
-            bg="primary"
-            className="mb-5"
-            style={{ width: "320px", height: "130px", color: "#ffa426",boxShadow:'6px 6px 10px gray' }}
-          >
-            <Card.Title
-              className="mx-4 mt-4 py-0 mb-0"
-              style={{ fontSize: "15px" }}
-            >
-              Your profile strength
-              <MdKeyboardArrowRight
-                size={"30px"}
-                style={{ verticalAlign: "middle", marginLeft: "90px" }}
-                onClick={() => navigate("/upcoming")}
-              />
-            </Card.Title>
-            <Card.Text className="mx-4 mt-2 fs-4">
-              {profilestatus}
-              <PiPlantFill className="mx-2" style={{ color: "#33a70d" }} />
-            </Card.Text>
-          </Card>
+        
           <Card
             text="primary"
             bg="white"
             border="primary"
+            className="mb-5"
             style={{ width: "320px", height: "130px", boxShadow:'4px 4px 10px gray'  }}
           >
             <Card.Title
@@ -210,11 +179,43 @@ function MenteeWelcome() {
               Unlock other milestones
             </Card.Text>
           </Card>
+          <Card
+            text="primary"
+            bg="white"
+            border="primary"
+            className="mb-5"
+            style={{ width: "320px", height: "160px", color: "#ffa426",boxShadow:'6px 6px 10px gray' }}
+          >
+            <Card.Body>
+        <Card.Title className="mt-3 py-0 mb-0"
+              style={{ fontSize: "15px", textAlign:'center' }}>Showcase wins, amplify your impact</Card.Title>
+        <Card.Text className="mx-3 mt-2" style={{ fontSize: "13px", textAlign:'center' }}>
+        Share profile, get more bookings
+        </Card.Text>
+        <div className="d-flex justify-content-center">
+        <Button
+  className="custom-hover-button"
+  style={{
+    backgroundColor: "white",
+    color: "#0E003F",
+    fontWeight: "bold",
+    borderRadius: "10px",
+    border: "1px solid #0E003F",
+    
+  }}
+>
+  Copy Link
+</Button>
+    </div>
+      </Card.Body>
+          </Card>
          
         </div>
       </div>
     </Container>
-  );
-}
+    );
+    
+            
+    
 
-export default MenteeWelcome;
+}

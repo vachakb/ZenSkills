@@ -8,12 +8,20 @@ const getRandomPastelColor = () => {
   };
 
 function EventCard() {
+    const eventdetails={
+        name:"Bergen International Film Festival",
+        desc:" Films from all over the world gather all film enthusiasts for unique moments at the Bergen International Film Festival.",
+        date: "28/11",
+        time: "17:00"
+
+
+    };
     
     const pastelColor = getRandomPastelColor();
     
     return (
         
-        <Container className="p-3 mx-0 px-0" style={{ width: '900px' }}>
+        <Container className="p-3 mx-0 px-0" style={{ width: '1050px' }}>
             <Card className="shadow-sm" style={{ borderRadius: "15px" }}>
                 <Row className="align-items-center p-3">
                     
@@ -28,17 +36,16 @@ function EventCard() {
                         }}
                     >
                         <p className="mb-1" style={{ color: "#888888", fontSize: "14px" }}>
-                            TODAY
+                            {eventdetails.date}
                         </p>
-                        <h3 style={{ margin: 0, fontSize: "24px" }}>17:00</h3>
+                        <h3 style={{ margin: 0, fontSize: "24px",color: "#888888" }}>{eventdetails.time}</h3>
                     </Col>
 
                    
                     <Col xs={7}>
-                        <h5 className="fw-bold mb-1">Bergen International Film Festival</h5>
+                        <h5 className="fw-bold mb-1">{eventdetails.name}</h5>
                         <p className="text-muted mb-0" style={{ fontSize: "14px" }}>
-                            Films from all over the world gather all film enthusiasts for
-                            unique moments at the Bergen International Film Festival.
+                           {eventdetails.desc}
                         </p>
                     </Col>
 
@@ -48,12 +55,12 @@ function EventCard() {
 
 
                             style={{
-                                backgroundColor: "#28a745", 
-                                color: "white", 
+                                backgroundColor:'white',
+                                color:'#0E003F',
                                 fontWeight: "bold",
                                 borderRadius: "20px",
                                 padding: "10px 20px",
-                                border: "none",
+                                border: "1px solid #0E003F",
                             }}
                         >
                             Register now

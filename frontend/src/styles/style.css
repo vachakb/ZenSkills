@@ -13,3 +13,7 @@
     border-color: #037f7d !important;
     background-color: #037f7d !important;
 }
+.custom-hover-button:hover {
+    background-color: blue; /* Bootstrap's primary color */
+    color: white; /* Text color changes for better visibility */
+  }

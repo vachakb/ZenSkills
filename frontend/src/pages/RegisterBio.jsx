@@ -43,6 +43,10 @@ function RegisterBio() {
                 navigate("/mentee_welcome", { state: { ...prevForm, ...data} });
                 
               }
+              else{
+                navigate("/mentor_welcome", { state: { ...prevForm, ...data} });
+                
+              }
             }}
           >
             {(formikProps) => (

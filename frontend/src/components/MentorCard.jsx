@@ -4,23 +4,23 @@ import { FaStar } from 'react-icons/fa';
 import demoMentorImage from '../assets/mentorImage.png'
 
 // passed mentor object should be like this
-// const mentor = {
-//     name:"mentor",
-//     rating: 4.5,
-//     currentPost:"Test Architecture manager at Align",
-//     noOfSessions: 19,
-//     noOfReviews: 4,
-//     Experience: 23,
-//     creditScore: 95
-// }
+ const mentor = {
+  name:"mentor",
+ rating: 4.5,
+   currentPost:"Test Architecture manager at Align",
+   noOfSessions: 19,
+   noOfReviews: 4,
+   Experience: 23,
+  creditScore: 95
+};
 
-export default function mentorCard({mentor}){
-    return <div className="ms-5 rounded shadow p-2 d-flex flex-column justify-content-around" style={{height:"28rem", width:"15rem"}}>
+export default function mentorCard(){
+    return <div className="ms-0 my-4 rounded shadow p-2 d-flex flex-column justify-content-around" style={{height:"28rem", width:"15rem"}}>
         <img src={demoMentorImage} alt="Mentor Image" style={{width:"100%", borderRadius: "10px"}}/>
         <div className='d-flex justify-content-between align-items-end'>
             <div className='fs-4 fw-bold'>{mentor.name}</div>
             {/* unable to aligning star icon and rating text perectly */}
-            <div style={{color:"yellow"}} className=''>
+            <div style={{color:"yellow"}} >
                 <FaStar size={15} color="yellow" /> {mentor.rating}
             </div>
         </div>
