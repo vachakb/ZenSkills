@@ -116,7 +116,7 @@ function MenteeWelcome() {
               perfectly tailored to your needs!
             </h6>
           </div>
-          <div className="d-flex"></div>
+          <div className="d-flex">{/* TODO: display mentors */}</div>
         </div>
         <div className="flex-grow-0 ms-auto">
           <Card
