@@ -65,15 +65,12 @@ const router = createBrowserRouter([
         element: <MenteeWelcome />,
       },
       {
-<<<<<<< HEAD
         path: "mentor_welcome",
         element: <MentorWelcome />,
-=======
         path: "explore",
         // element: <ExploreMentor/>
         element: <ExploreMentor mentors_={mentors} demoTags={demoTags}/>,
         // this array is just passed for test/preview
->>>>>>> 14a27d91e7fff7fdc1816e96b9202f87ebbfd1e5
       },
     ],
   },
