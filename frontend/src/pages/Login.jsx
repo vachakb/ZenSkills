@@ -7,6 +7,12 @@ import { useState } from "react";
 import { GoogleLogin } from '@react-oauth/google';
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+// import { loginUser } from '../services/authServices'; 
+
+const Role = Object.freeze({
+  Mentor: "mentor",
+  Mentee: "mentee"
+});
 
 const GOOGLE_CLIENT_ID = "172493269774-4qr965tabedoqajcv49jpu2btps6sg8v.apps.googleusercontent.com";
 const API_URL = "http://localhost:5000";
@@ -39,9 +45,23 @@ function Login() {
               email: "",
               password: "",
             }}
-            onSubmit={(data) => {
-              console.log("Data:", data);
-            }}
+            onSubmit={async (data) => {
+              try {
+                const res = await axios.post(
+                  `${API_URL}/auth/login`, 
+                  {
+                    email: data.email, 
+                    password: data.password,
+                    role: isMentor ? Role.Mentor : Role.Mentee,
+                  },
+                  { headers: { 'Content-Type': 'application/json' } }
+                );
+                console.log("Login success:", res.data);
+                navigate('/mentee_welcome');
+              } catch (error) {
+                console.error('Login error:', error);
+              }
+            }}            
           >
             {(formikProps) => (
               <Form className="d-flex flex-column gap-4" noValidate onSubmit={formikProps.handleSubmit}>

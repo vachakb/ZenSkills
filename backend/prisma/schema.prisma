@@ -10,15 +10,15 @@ datasource db {
 model User {
   email         String       @unique(map: "user_unique_1") @db.VarChar(100)
   password_hash String
-  phone_number  String       @db.VarChar(13)
+  phone_number  String?       @db.VarChar(13)
   created_date  DateTime     @db.Timestamptz(6)
-  location      String
+  location      String?
   name          String       @db.VarChar(50)
   is_deleted    Boolean
   status        UserStatus   @default(active)
   role          UserRole
   uid           String    @id @default(uuid()) // Change from BigInt to String (UUID)
-  gender        gender_enum
+  gender        gender_enum?
   googleId      String?      @unique(map: "user_unique") @db.VarChar
   mentee        mentee[]
   mentor        mentor[]

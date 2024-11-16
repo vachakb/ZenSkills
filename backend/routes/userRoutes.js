@@ -1,9 +1,8 @@
-const express = require("express");
-const router = express.Router();
-const { verifyToken } = require("../middlewares/authMiddleware");
-const userController = require("../controllers/userController");
+const express = require('express');
+const { getUserProfile } = require('../controllers/userController'); // Ensure this function is properly imported
 
-// Get user profile
-router.get("/profile", verifyToken, userController.getUserProfile);
+const router = express.Router();
+
+router.get('/profile', getUserProfile);
 
 module.exports = router;

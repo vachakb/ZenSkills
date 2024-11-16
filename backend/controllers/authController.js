@@ -15,45 +15,52 @@ const generateToken = (user) => {
 
 // Login
 exports.login = async (req, res) => {
-  const { email, password } = req.body;
-
+  const { email, password, role } = req.body; // Get email, password, and role (Mentor/Mentee)
+  console.log("Login request:", req.body);
   try {
     const user = await prisma.user.findUnique({ where: { email } });
-    if (!user || !user.password_hash) {
-      return res.status(400).json({ error: "Invalid email or password." });
+    if (!user) {
+      return res.status(400).json({ message: "User not found" });
     }
 
-    const isPasswordValid = await bcrypt.compare(password, user.password_hash);
-    if (!isPasswordValid) {
-      return res.status(400).json({ error: "Invalid email or password." });
+    const isMatch = await bcrypt.compare(password, user.password_hash);
+    if (!isMatch) {
+      return res.status(400).json({ message: "Invalid credentials" });
+    }
+    
+    if (user.role !== role) {
+      return res.status(403).json({ message: "Unauthorized role" });
     }
 
-    const token = generateToken(user);
-    res.cookie("token", token, { httpOnly: true });
-    res.json({ success: true, token, role: user.role });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: "Server error." });
+    const token = jwt.sign(
+      { userId: user.id, email: user.email, role: user.role }, // Payload
+      process.env.JWT_SECRET,
+      { expiresIn: '1h' } 
+    );
+    
+    res.cookie('token', token, { httpOnly: true, secure: process.env.NODE_ENV === 'production' }); // Save token in a cookie
+    return res.json({ message: "Login successful", token });
+  } catch (error) {
+    console.error("Error during login:", error);
+    res.status(500).json({ message: "Server error" });
   }
+  
 };
 
 // Register
 exports.register = async (req, res) => {
   const { email, password, role, gender, name, phone_number, location } = req.body;
-
   try {
     const hashedPassword = await bcrypt.hash(password, 10);
     const user = await prisma.user.create({
       data: {
-        email,
+        email: email,
         password_hash: hashedPassword,
-        role,
-        gender,
-        name,
-        phone_number,
-        location,
+        role: role,
+        name: "",
         is_deleted: false,
-        status: "active",  // Default status set to 'active'
+        status: "active", 
+        created_date: new Date(),
       },
     });
 
@@ -81,24 +88,24 @@ exports.googleCallback = async (req, res) => {
     const payload = ticket.getPayload();
     const { email, sub: googleId } = payload;
 
-    // Look for the user by email (use correct primary key)
+    
     let user = await prisma.user.findUnique({
-      where: { email },  // Ensure you're looking by the correct field
+      where: { email },  
     });
 
     if (!user) {
-      // If the user doesn't exist, create a new one
+      
       user = await prisma.user.create({
         data: {
           email,
-          googleId, // You might need to add googleId in your User model schema
-          role: "mentee", // Default role
-          status: "active", // Default status
+          googleId, 
+          role: "mentee", 
+          status: "active", 
           is_deleted: false,
-          gender: "prefer_not_to_say", // Example default
-          name: payload.name || "Unknown", // Default name
-          phone_number: "0000000000", // Default phone number
-          location: "Unknown", // Default location
+          gender: "prefer_not_to_say", 
+          name: payload.name || "Unknown", 
+          phone_number: "0000000000", 
+          location: "Unknown", 
           password_hash: "",
           created_date: new Date(),
         },
