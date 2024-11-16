@@ -14,6 +14,22 @@ import RegisterBio from "./RegisterBio.jsx";
 import { GoogleOAuthProvider } from "@react-oauth/google";
 import MenteeWelcome from "./MenteeWelcome.jsx";
 import MentorWelcome from "./MentorWelcome.jsx";
+import ExploreMentor from "./ExloreMentors.jsx";
+
+const mentor = {
+  id:"id",
+  name:"mentor",
+  rating: 4.5,
+  currentPost:"Test Architecture manager at Align",
+  noOfSessions: 19,
+  noOfReviews: 4,
+  Experience: 23,
+  creditScore: 95
+}
+
+const demoTags = ["Technology", "IT", "Computer", "Engineering", "Blockchain", "Gaming", "Education", "Web Development"]
+
+const mentors = Array(12).fill(mentor);
 
 const router = createBrowserRouter([
   {
@@ -49,8 +65,15 @@ const router = createBrowserRouter([
         element: <MenteeWelcome />,
       },
       {
+<<<<<<< HEAD
         path: "mentor_welcome",
         element: <MentorWelcome />,
+=======
+        path: "explore",
+        // element: <ExploreMentor/>
+        element: <ExploreMentor mentors_={mentors} demoTags={demoTags}/>,
+        // this array is just passed for test/preview
+>>>>>>> 14a27d91e7fff7fdc1816e96b9202f87ebbfd1e5
       },
     ],
   },
