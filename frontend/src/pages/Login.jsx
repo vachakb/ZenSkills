@@ -8,6 +8,9 @@ import { GoogleLogin } from '@react-oauth/google';
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
+const GOOGLE_CLIENT_ID = "172493269774-4qr965tabedoqajcv49jpu2btps6sg8v.apps.googleusercontent.com";
+const API_URL = "http://localhost:5000";
+
 function Login() {
   const [isMentor, setIsMentor] = useState(false);
 
@@ -23,6 +26,7 @@ function Login() {
       .required("This is a required field")
       .min(8, "Password should be at least 8 characters"),
   });
+
 
   return (
     <Container className="d-flex vh-100 p-0" fluid>
@@ -116,19 +120,28 @@ function Login() {
                   <p className="m-0 mx-4">OR</p>
                   <div style={{ borderTop: "2px black solid" }} className="flex-grow-1"></div>
                 </div>
+
                 <GoogleLogin
-                  onSuccess={async (credentialResponse) => {
+                  clientId={GOOGLE_CLIENT_ID}
+                  onSuccess={async (response) => {
+                    const { credential } = response;
                     try {
-                      console.log(credentialResponse);
-                      const response = await axios.post("http://localhost:5000/");  //TODO Send google credentials to backend
+                      const res = await axios.post(
+                        `${API_URL}/auth/google/callback`,
+                        { token: credential },
+                        { headers: { 'Content-Type': 'application/json' } },
+                        { withCredentials: true }
+                      );
+                      console.log('Backend Response:', res.data);
                     } catch (error) {
-                      console.log('Login Failed 1');
+                      console.error('Error during backend processing:', error);
                     }
                   }}
                   onError={() => {
                     console.log('Login Failed');
                   }}
                 />
+                
                 <p className="m-0 mx-auto">Don't have an account? <a className="text-decoration-none" href="/register">Register</a></p>
               </Form>
             )}
