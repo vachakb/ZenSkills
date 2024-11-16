@@ -3,3 +3,13 @@
     flex-direction: column;
     height: 100vh;
 }
+
+/* TODO instead of doing this just generate a new bootstrap color with scss */
+.progress-bar {
+    background-color: #037f7d !important;
+}
+
+.form-check-input:checked {
+    border-color: #037f7d !important;
+    background-color: #037f7d !important;
+}
