@@ -16,7 +16,7 @@ import demoMentorImage from "../assets/mentorImage.png";
 
 export default function mentorCard({ mentor }) {
   return (
-    <div className="card col-12 col-sm-6 col-md-4 col-lg-3">
+    <div className="card">
       <div className="card-body">
         <img
           src={demoMentorImage}

@@ -86,7 +86,7 @@ export default function ExploreMentor({ mentors_, demoTags }) {
   }
 
   return (
-    <div className="container mt-4">
+    <div className="container-fluid mt-4">
       {/* search and filter bar */}
       <div className="row mb-4">
         <div className="col-12 col-md-8 mb-3 mb-md-0">
@@ -187,7 +187,7 @@ export default function ExploreMentor({ mentors_, demoTags }) {
       )}
 
       {/* card grid */}
-      <div className="row">
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(4, minmax(0, 1fr))" }} className="gap-4">
         {mentors.map((mentor) => {
           return <Mentorcard mentor={mentor} />;
         })}
@@ -196,6 +196,7 @@ export default function ExploreMentor({ mentors_, demoTags }) {
 
       {/* pagination */}
       <div className="mt-4 d-flex justify-content-center">
+        {/* TODO use bootstrap pagination component */}
         <ReactPaginate
           previousLabel={"Previous"}
           nextLabel={"Next"}

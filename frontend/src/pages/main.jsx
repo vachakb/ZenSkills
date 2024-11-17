@@ -15,7 +15,13 @@ import { GoogleOAuthProvider } from "@react-oauth/google";
 import MenteeWelcome from "./MenteeWelcome.jsx";
 import MentorWelcome from "./MentorWelcome.jsx";
 import ExploreMentor from "./ExloreMentors.jsx";
+
 import VerifyEmail from "./VerifyEmail.jsx";
+
+import UserInfo from "../components/UserInfo.jsx";
+import ProfileCard from "../components/ProfileCard.jsx";
+import MenteeProfile from "./MenteeProfile.jsx";
+
 
 const mentor = {
   id: "id",
@@ -25,8 +31,17 @@ const mentor = {
   noOfSessions: 19,
   noOfReviews: 4,
   Experience: 23,
-  creditScore: 95,
+  creditScore: 95
+}
+const eventdetails={
+  name:"Bergen International Film Festival",
+  desc:" Films from all over the world gather all film enthusiasts for unique moments at the Bergen International Film Festival.",
+  date: "28/11",
+  time: "17:00"
+
+
 };
+
 
 const demoTags = [
   "Technology",
@@ -40,6 +55,8 @@ const demoTags = [
 ];
 
 const mentors = Array(12).fill(mentor);
+const events = Array(6).fill(eventdetails);
+
 
 const router = createBrowserRouter([
   {
@@ -72,11 +89,13 @@ const router = createBrowserRouter([
       },
       {
         path: "mentee_welcome",
-        element: <MenteeWelcome />,
+        element: <MenteeWelcome mentors_={mentors} events_={events} />,
       },
       {
         path: "mentor_welcome",
         element: <MentorWelcome />,
+      },
+      {
         path: "explore",
         // element: <ExploreMentor/>
         element: <ExploreMentor mentors_={mentors} demoTags={demoTags} />,
@@ -85,6 +104,14 @@ const router = createBrowserRouter([
       {
         path: "verify-email",
         element: <VerifyEmail />,
+      },
+      {
+        path: "mentee_profile",
+        element: <MenteeProfile/>
+      },
+      {
+        path: "profilecard",
+        element: <ProfileCard/>
       },
     ],
   },
