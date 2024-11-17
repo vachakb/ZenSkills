@@ -196,6 +196,7 @@ export default function ExploreMentor({ mentors_, demoTags }) {
 
       {/* pagination */}
       <div className="mt-4 d-flex justify-content-center">
+        {/* TODO use bootstrap pagination component */}
         <ReactPaginate
           previousLabel={"Previous"}
           nextLabel={"Next"}
