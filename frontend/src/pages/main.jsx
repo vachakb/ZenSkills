@@ -67,6 +67,8 @@ const router = createBrowserRouter([
       {
         path: "mentor_welcome",
         element: <MentorWelcome />,
+      },
+      {
         path: "explore",
         // element: <ExploreMentor/>
         element: <ExploreMentor mentors_={mentors} demoTags={demoTags}/>,
