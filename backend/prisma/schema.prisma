@@ -15,6 +15,7 @@ model User {
   location      String?
   name          String       @db.VarChar(50)
   password_hash String
+  language      String?
   phone_number  String?      @db.VarChar(13)
   status        UserStatus   @default(active)
   uid           String       @id @default(uuid())
@@ -28,14 +29,14 @@ model User {
 model mentee {
   bio              String?
   mentee_id        BigInt             @id(map: "mentee_pk") @default(autoincrement())
-  uid              String
+  uid              String             @unique
   User             User               @relation(fields: [uid], references: [uid], onDelete: Cascade, map: "mentee_user_fk")
   mentee_interests mentee_interests[]
 }
 
 model mentee_interests {
-  mentee_id           BigInt
-  tag_id              BigInt
+  mentee_id           BigInt  @unique
+  tag_id              BigInt  @unique
   mentee_interests_id BigInt @id(map: "mentee_interests_pk") @default(autoincrement())
   mentee              mentee @relation(fields: [mentee_id], references: [mentee_id], onDelete: Cascade, map: "mentee_interests_mentee_fk")
   tags                tags   @relation(fields: [tag_id], references: [tag_id], onDelete: Cascade, map: "mentee_interests_tags_fk")
@@ -47,7 +48,7 @@ model mentor {
   bio                        String?
   experience_years           Int                @default(0)
   mentor_id                  BigInt             @id(map: "mentor_pk") @default(autoincrement())
-  uid                        String
+  uid                        String             @unique
   rating                     Float?             @db.Real
   number_of_mentees_mentored Int                @default(0)
   company                    String?            @db.VarChar(255)
@@ -58,8 +59,8 @@ model mentor {
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model mentor_expertise {
-  mentor_id           BigInt
-  tag_id              BigInt
+  mentor_id           BigInt  @unique
+  tag_id              BigInt  @unique
   mentor_expertise_id BigInt @id(map: "mentor_expertise_pk") @default(autoincrement())
   mentor              mentor @relation(fields: [mentor_id], references: [mentor_id], onDelete: Cascade, map: "mentor_expertise_mentor_fk")
   tags                tags   @relation(fields: [tag_id], references: [tag_id], onDelete: Cascade, map: "mentor_expertise_tags_fk")
@@ -82,10 +83,10 @@ model tempuser {
 }
 
 enum gender_enum {
-  male
-  female
-  other
-  prefer_not_to_say
+  Male
+  Female
+  Other
+  Prefer_not_to_say
 }
 
 enum UserStatus {
