@@ -15,6 +15,7 @@ import { GoogleOAuthProvider } from "@react-oauth/google";
 import MenteeWelcome from "./MenteeWelcome.jsx";
 import MentorWelcome from "./MentorWelcome.jsx";
 import ExploreMentor from "./ExloreMentors.jsx";
+import UserInfo from "../components/UserInfo.jsx";
 
 const mentor = {
   id:"id",
@@ -74,6 +75,10 @@ const router = createBrowserRouter([
         element: <ExploreMentor mentors_={mentors} demoTags={demoTags}/>,
         // this array is just passed for test/preview
       },
+      {
+        path: "userInfo",
+        element: <UserInfo/>
+      }
     ],
   },
 ]);
