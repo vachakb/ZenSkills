@@ -3,7 +3,6 @@ const prisma = require("../models/prismaClient");
 
 const verifyEmail = async (req, res) => {
   const { token } = req.query;
-
   try {
     // Decode and verify the token
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
@@ -15,7 +14,7 @@ const verifyEmail = async (req, res) => {
     }
 
     // Move user data to the User table
-    await prisma.user.create({
+    const user = await prisma.user.create({
       data: {
         email: tempUser.email,
         password_hash: tempUser.password_hash,
@@ -26,6 +25,33 @@ const verifyEmail = async (req, res) => {
         status: "active",
       },
     });
+    console.log("User record created for email:", email);
+
+    console.log("role:", tempUser.role);
+
+    if (tempUser.role === "mentor") {
+      await prisma.mentor.create({
+        data: {
+          uid: user.uid,
+          bio: null,
+          experience_years: 0, // Default value
+          number_of_mentees_mentored: 0, // Default value
+          mentor_job_title: "Unknown",
+          company: "Unknown",
+        },
+      });
+      console.log("Mentor record created for email:", email);
+    }
+
+    if (tempUser.role === "mentee") {
+      await prisma.mentee.create({
+        data: {
+          uid: user.uid,
+          bio: null,
+        },
+      });
+      console.log("Mentee record created for email:", email);
+    }
 
     // Delete temporary user
     await prisma.tempuser.delete({ where: { email } });

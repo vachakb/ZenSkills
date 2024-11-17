@@ -11,7 +11,7 @@ model User {
   email         String       @unique(map: "user_unique_1") @db.VarChar(100)
   created_date  DateTime     @db.Timestamptz(6)
   gender        gender_enum?
-  is_deleted    Boolean
+  is_deleted    Boolean      @default(false)
   location      String?
   name          String       @db.VarChar(50)
   password_hash String
@@ -76,8 +76,9 @@ model tempuser {
   email         String   @unique
   created_date  DateTime @default(now())
   password_hash String
-  role          UserRole
+  role          UserRole  
   temp_uid      String   @id @default(uuid())
+  expires_at    DateTime @default(dbgenerated("CURRENT_TIMESTAMP + INTERVAL '1 hour'"))
 }
 
 enum gender_enum {
