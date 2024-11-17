@@ -9,21 +9,21 @@ datasource db {
 
 model User {
   email         String       @unique(map: "user_unique_1") @db.VarChar(100)
-  password_hash String
-  phone_number  String?       @db.VarChar(13)
   created_date  DateTime     @db.Timestamptz(6)
+  gender        gender_enum?
+  is_deleted    Boolean
   location      String?
   name          String       @db.VarChar(50)
-  is_deleted    Boolean
+  password_hash String
+  phone_number  String?      @db.VarChar(13)
   status        UserStatus   @default(active)
+  uid           String       @id @default(uuid())
   role          UserRole
-  uid           String    @id @default(uuid()) // Change from BigInt to String (UUID)
-  gender        gender_enum?
   googleId      String?      @unique(map: "user_unique") @db.VarChar
+  is_verified   Boolean      @default(false)
   mentee        mentee[]
   mentor        mentor[]
 }
-
 
 model mentee {
   bio              String?
@@ -70,6 +70,14 @@ model tags {
   tag_id           BigInt             @id(map: "tags_pk") @default(autoincrement())
   mentee_interests mentee_interests[]
   mentor_expertise mentor_expertise[]
+}
+
+model tempuser {
+  email         String   @unique
+  created_date  DateTime @default(now())
+  password_hash String
+  role          UserRole
+  temp_uid      String   @id @default(uuid())
 }
 
 enum gender_enum {
