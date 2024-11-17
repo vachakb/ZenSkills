@@ -8,13 +8,20 @@ import { FaChalkboardTeacher, FaRegUserCircle } from "react-icons/fa";
 import { FaRegClock } from "react-icons/fa6";
 import { BiMessageDetail } from "react-icons/bi";
 import { MdWorkOutline } from "react-icons/md";
+import classNames from "classnames";
 
-function SideBar() {
+function SideBar(props) {
+  const navbarClassname = classNames({
+    "flex-column align-items-center d-md-block": true,
+    "d-block": props.show,
+    "d-none": !props.show
+  });
+
   return (
     <Navbar
       bg="primary"
       expand="lg"
-      className="flex-column align-items-center"
+      className={navbarClassname}
       style={{ maxWidth: "18%" }}
     >
       <Nav
