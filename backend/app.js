@@ -4,15 +4,17 @@ const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
 const cors = require("cors");
 
-const authRoutes = require("./routes/authroutes");
+const authRoutes = require("./routes/authRoutes");
 const userRoutes = require("./routes/userRoutes");
 
 const app = express();
 
-app.use(cors({
-  origin: 'http://localhost:5173', // Frontend URL
-  credentials: true,           
-}));
+app.use(
+  cors({
+    origin: "http://localhost:5173", // Frontend URL
+    credentials: true,
+  })
+);
 
 app.use(bodyParser.json());
 app.use(cookieParser());

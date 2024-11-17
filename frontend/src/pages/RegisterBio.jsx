@@ -6,7 +6,8 @@ import { Formik } from "formik";
 import { useLocation } from "react-router-dom";
 import { useMemo } from "react";
 import { useState } from "react";
-import { useNavigate } from 'react-router-dom'
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 function RegisterBio() {
   const prevForm = useLocation().state;
@@ -37,15 +38,20 @@ function RegisterBio() {
               expertise: "",
               bio: "",
             }}
-            onSubmit={(data) => {
+            onSubmit={async (data) => {
+              const response = await axios.post(
+                "http://localhost:5000/auth/register-user",
+                { ...prevForm, ...data }
+              );
               console.log({ ...prevForm, ...data });
               if (!prevForm.isMentor) {
-                navigate("/mentee_welcome", { state: { ...prevForm, ...data} });
-                
-              }
-              else{
-                navigate("/mentor_welcome", { state: { ...prevForm, ...data} });
-                
+                navigate("/mentee_welcome", {
+                  state: { ...prevForm, ...data },
+                });
+              } else {
+                navigate("/mentor_welcome", {
+                  state: { ...prevForm, ...data },
+                });
               }
             }}
           >
@@ -104,9 +110,7 @@ function RegisterBio() {
                   placeholder="Write your bio here"
                   onChange={formikProps.handleChange}
                   onBlur={formikProps.handleBlur}
-                  isValid={
-                    formikProps.touched.bio && !formikProps.errors.bio
-                  }
+                  isValid={formikProps.touched.bio && !formikProps.errors.bio}
                   isInvalid={
                     formikProps.touched.bio && !!formikProps.errors.bio
                   }

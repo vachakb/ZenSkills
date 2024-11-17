@@ -27,13 +27,19 @@ const VerifyEmail = () => {
           `http://localhost:5000/auth/verify-email?token=${token}`
         );
 
+        // Extract message and email from response
         setMessage(response.data.message || "Email verified successfully!");
         setVariant("success");
+        setLoading(false);
 
-        // Optionally, navigate to login page after a delay
-        setTimeout(() => {
-          navigate("/register/1");
-        }, 3000);
+        // Extract the email from the response data and forward it to the next page
+        const email = response.data.email;
+        if (email) {
+          // Navigate to the next page and pass the email
+          setTimeout(() => {
+            navigate("/register/1", { state: { email } });
+          }, 3000);
+        }
       } catch (error) {
         console.error("Verification error:", error);
         setMessage(
