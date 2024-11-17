@@ -6,11 +6,18 @@ const verifyEmail = async (req, res) => {
   try {
     // Decode and verify the token
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    const { email } = decoded;
+    const { email, expiresAt } = decoded;
+    const now = new Date();
     // Retrieve the user from the tempUser table
     const tempUser = await prisma.tempuser.findUnique({ where: { email } });
     if (!tempUser) {
       return res.status(400).json({ message: "Invalid or expired token." });
+    }
+
+    if (now > new Date(expiresAt)) {
+      return res
+        .status(400)
+        .json({ message: "Verification link has expired." });
     }
 
     // Move user data to the User table
@@ -23,6 +30,7 @@ const verifyEmail = async (req, res) => {
         name: "",
         is_deleted: false,
         status: "active",
+        is_verified: true,
       },
     });
     console.log("User record created for email:", email);
@@ -56,7 +64,11 @@ const verifyEmail = async (req, res) => {
     // Delete temporary user
     await prisma.tempuser.delete({ where: { email } });
     console.log("Email verification successfull for email:", email);
-    res.status(200).json({ message: "Email verified successfully." });
+    res.status(200).json({
+      message: "Email verified successfully.",
+      email: tempUser.email, // Include email and any other info you want to send to frontend
+      status: "verified",
+    });
   } catch (error) {
     console.error(error);
     res.status(400).json({ message: "Invalid or expired token." });
