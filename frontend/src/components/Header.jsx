@@ -11,7 +11,7 @@ function Header(props) {
         ZenSkills
       </Navbar.Brand>
       <Navbar.Toggle aria-controls="basic-navbar-nav" />
-      <Nav className="d-flex flex-row flex-md-column ms-auto gap-2">
+      <Nav className="d-flex flex-row ms-auto gap-2">
         <Nav.Link>
           <img src="/bell.svg" style={{ width: "28px" }} />
         </Nav.Link>
