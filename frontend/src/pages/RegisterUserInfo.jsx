@@ -21,6 +21,8 @@ function RegisterUserInfo() {
     location: yup.string().required("This is a required field"),
   });
 
+  const email = prevForm?.email || "";
+
   return (
     <Container className="d-flex vh-100 p-0" fluid>
       <Col className="d-flex justify-content-center align-items-center">

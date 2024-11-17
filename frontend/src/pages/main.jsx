@@ -15,15 +15,19 @@ import { GoogleOAuthProvider } from "@react-oauth/google";
 import MenteeWelcome from "./MenteeWelcome.jsx";
 import MentorWelcome from "./MentorWelcome.jsx";
 import ExploreMentor from "./ExloreMentors.jsx";
+
+import VerifyEmail from "./VerifyEmail.jsx";
+
 import UserInfo from "../components/UserInfo.jsx";
 import ProfileCard from "../components/ProfileCard.jsx";
 import MenteeProfile from "./MenteeProfile.jsx";
 
+
 const mentor = {
-  id:"id",
-  name:"mentor",
+  id: "id",
+  name: "mentor",
   rating: 4.5,
-  currentPost:"Test Architecture manager at Align",
+  currentPost: "Test Architecture manager at Align",
   noOfSessions: 19,
   noOfReviews: 4,
   Experience: 23,
@@ -39,7 +43,16 @@ const eventdetails={
 };
 
 
-const demoTags = ["Technology", "IT", "Computer", "Engineering", "Blockchain", "Gaming", "Education", "Web Development"]
+const demoTags = [
+  "Technology",
+  "IT",
+  "Computer",
+  "Engineering",
+  "Blockchain",
+  "Gaming",
+  "Education",
+  "Web Development",
+];
 
 const mentors = Array(12).fill(mentor);
 const events = Array(6).fill(eventdetails);
@@ -85,8 +98,12 @@ const router = createBrowserRouter([
       {
         path: "explore",
         // element: <ExploreMentor/>
-        element: <ExploreMentor mentors_={mentors} demoTags={demoTags}/>,
+        element: <ExploreMentor mentors_={mentors} demoTags={demoTags} />,
         // this array is just passed for test/preview
+      },
+      {
+        path: "verify-email",
+        element: <VerifyEmail />,
       },
       {
         path: "mentee_profile",
@@ -96,7 +113,6 @@ const router = createBrowserRouter([
         path: "profilecard",
         element: <ProfileCard/>
       },
-      
     ],
   },
 ]);
@@ -106,5 +122,5 @@ createRoot(document.getElementById("root")).render(
     <GoogleOAuthProvider clientId="172493269774-4qr965tabedoqajcv49jpu2btps6sg8v.apps.googleusercontent.com">
       <RouterProvider router={router} />
     </GoogleOAuthProvider>
-  </StrictMode>,
+  </StrictMode>
 );
