@@ -2,7 +2,7 @@ import React from "react";
 
 const UserInfo = () => {
     return (
-        <div className="container mt-4">
+        <div className="container mt-4 mx-0 px-0" >
             {/* Bio Section */}
             <div className="card mb-4">
                 <div className="card-body">
@@ -63,4 +63,4 @@ const UserInfo = () => {
     );
 };
 
-export default UserInfo;
+export default UserInfo; 

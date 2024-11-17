@@ -7,7 +7,7 @@ import {
   Card,
   ProgressBar,
 } from "react-bootstrap";
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useLocation } from "react-router-dom";
 import { GiHand } from "react-icons/gi";
@@ -17,45 +17,57 @@ import { Link } from "react-router-dom";
 import { MdOutlineKeyboardDoubleArrowRight } from "react-icons/md";
 import { RiCopperCoinLine } from "react-icons/ri";
 import EventCard from "../components/Events";
-import MentorCard from "../components/MentorCard"
+import MentorCard from "../components/MentorCard";
+import axios from "axios";
 
-function MenteeWelcome() {
+function MenteeWelcome({ mentors_,events_}) {
+  const [mentors, setMentors] = useState(mentors_);
   const location = useLocation();
-
   const userName = location.state?.name || "User";
-
-  const sessiondata = [
-    /*{name:"test1",date:new Date()},
-        {name:"test2",date:new Date()},*/
-  ];
 
   const [tasks, setTasks] = useState([
     { label: "Complete your profile", done: false },
     { label: "Book your first session", done: false },
-    
   ]);
-   const [isVisible, setIsVisible] = useState(true);
-
+  const [isVisible, setIsVisible] = useState(true);
+ 
+  const [events, setEvents] = useState(events_);
   const progress = useMemo(() => {
     let done = 0;
-
     for (let i = 0; i < tasks.length; i++) {
       if (tasks[i].done) {
         done++;
       }
     }
-
     return (done / tasks.length) * 100;
   }, [tasks]);
+
   const handleClose = () => {
     setIsVisible(false);
   };
-  const allCompleted = tasks.every(task => task.done);
 
+  const allCompleted = tasks.every((task) => task.done);
 
   const profilestatus = "Beginner";
 
   const navigate = useNavigate();
+
+  // Fetch mentors and events
+  /*useEffect(() => {
+    async function fetchData() {
+      try {
+        const [mentorsResponse, eventsResponse] = await Promise.all([
+          axios.get("/api/mentors"),
+          axios.get("/api/events"),
+        ]);
+        setMentors(mentorsResponse.data.mentors || []);
+        setEvents(eventsResponse.data.events || []);
+      } catch (error) {
+        console.error("Error fetching data: ", error);
+      }
+    }
+    fetchData();
+  }, []);*/
 
   return (
     <Container className="d-flex flex-column gap-4" fluid>
@@ -64,11 +76,13 @@ function MenteeWelcome() {
           <h2 className="fw-bold">Hello, {userName}!</h2>
           <GiHand size={"2rem"} color="#ffa426" />
         </div>
-        {sessiondata.length === 0 ? (
-          <h6 style={{ color: "#436DA7" }} className="m-0">
-            You have no upcoming sessions.
-          </h6>
-        ) : null}
+        <div>
+          {mentors.length === 0 && (
+            <h6 style={{ color: "#436DA7" }} className="m-0">
+              You have no upcoming sessions.
+            </h6>
+          )}
+        </div>
       </div>
       <div className="d-flex">
         <div
@@ -77,58 +91,57 @@ function MenteeWelcome() {
           }}
           className="d-flex flex-column gap-4 flex-grow-1"
         >
-          
           <>
-      {isVisible && (
-        <Card style={{boxShadow:'1px 2px 9px gray'}}>
-          <Card.Body className="d-flex flex-column gap-3">
-            <div className="d-flex">
-              <div className="flex-grow-1">
-                <h3 className="fw-bold">Let's start with the basics</h3>
-                <h6 style={{ color: "#436DA7" }}>
-                  Get more by setting up a profile you love.
-                </h6>
-              </div>
-              <div className="d-flex flex-column justify-content-between align-items-end ms-auto">
-                <MdClose 
-                  style={{ cursor: "pointer" }} 
-                  onClick={handleClose} 
-                />
-                <h6 style={{ color: "#436DA7" }}>
-                  {Math.floor(progress)}% completed
-                </h6>
-              </div>
-            </div>
-            <ProgressBar now={progress} />
-            {tasks.map((value, index) => (
-              <Form.Group key={index} className="d-flex align-content-center gap-2">
-                <Form.Check
-                  checked={value.done}
-                  onChange={() => {
-                    const copy = [...tasks];
-                    copy[index].done = !copy[index].done;
-                    setTasks(copy);
+            {isVisible && (
+              <Card style={{ boxShadow: "1px 2px 9px gray" }}>
+                <Card.Body className="d-flex flex-column gap-3">
+                  <div className="d-flex">
+                    <div className="flex-grow-1">
+                      <h3 className="fw-bold">Let's start with the basics</h3>
+                      <h6 style={{ color: "#436DA7" }}>
+                        Get more by setting up a profile you love.
+                      </h6>
+                    </div>
+                    <div className="d-flex flex-column justify-content-between align-items-end ms-auto">
+                      <MdClose
+                        style={{ cursor: "pointer" }}
+                        onClick={handleClose}
+                      />
+                      <h6 style={{ color: "#436DA7" }}>
+                        {Math.floor(progress)}% completed
+                      </h6>
+                    </div>
+                  </div>
+                  <ProgressBar now={progress} />
+                  {tasks.map((value, index) => (
+                    <Form.Group key={index} className="d-flex align-content-center gap-2">
+                      <Form.Check
+                        checked={value.done}
+                        onChange={() => {
+                          const copy = [...tasks];
+                          copy[index].done = !copy[index].done;
+                          setTasks(copy);
 
-                    // Close card if all tasks are done
-                    if (copy.every(task => task.done)) {
-                      handleClose();
-                    }
-                  }}
-                />
-                <Form.Label
-                  style={{
-                    color: "#037f7d",
-                  }}
-                  className={value.done ? "text-decoration-line-through" : ""}
-                >
-                  {value.label}
-                </Form.Label>
-              </Form.Group>
-            ))}
-          </Card.Body>
-        </Card>
-      )}
-    </>
+                          // Close card if all tasks are done
+                          if (copy.every((task) => task.done)) {
+                            handleClose();
+                          }
+                        }}
+                      />
+                      <Form.Label
+                        style={{
+                          color: "#037f7d",
+                        }}
+                        className={value.done ? "text-decoration-line-through" : ""}
+                      >
+                        {value.label}
+                      </Form.Label>
+                    </Form.Group>
+                  ))}
+                </Card.Body>
+              </Card>
+            )}
+          </>
           <div>
             <h3 className="fw-bold">Recommended Mentors</h3>
             <h6 style={{ color: "#436DA7" }} className="m-0">
@@ -136,43 +149,42 @@ function MenteeWelcome() {
               perfectly tailored to your needs!
             </h6>
           </div>
-          <div className="d-flex flex-wrap justify-content-flex-start" style={{
-              maxWidth: "100%",
-              columnGap:'163px'
-             
-            }}><MentorCard></MentorCard>
-          <MentorCard></MentorCard>
-          <MentorCard></MentorCard>
-          <MentorCard></MentorCard>
-          <MentorCard></MentorCard>
-          <MentorCard></MentorCard></div>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(4, minmax(0, 1fr))" }} className="gap-4">
+            {mentors.length > 0 ? (
+              mentors.map((mentor) => (
+                <MentorCard key={mentor.id} mentor={mentor} />
+              ))
+            ) : (
+              <p>No mentors available.</p>
+            )}
+          </div>
           <div>
             <h3 className="fw-bold">Events</h3>
             <h6 style={{ color: "#436DA7" }} className="m-0">
-            To help you connect and grow.
+              To help you connect and grow.
             </h6>
           </div>
           <div className="d-flex flex-column flex-wrap justify-content-flex-start" style={{
               maxWidth: "100%",
-              columnGap:'163px'
-             
-            }}><EventCard></EventCard>
-            <EventCard></EventCard>
-            <EventCard></EventCard></div>
+              columnGap: '163px'
+            }}>
+            {events.length > 0 ? (
+              events.map((event) => (
+                <EventCard key={event.id} event={event} />
+              ))
+            ) : (
+              <p>No events available.</p>
+            )}
+          </div>
         </div>
-       
-        
-      
-        <div className="flex-grow-0 ms-auto" style={{position:'fixed', right:'15px'}}>
+
+        <div className="flex-grow-0 ms-auto" style={{ position: "fixed", right: "15px" }}>
           <Card
             bg="primary"
             className="mb-5"
-            style={{ width: "320px", height: "130px", color: "#ffa426",boxShadow:'6px 6px 10px gray' }}
+            style={{ width: "320px", height: "130px", color: "#ffa426", boxShadow: '6px 6px 10px gray' }}
           >
-            <Card.Title
-              className="mx-4 mt-4 py-0 mb-0"
-              style={{ fontSize: "15px" }}
-            >
+            <Card.Title className="mx-4 mt-4 py-0 mb-0" style={{ fontSize: "15px" }}>
               Your profile strength
               <MdKeyboardArrowRight
                 size={"30px"}
@@ -189,7 +201,7 @@ function MenteeWelcome() {
             text="primary"
             bg="white"
             border="primary"
-            style={{ width: "320px", height: "130px", boxShadow:'4px 4px 10px gray'  }}
+            style={{ width: "320px", height: "130px", boxShadow: '4px 4px 10px gray' }}
           >
             <Card.Title
               className="mt-4 py-0 mb-0"
@@ -210,7 +222,6 @@ function MenteeWelcome() {
               Unlock other milestones
             </Card.Text>
           </Card>
-         
         </div>
       </div>
     </Container>
