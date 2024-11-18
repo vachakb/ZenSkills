@@ -24,7 +24,7 @@ const UserInfo = ({ profile }) => {
                 <div className="card-body">
                     <h5 className="card-title">BIO</h5>
                     <p className="card-text">
-                        As a final-year Computer Science student at ABC University, I'm eager to expand my skills and transition into the tech industry. I have a solid foundation in Java, Python, and web...
+                        {profile.bio}
                     </p>
                 </div>
             </div>

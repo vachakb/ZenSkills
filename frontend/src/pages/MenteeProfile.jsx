@@ -8,6 +8,7 @@ import Achievements from "../components/Achievements";
 const profile = {
   isMentor: false,
   name: "Mentee 1",
+  bio: "As a final-year Computer Science student at ABC University, I'm eager to expand my skills and transition into the tech industry. I have a solid foundation in Java, Python, and web...",
   occupation: "Student at XYZ University",
   interests: ["Web Dev", "React", "Bootstrap"]
 }
