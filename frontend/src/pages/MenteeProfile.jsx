@@ -5,6 +5,13 @@ import { useState } from "react";
 import Statistics from "../components/Statistics";
 import Achievements from "../components/Achievements";
 
+const profile = {
+  isMentor: false,
+  name: "Mentee 1",
+  occupation: "Student at XYZ University",
+  interests: ["Web Dev", "React", "Bootstrap"]
+}
+
 function MenteeProfile() {
   const [radioValue, setRadioValue] = useState("1");
 
@@ -36,7 +43,7 @@ function MenteeProfile() {
       <div className="row">
         {/* Main Content */}
         <div className="col-lg-8 col-md-12 mb-4">
-          <ProfileCard />
+          <ProfileCard profile={profile} />
           <div className="pt-0 mt-0" style={{ width: "100%", borderBottom: "1px solid grey" }}>
             <ButtonGroup className="d-flex flex-row justify-content-start">
               {radios.map((radio, idx) => (
