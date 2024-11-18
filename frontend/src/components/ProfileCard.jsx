@@ -19,7 +19,7 @@ const ProfileCard = () => {
   };
 
   return (
-    <div className="container-fluid">
+    <div className="container-fluid mx-0 px-0">
       <div className="text-primary mb-0 pb-0">
         {/* Top Buttons */}
         <div
