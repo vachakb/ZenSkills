@@ -114,13 +114,10 @@ const router = createBrowserRouter([
         path: "profilecard",
         element: <ProfileCard/>
       },
-<<<<<<< HEAD
       {
         path: "mentee_exploring",
         element: <MenteeExploring />
       }
-=======
->>>>>>> ffee55a32f78e4780b1bbad334da350373d7a26a
     ],
   },
 ]);
