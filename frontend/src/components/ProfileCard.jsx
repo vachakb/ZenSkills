@@ -99,9 +99,9 @@ const ProfileCard = ({ profile }) => {
                 <h5 className="mb-0 fs-4">{profile.name}</h5>
                 {profile.isMentor ? <>
                   <div style={{ borderLeft: "2px solid #DBDBDB" }}></div>
-                  <div className="d-flex align-items-center">
-<GiRoundStar size="1.5rem" color="#ffa426" />
-<span style={{ color: "#ffa426" }}>{profile.rating}</span>
+                  <div className="d-flex align-items-center gap-1">
+                    <GiRoundStar size="1.5rem" color="#ffa426" />
+                    <span style={{ color: "#ffa426" }}>{profile.rating}</span>
                   </div>
                 </> : null}
               </div>
