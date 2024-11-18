@@ -11,7 +11,7 @@ export default function ExploreMentor({ mentors_, demoTags }) {
   const [allTags, setAllTags] = useState([]);
   const [selectedTags, setSelectedTags] = useState([]);
   const [noOfMenteesMentored, setNoOfMenteedMentored] = useState(0);
-  const [currentPage, setCurrntpage] = useState(0);
+  const [currentPage, setCurrentpage] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
   const [filterDropdownVisibility, setFilterDropdownVisibility] = useState(false);
   const itemsPerPage = 10;
@@ -55,7 +55,7 @@ export default function ExploreMentor({ mentors_, demoTags }) {
   }
 
   function handlePageChange(selectedItem) {
-    setCurrntpage(selectedItem.selected);
+    setCurrentpage(selectedItem.selected);
   }
 
   useEffect(() => {
