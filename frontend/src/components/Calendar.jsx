@@ -10,8 +10,6 @@ function Calendar() {
   const week = useMemo(() => {
     const weekDateTime = DateTime.local().plus({ week: weekOffset });
 
-    console.log(weekDateTime.c.day);
-
     const weekStart = weekDateTime.startOf("week", {
       useLocaleWeeks: true,
     });
