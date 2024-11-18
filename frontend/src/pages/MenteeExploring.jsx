@@ -3,7 +3,7 @@ import ProfileCard from "../components/ProfileCard";
 import UserInfo from "../components/UserInfo";
 import { useState } from "react";
 import Statistics from "../components/Statistics";
-import AvailableSessions from "./AvailableSessions";
+import AvailableSessions from "../components/AvailableSessions";
 import { DateTime } from "luxon";
 
 const profile = {
