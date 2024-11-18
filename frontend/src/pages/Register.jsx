@@ -4,7 +4,14 @@ import TextField from "../components/TextField";
 import * as yup from "yup";
 import { Formik } from "formik";
 import { useState } from "react";
-import { useNavigate } from 'react-router-dom'
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
+
+const API_URL = "http://localhost:5000";
+const Role = Object.freeze({
+  Mentor: "mentor",
+  Mentee: "mentee",
+});
 
 function Register() {
   const [isMentor, setIsMentor] = useState(false);
@@ -38,19 +45,40 @@ function Register() {
               password: "",
               confirmPassword: "",
             }}
-            onSubmit={(data) => {
-              navigate("/register/1", { state: { ...data, isMentor: isMentor } });
+            onSubmit={async (data) => {
+              try {
+                const response = await axios.post(
+                  `${API_URL}/auth/register`,
+                  {
+                    email: data.email,
+                    password: data.password,
+                    role: isMentor ? Role.Mentor : Role.Mentee,
+                  },
+                  { headers: { "Content-Type": "application/json" } }
+                );
+                alert(response.data.message);
+              } catch (error) {
+                console.error("Login error:", error);
+                alert(error.response?.data?.message || "An error occurred.");
+              }
             }}
           >
             {(formikProps) => (
-              <Form className="d-flex flex-column gap-4" noValidate onSubmit={formikProps.handleSubmit}>
-                <div className="d-flex p-1 rounded" style={{ backgroundColor: "#ECF0FF" }}>
+              <Form
+                className="d-flex flex-column gap-4"
+                noValidate
+                onSubmit={formikProps.handleSubmit}
+              >
+                <div
+                  className="d-flex p-1 rounded"
+                  style={{ backgroundColor: "#ECF0FF" }}
+                >
                   <Button
                     className="flex-grow-1"
                     onClick={() => setIsMentor(true)}
                     style={{
                       backgroundColor: isMentor ? "#2E2F5B" : "#C6C2F9",
-                      borderColor:  isMentor ? "#2E2F5B" : "#C6C2F9",
+                      borderColor: isMentor ? "#2E2F5B" : "#C6C2F9",
                       color: isMentor ? "white" : "#958CC4",
                     }}
                   >
@@ -62,7 +90,7 @@ function Register() {
                     style={{
                       backgroundColor: isMentor ? "#C6C2F9" : "#2E2F5B",
                       borderColor: isMentor ? "#C6C2F9" : "#2E2F5B",
-                      color: isMentor ?  "#958CC4" : "white",
+                      color: isMentor ? "#958CC4" : "white",
                     }}
                   >
                     Mentee
@@ -134,11 +162,22 @@ function Register() {
                   Create Account
                 </Button>
                 <div className="d-flex align-items-center mt-4">
-                  <div style={{ borderTop: "2px black solid" }} className="flex-grow-1"></div>
+                  <div
+                    style={{ borderTop: "2px black solid" }}
+                    className="flex-grow-1"
+                  ></div>
                   <p className="m-0 mx-4">OR</p>
-                  <div style={{ borderTop: "2px black solid" }} className="flex-grow-1"></div>
+                  <div
+                    style={{ borderTop: "2px black solid" }}
+                    className="flex-grow-1"
+                  ></div>
                 </div>
-                <p className="m-0 mx-auto">Already have an account? <a className="text-decoration-none" href="/login">Login</a></p>
+                <p className="m-0 mx-auto">
+                  Already have an account?{" "}
+                  <a className="text-decoration-none" href="/login">
+                    Login
+                  </a>
+                </p>
               </Form>
             )}
           </Formik>
