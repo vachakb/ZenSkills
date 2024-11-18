@@ -13,8 +13,7 @@ export default function ExploreMentor({ mentors_, demoTags }) {
   const [noOfMenteesMentored, setNoOfMenteedMentored] = useState(0);
   const [currentPage, setCurrntpage] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
-  const [filterDropdownVisibility, setFilterDropdownVisibility] =
-    useState(false);
+  const [filterDropdownVisibility, setFilterDropdownVisibility] = useState(false);
   const itemsPerPage = 10;
 
   // useEffect(()=>{

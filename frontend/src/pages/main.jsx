@@ -162,7 +162,7 @@ const router = createBrowserRouter([
       },
       {
         path: "workshops",
-        element: <Workshops/>
+        element: <Workshops demoTags={demoTags}/>
       }
     ],
   },

@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import JobCard from "../components/JobCard";
-import '@fortawesome/fontawesome-free/css/all.min.css'; // Import Font Awesome CSS
+import "@fortawesome/fontawesome-free/css/all.min.css"; // Import Font Awesome CSS
 
 const JobList = () => {
   const jobs = [
@@ -118,6 +118,9 @@ const JobList = () => {
   const [locationInput, setLocationInput] = useState("");
   const [filteredJobs, setFilteredJobs] = useState(jobs);
 
+  const [filterDropdownVisibility, setFilterDropdownVisibility] =
+    useState(false);
+
   const handleSearch = () => {
     const filtered = jobs.filter((job) => {
       const matchesTitle = job.title
@@ -139,26 +142,31 @@ const JobList = () => {
     setLocationInput(currentLocation);
   };
 
+  function toggleFilterDropdownVisibility() {
+    if (filterDropdownVisibility) setFilterDropdownVisibility(false);
+    else setFilterDropdownVisibility(true);
+  }
+
   return (
-    <div className="container my-5">
+    <div className="container my-3">
       <h1 className="text-center mb-4">Explore Jobs</h1>
 
       {/* Search and Filters */}
       <div className="mb-4">
         <div className="row g-3 align-items-center">
           {/* Search Bar */}
-          <div className="col-md-5">
+          <div className="col-md-4">
             <input
               type="text"
               className="form-control"
-              placeholder="Search jobs by title"
+              placeholder="Search by: job title, position, organization ..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
 
           {/* Location Input */}
-          <div className="col-md-5 position-relative">
+          <div className="col-md-4 position-relative">
             <input
               type="text"
               className="form-control"
@@ -186,6 +194,14 @@ const JobList = () => {
           <div className="col-md-2">
             <button className="btn btn-primary w-100" onClick={handleSearch}>
               Search
+            </button>
+          </div>
+          <div className="col-12 col-md-2">
+            <button
+              className="btn btn-primary w-100"
+              onClick={toggleFilterDropdownVisibility}
+            >
+              Filter
             </button>
           </div>
         </div>
