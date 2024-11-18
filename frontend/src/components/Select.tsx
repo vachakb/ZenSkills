@@ -8,9 +8,12 @@ function Select(props) {
         {props.required ? <span style={{ color: "red" }}> *</span> : null}
       </Form.Label>
       <Form.Select style={{ borderColor: "#465FF180" }} {...props}>
-        <option value="Male">Male</option>
-        <option value="Female">Female</option>
-        <option value="Other">Other</option>
+        <option value={props.placeholder} disabled selected>{props.placeholder}</option>
+        {props.options.map((value) => (
+          <option value={value} key={value}>
+            {value}
+          </option>
+        ))}
       </Form.Select>
       <Form.Control.Feedback type="invalid">
         {props.error}
