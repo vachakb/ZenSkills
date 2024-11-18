@@ -64,7 +64,7 @@ function MenteeProfile() {
             </ButtonGroup>
           </div>
           <div className="mt-3">
-            {radioValue === "1" && <UserInfo />}
+            {radioValue === "1" && <UserInfo profile={profile} />}
            
             {radioValue === "2" && <div>Milestones Content Coming Soon!</div>}
           </div>

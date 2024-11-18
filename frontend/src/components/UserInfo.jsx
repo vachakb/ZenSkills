@@ -1,6 +1,22 @@
 import React from "react";
+import { Card } from "react-bootstrap";
+import { Link } from "react-router-dom";
+import { DateTime } from "luxon";
 
-const UserInfo = () => {
+const UserInfo = ({ profile }) => {
+    const calculateDateDifference = (workExperience) => {
+        const from = workExperience.from;
+        const to = workExperience.to ?? DateTime.now()
+
+        const diff = to.diff(from, ["years", "months"]).toObject();
+
+        if (diff.years) {
+            return `${Math.floor(diff.years)} yrs ${Math.floor(diff.months)} mos`;
+        } else {
+            return `${Math.floor(diff.months)} mos`;
+        }
+    };
+
     return (
         <div className="container mt-4 mx-0 px-0" >
             {/* Bio Section */}
@@ -13,7 +29,36 @@ const UserInfo = () => {
                 </div>
             </div>
 
-            {/* Skills and Education Section */}
+            {
+                profile.isMentor ?
+                <>
+              <Card>
+                  <Card.Body className="d-flex flex-column gap-2">
+                      <Card.Text>
+                          <h5 className="m-0">WORK EXPERIENCE</h5>
+                      </Card.Text>
+                {profile.workExperiences.map((workExperience) => (
+                    <div className="d-flex flex-column gap-2">
+                        <div className="d-flex gap-2">
+                            <img src="/rosette.svg" />
+                            <div className="d-flex flex-column">
+                                <div className="d-flex align-items-center gap-2">
+                                    <h5 className="m-0">{workExperience.title}</h5>
+                                    <h6 className="m-0">{workExperience.from.toFormat("LLLL yyyy")} - {workExperience.to ? workExperience.to.toFormat("LLLL yyyy") : "present" }</h6>
+                                </div>
+                                <h6 style={{ color: "#0077B5" }}>{calculateDateDifference(workExperience)}</h6>
+                            </div>
+                        </div>
+                        <Link className="text-decoration-none m-0" style={{ color: "#4D9398" }} href="#">Show more</Link>
+                    </div>
+                ))}
+                <div>
+                </div>
+                  </Card.Body>
+              </Card>
+                </>
+                :
+            /* Skills and Education Section */
             <div className="row">
                 {/* Skills */}
                 <div className="col-md-6">
@@ -59,8 +104,9 @@ const UserInfo = () => {
                     </div>
                 </div>
             </div>
+                }
         </div>
     );
 };
 
-export default UserInfo; 
+export default UserInfo;
