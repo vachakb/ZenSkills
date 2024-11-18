@@ -3,17 +3,31 @@ import ProfileCard from "../components/ProfileCard";
 import UserInfo from "../components/UserInfo";
 import { useState } from "react";
 import Statistics from "../components/Statistics";
-import Achievements from "../components/Achievements";
+import AvailableSessions from "./AvailableSessions";
+import { DateTime } from "luxon";
 
 const profile = {
-  isMentor: false,
-  name: "Mentee 1",
-  bio: "As a final-year Computer Science student at ABC University, I'm eager to expand my skills and transition into the tech industry. I have a solid foundation in Java, Python, and web...",
-  occupation: "Student at XYZ University",
-  interests: ["Web Dev", "React", "Bootstrap"]
-}
+  isMentor: true,
+  name: "Mentor 1",
+  bio: "As a Senior Software Engineer with over 8 years of experience, I’m passionate about guiding aspiring developers in full-stack web development, cloud computing, and career...",
+  rating: 4.9,
+  occupation: "Senior Software Engineer at XYZ Corp",
+  expertise: ["Web Dev", "React", "Bootstrap"],
+  workExperiences: [
+    {
+      title: "Business Development",
+      from: DateTime.fromObject({ year: 2022, month: 6 }),
+      to: DateTime.fromObject({ year: 2024, month: 8 }),
+    },
+    {
+      title: "UX/UI Designer",
+      from: DateTime.fromObject({ year: 2024, month: 8 }),
+      to: null,
+    },
+  ],
+};
 
-function MenteeProfile() {
+function MenteeExploring() {
   const [radioValue, setRadioValue] = useState("1");
 
   const radios = [
@@ -21,21 +35,20 @@ function MenteeProfile() {
     { name: "Milestones", value: "2" },
   ];
 
-  
   const getButtonStyle = (value) => {
     if (radioValue === value) {
       return {
         color: "green",
         border: "none",
-        borderBottom: "2px solid green", 
-        backgroundColor: "white", 
+        borderBottom: "2px solid green",
+        backgroundColor: "white",
       };
     }
     return {
-      color: "black", 
+      color: "black",
       border: "none",
-      borderBottom: "none", 
-      backgroundColor: "white", 
+      borderBottom: "none",
+      backgroundColor: "white",
     };
   };
 
@@ -45,7 +58,10 @@ function MenteeProfile() {
         {/* Main Content */}
         <div className="col-lg-8 col-md-12 mb-4">
           <ProfileCard profile={profile} />
-          <div className="pt-0 mt-0" style={{ width: "100%", borderBottom: "1px solid grey" }}>
+          <div
+            className="pt-0 mt-0"
+            style={{ width: "100%", borderBottom: "1px solid grey" }}
+          >
             <ButtonGroup className="d-flex flex-row justify-content-start">
               {radios.map((radio, idx) => (
                 <ToggleButton
@@ -57,7 +73,7 @@ function MenteeProfile() {
                   value={radio.value}
                   checked={radioValue === radio.value}
                   onChange={(e) => setRadioValue(e.currentTarget.value)}
-                  style={getButtonStyle(radio.value)} 
+                  style={getButtonStyle(radio.value)}
                 >
                   {radio.name}
                 </ToggleButton>
@@ -66,7 +82,7 @@ function MenteeProfile() {
           </div>
           <div className="mt-3">
             {radioValue === "1" && <UserInfo profile={profile} />}
-           
+
             {radioValue === "2" && <div>Milestones Content Coming Soon!</div>}
           </div>
         </div>
@@ -80,8 +96,9 @@ function MenteeProfile() {
               marginTop: "30px",
             }}
           >
+            {/* TODO mentor statistics */}
             <Statistics />
-            <Achievements />
+            <AvailableSessions />
           </div>
         </div>
       </div>
@@ -89,4 +106,4 @@ function MenteeProfile() {
   );
 }
 
-export default MenteeProfile;
+export default MenteeExploring;

@@ -15,15 +15,21 @@ import { GoogleOAuthProvider } from "@react-oauth/google";
 import MenteeWelcome from "./MenteeWelcome.jsx";
 import MentorWelcome from "./MentorWelcome.jsx";
 import ExploreMentor from "./ExloreMentors.jsx";
+
+import VerifyEmail from "./VerifyEmail.jsx";
+
 import UserInfo from "../components/UserInfo.jsx";
 import ProfileCard from "../components/ProfileCard.jsx";
 import MenteeProfile from "./MenteeProfile.jsx";
+import MenteeExploring from "./MenteeExploring.jsx";
+import Milestone from "../components/Milestones.jsx";
+
 
 const mentor = {
-  id:"id",
-  name:"mentor",
+  id: "id",
+  name: "mentor",
   rating: 4.5,
-  currentPost:"Test Architecture manager at Align",
+  currentPost: "Test Architecture manager at Align",
   noOfSessions: 19,
   noOfReviews: 4,
   Experience: 23,
@@ -39,10 +45,50 @@ const eventdetails={
 };
 
 
-const demoTags = ["Technology", "IT", "Computer", "Engineering", "Blockchain", "Gaming", "Education", "Web Development"]
+const demoTags = [
+  "Technology",
+  "IT",
+  "Computer",
+  "Engineering",
+  "Blockchain",
+  "Gaming",
+  "Education",
+  "Web Development",
+];
 
 const mentors = Array(12).fill(mentor);
 const events = Array(6).fill(eventdetails);
+
+const timelineData = [
+  {
+    date: "May 2001",
+    category: "The origin",
+    title: "Acme was founded in Milan, Italy",
+    description:
+      "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut pharetra pharetra massa.",
+  },
+  {
+    date: "May 2007",
+    category: "The milestone",
+    title: "Reached 5K customers",
+    description:
+      "Praesent eu neque aliquam vestibulum morbi blandit cursus risus at ultrices.",
+  },
+  {
+    date: "May 2012",
+    category: "The acquisition",
+    title: "Acquired various companies, including Technology Inc.",
+    description:
+      "Pellentesque habitant morbi tristique senectus et netus et malesuada.",
+  },
+  {
+    date: "May 2022",
+    category: "The IPO",
+    title: "Went public at the New York Stock Exchange",
+    description:
+      "Adipiscing enim eu neque aliquam vestibulum morbi blandit cursus risus.",
+  },
+];
 
 
 const router = createBrowserRouter([
@@ -85,8 +131,12 @@ const router = createBrowserRouter([
       {
         path: "explore",
         // element: <ExploreMentor/>
-        element: <ExploreMentor mentors_={mentors} demoTags={demoTags}/>,
+        element: <ExploreMentor mentors_={mentors} demoTags={demoTags} />,
         // this array is just passed for test/preview
+      },
+      {
+        path: "verify-email",
+        element: <VerifyEmail />,
       },
       {
         path: "mentee_profile",
@@ -96,7 +146,14 @@ const router = createBrowserRouter([
         path: "profilecard",
         element: <ProfileCard/>
       },
-      
+      {
+        path: "mentee_exploring",
+        element: <MenteeExploring />
+      },
+      {
+        path: "milestone",
+        element: <Milestone data={timelineData}/>
+      }
     ],
   },
 ]);
@@ -106,5 +163,5 @@ createRoot(document.getElementById("root")).render(
     <GoogleOAuthProvider clientId="172493269774-4qr965tabedoqajcv49jpu2btps6sg8v.apps.googleusercontent.com">
       <RouterProvider router={router} />
     </GoogleOAuthProvider>
-  </StrictMode>,
+  </StrictMode>
 );
