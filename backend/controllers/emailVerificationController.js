@@ -27,7 +27,6 @@ const verifyEmail = async (req, res) => {
         password_hash: tempUser.password_hash,
         role: tempUser.role,
         created_date: new Date(),
-        name: "",
         is_deleted: false,
         status: "active",
         is_verified: true,
@@ -42,6 +41,7 @@ const verifyEmail = async (req, res) => {
         data: {
           uid: user.uid,
           bio: null,
+          name: "",
           experience_years: 0, // Default value
           number_of_mentees_mentored: 0, // Default value
           mentor_job_title: "Unknown",
@@ -54,6 +54,7 @@ const verifyEmail = async (req, res) => {
     if (tempUser.role === "mentee") {
       await prisma.mentee.create({
         data: {
+          name: "",
           uid: user.uid,
           bio: null,
         },
