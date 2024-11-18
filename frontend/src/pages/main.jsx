@@ -18,6 +18,7 @@ import ExploreMentor from "./ExloreMentors.jsx";
 import UserInfo from "../components/UserInfo.jsx";
 import ProfileCard from "../components/ProfileCard.jsx";
 import MenteeProfile from "./MenteeProfile.jsx";
+import MenteeExploring from "./MenteeExploring.jsx";
 
 const mentor = {
   id:"id",
@@ -96,7 +97,10 @@ const router = createBrowserRouter([
         path: "profilecard",
         element: <ProfileCard/>
       },
-      
+      {
+        path: "mentee_exploring",
+        element: <MenteeExploring />
+      }
     ],
   },
 ]);
