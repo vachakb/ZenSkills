@@ -14,9 +14,8 @@ function RegisterUserInfo() {
   const navigate = useNavigate();
 
   const countriesNames = useMemo(() => {
-    return Object
-      .values(countries)
-      .map(country => country.name)
+    return Object.values(countries)
+      .map((country) => country.name)
       .sort();
   }, []);
 
@@ -80,11 +79,7 @@ function RegisterUserInfo() {
                   name="gender"
                   label="Gender"
                   value={formikProps.values.gender}
-                  options={[
-                    "Male",
-                    "Female",
-                    "Other"
-                  ]}
+                  options={["Male", "Female", "Other"]}
                   placeholder="Gender"
                   onChange={formikProps.handleChange}
                   onBlur={formikProps.handleBlur}
