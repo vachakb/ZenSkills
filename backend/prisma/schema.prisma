@@ -11,11 +11,9 @@ model User {
   email         String       @unique(map: "user_unique_1") @db.VarChar(100)
   created_date  DateTime     @db.Timestamptz(6)
   gender        gender_enum?
-  is_deleted    Boolean      @default(false)
+  is_deleted    Boolean
   location      String?
-  name          String       @db.VarChar(50)
   password_hash String
-  language      String?
   phone_number  String?      @db.VarChar(13)
   status        UserStatus   @default(active)
   uid           String       @id @default(uuid())
@@ -27,17 +25,18 @@ model User {
 }
 
 model mentee {
+  name          String       @db.VarChar(50)
   bio              String?
-  mentee_id        BigInt             @id(map: "mentee_pk") @default(autoincrement())
-  uid              String             @unique
+  mentee_id        String             @id(map: "mentee_pk") @default(uuid())
+  uid              String
   User             User               @relation(fields: [uid], references: [uid], onDelete: Cascade, map: "mentee_user_fk")
   mentee_interests mentee_interests[]
 }
 
 model mentee_interests {
-  mentee_id           BigInt  @unique
-  tag_id              BigInt  @unique
-  mentee_interests_id BigInt @id(map: "mentee_interests_pk") @default(autoincrement())
+  mentee_id           String
+  tag_id              String
+  mentee_interests_id String @id(map: "mentee_interests_pk") @default(uuid())
   mentee              mentee @relation(fields: [mentee_id], references: [mentee_id], onDelete: Cascade, map: "mentee_interests_mentee_fk")
   tags                tags   @relation(fields: [tag_id], references: [tag_id], onDelete: Cascade, map: "mentee_interests_tags_fk")
 }
@@ -45,41 +44,43 @@ model mentee_interests {
 /// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model mentor {
+  name          String       @db.VarChar(50)
   bio                        String?
   experience_years           Int                @default(0)
-  mentor_id                  BigInt             @id(map: "mentor_pk") @default(autoincrement())
-  uid                        String             @unique
+  mentor_id                  String             @id(map: "mentor_pk") @default(uuid())
+  uid                        String
   rating                     Float?             @db.Real
   number_of_mentees_mentored Int                @default(0)
   company                    String?            @db.VarChar(255)
   mentor_job_title           String             @db.VarChar(50)
   User                       User               @relation(fields: [uid], references: [uid], onDelete: Cascade, map: "mentor_user_fk")
   mentor_expertise           mentor_expertise[]
+  number_of_sessions         Int                @default(0)
+  credit_score               Float              @default(75)           
 }
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model mentor_expertise {
-  mentor_id           BigInt  @unique
-  tag_id              BigInt  @unique
-  mentor_expertise_id BigInt @id(map: "mentor_expertise_pk") @default(autoincrement())
+  mentor_id           String
+  tag_id              String
+  mentor_expertise_id String @id(map: "mentor_expertise_pk") @default(uuid())
   mentor              mentor @relation(fields: [mentor_id], references: [mentor_id], onDelete: Cascade, map: "mentor_expertise_mentor_fk")
   tags                tags   @relation(fields: [tag_id], references: [tag_id], onDelete: Cascade, map: "mentor_expertise_tags_fk")
 }
 
 model tags {
   tag_name         String             @unique(map: "tags_unique") @db.VarChar(100)
-  tag_id           BigInt             @id(map: "tags_pk") @default(autoincrement())
+  tag_id           String             @id(map: "tags_pk") @default(uuid())
   mentee_interests mentee_interests[]
   mentor_expertise mentor_expertise[]
 }
 
 model tempuser {
-  email         String   @unique
-  created_date  DateTime @default(now())
+  email         String   @db.VarChar(100)
+  created_date  DateTime @db.Timestamptz(6)
   password_hash String
-  role          UserRole  
-  temp_uid      String   @id @default(uuid())
-  expires_at    DateTime @default(dbgenerated("CURRENT_TIMESTAMP + INTERVAL '1 hour'"))
+  temp_uid      String   @id(map: "tempuser_pk") @default(uuid())
+  role          UserRole
 }
 
 enum gender_enum {
