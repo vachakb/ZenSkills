@@ -4,7 +4,7 @@ import ReactPaginate from "react-paginate";
 import axios from "axios";
 
 // remove mentors_ and allTags aguments when api is live
-
+const API_URL = "http://localhost:5000";
 export default function ExploreMentor({ mentors_, demoTags }) {
   const [mentors, setMentors] = useState(mentors_);
   const [searchTerm, setSearchTerm] = useState("");
@@ -16,30 +16,30 @@ export default function ExploreMentor({ mentors_, demoTags }) {
   const [filterDropdownVisibility, setFilterDropdownVisibility] = useState(false);
   const itemsPerPage = 10;
 
-  // useEffect(()=>{
-  //     // fetch cards from backend by api
-  //     async function fetchMentors(){
-  //         const responce = await axios.get('/api/mentors', {
-  //             params:{
-  //                 page: currentPage,
-  //                 limit: itemsPerPage,
-  //                 search: searchTerm,
-  //                 selectedTags: selectedTags,
-  //                 noOfMenteesMentored: noOfMenteesMentored
-  //             }
-  //         })
-  //         setMentors(responce.data.mentors)
-  //         setTotalPages(Math.ceil(responce.data.totalMentorsCount/itemsPerPage))
-  //     }
-  //     fetchMentors()
-  // }, [currentPage, noOfMenteesMentored])
+  useEffect(() => {
+    // fetch cards from backend by api
+    async function fetchMentors() {
+      const responce = await axios.get(`${API_URL}/api/mentors`, {
+        params: {
+          page: currentPage,
+          limit: itemsPerPage,
+          search: searchTerm,
+          selectedTags: selectedTags,
+          noOfMenteesMentored: noOfMenteesMentored,
+        },
+      });
+      setMentors(responce.data.mentors);
+      setTotalPages(Math.ceil(responce.data.totalMentorsCount / itemsPerPage));
+    }
+    fetchMentors();
+  }, [currentPage, noOfMenteesMentored]);
 
   async function handleSearchButtonClick() {
     // if(!searchTerm && selectedTags?.length===0)    return
     try {
-      const responce = await axios.get("/api/mentors", {
+      const responce = await axios.get(`${API_URL}/api/mentors`, {
         params: {
-          page: currentPage + 1,
+          page: currentPage,
           limit: itemsPerPage,
           search: searchTerm,
           selectedTags: selectedTags,
@@ -61,7 +61,7 @@ export default function ExploreMentor({ mentors_, demoTags }) {
   useEffect(() => {
     async function fetchTags() {
       try {
-        const responce = await axios.get("/api/mentors");
+        const responce = await axios.get(`${API_URL}/api/tags`);
         setAllTags(responce.data.tags || demoTags);
       } catch (error) {
         console.error("error fetching data: ", error);
@@ -156,15 +156,16 @@ export default function ExploreMentor({ mentors_, demoTags }) {
                 style={{ backgroundColor: "rgb(233, 236, 239)" }}
               >
                 <span>{tag}</span>
-                <button type="button" className="btn"
+                <button
+                  type="button"
+                  className="btn"
                   style={{
-                    background: '',
-                    border: 'none',
-                    fontSize: '1rem',
-                    cursor: 'pointer',
-                    transition: 'background-color 0.3s ease',
-                    borderRadius: '50%'
-                    
+                    background: "",
+                    border: "none",
+                    fontSize: "1rem",
+                    cursor: "pointer",
+                    transition: "background-color 0.3s ease",
+                    borderRadius: "50%",
                   }}
                   // onMouseEnter={(e) => {
                   //   e.target.style.backgroundColor = 'rgba(0, 0, 0, 0.1)'; // Hover background color
@@ -172,7 +173,10 @@ export default function ExploreMentor({ mentors_, demoTags }) {
                   // onMouseLeave={(e) => {
                   //   e.target.style.backgroundColor = ''; // Reset background on mouse leave
                   // }}
-                  onClick={()=>handleTagClick(tag)}>&times;</button>
+                  onClick={() => handleTagClick(tag)}
+                >
+                  &times;
+                </button>
                 {/* <i
                   className="fas fa-times custom-close"
                   onClick={() => handleTagClick(tag)}
@@ -186,8 +190,15 @@ export default function ExploreMentor({ mentors_, demoTags }) {
       )}
 
       {/* card grid */}
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(4, minmax(0, 1fr))" }} className="gap-4">
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: "repeat(4, minmax(0, 1fr))",
+        }}
+        className="gap-4"
+      >
         {mentors.map((mentor) => {
+          console.log(mentor);
           return <Mentorcard mentor={mentor} />;
         })}
         {mentors.length === 0 && <p>No mentors found.</p>}

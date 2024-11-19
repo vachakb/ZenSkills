@@ -53,8 +53,8 @@ function Register() {
               phoneNum: ""
             }}
             onSubmit={(data) =>
-              register(data)
-                .then(() => navigate("/register/1"))
+              register({ ...data, role: isMentor ? "mentor" : "mentee" })
+                .then(() => navigate("/verify", { state: data }))
                 .catch((err) => {
                   console.error(err);
                   // TODO error modal
