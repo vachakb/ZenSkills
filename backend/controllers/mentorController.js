@@ -4,7 +4,7 @@ const prisma = require("../models/prismaClient");
 const getMentors = async (req, res) => {
   try {
     const {
-      page = 1,
+      page = 0,
       limit = 10,
       search = "",
       selectedTags = [],
@@ -34,13 +34,13 @@ const getMentors = async (req, res) => {
                 mentor_expertise: {
                   some: {
                     tags: {
-                      tag_name: { in: tagsArray }, 
+                      tag_name: { in: tagsArray },
                     },
                   },
                 },
               },
             ]
-          : []), 
+          : []),
       ],
     };
 
@@ -49,21 +49,19 @@ const getMentors = async (req, res) => {
       skip: offset,
       take: parseInt(limit),
       include: {
-        User: true, 
+        User: true,
         mentor_expertise: {
           include: {
-            tags: true, 
+            tags: true,
           },
         },
       },
     });
 
-
     const totalMentorsCount = await prisma.mentor.count({
       where: whereClause,
     });
 
- 
     res.status(200).json({
       mentors,
       totalMentorsCount,
