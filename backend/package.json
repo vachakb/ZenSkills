@@ -35,7 +35,8 @@
     "pg": "^8.13.1",
     "pg-hstore": "^2.3.4",
     "prisma": "^5.22.0",
-    "sequelize": "^6.37.5"
+    "sequelize": "^6.37.5",
+    "yup": "^1.4.0"
   },
   "devDependencies": {
     "nodemon": "^3.1.7"
