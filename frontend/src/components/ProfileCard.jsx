@@ -105,7 +105,7 @@ const ProfileCard = ({ profile }) => {
                   </div>
                 </> : null}
               </div>
-              <small className="text-muted">{profile.occupation}</small>
+              <small className="text-muted">{profile.title} at {profile.occupation}</small>
             </div>
           </div>
 

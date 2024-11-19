@@ -22,14 +22,17 @@ model User {
   is_verified   Boolean      @default(false)
   mentee        mentee[]
   mentor        mentor[]
+  statistics    statistics? 
 }
 
 model mentee {
-  name          String       @db.VarChar(50)
+  name             String       @db.VarChar(50)
   bio              String?
   mentee_id        String             @id(map: "mentee_pk") @default(uuid())
   uid              String
-  User             User               @relation(fields: [uid], references: [uid], onDelete: Cascade, map: "mentee_user_fk")
+  mentee_title     String             @db.VarChar(50) 
+  company          String?            @db.VarChar(255)
+  User             User?              @relation(fields: [uid], references: [uid], onDelete: Cascade, map: "mentee_user_fk")
   mentee_interests mentee_interests[]
 }
 
@@ -70,8 +73,11 @@ model mentor_expertise {
 }
 
 model tags {
-  tag_name         String             @unique(map: "tags_unique") @db.VarChar(100)
-  tag_id           String             @id(map: "tags_pk") @default(uuid())
+  tag_id          String    @id @default(uuid())
+  tag_name        String?    
+  parent_tag_id   String?
+  parent          tags?     @relation("TagHierarchy", fields: [parent_tag_id], references: [tag_id])
+  children        tags[]    @relation("TagHierarchy")
   mentee_interests mentee_interests[]
   mentor_expertise mentor_expertise[]
 }
@@ -83,6 +89,19 @@ model tempuser {
   temp_uid      String   @id(map: "tempuser_pk") @default(uuid())
   role          UserRole
   expires_at    DateTime
+}
+
+model statistics {
+  id                 String   @id @default(uuid())
+  sessionsBooked     Int      @default(0) 
+  sessionsAttended   Int      @default(0) 
+  sessionsCancelled  Int      @default(0) 
+  workshopsAttended  Int      @default(0) 
+  badgesReceived     Int      @default(0) 
+  averageAttendance  Decimal  @default(0) 
+  lastUpdated        DateTime @updatedAt
+  uid                String   @unique
+  User               User     @relation(fields: [uid], references: [uid])
 }
 
 enum gender_enum {

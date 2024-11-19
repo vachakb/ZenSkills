@@ -40,7 +40,7 @@ function Register() {
               confirmPassword: "",
             }}
             onSubmit={(data) =>
-              register(data)
+              register({ ...data, role: isMentor ? "mentor" : "mentee" })
                 .then(() => navigate("/register/1"))
                 .catch((err) => {
                   console.error(err);

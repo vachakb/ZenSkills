@@ -141,7 +141,7 @@ const router = createBrowserRouter([
         element: <VerifyEmail />,
       },
       {
-        path: "mentee_profile",
+        path: "mentee_profile/:menteeId",
         element: <MenteeProfile/>
       },
       {
