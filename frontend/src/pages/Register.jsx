@@ -5,17 +5,7 @@ import * as yup from "yup";
 import { Formik } from "formik";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
-import PhoneInput from 'react-phone-input-2'
-import 'react-phone-input-2/lib/style.css'
-
-
-
-const API_URL = "http://localhost:5000";
-const Role = Object.freeze({
-  Mentor: "mentor",
-  Mentee: "mentee",
-});
+import { register } from "../apis/user";
 
 function Register() {
   const [isMentor, setIsMentor] = useState(false);
@@ -60,24 +50,15 @@ function Register() {
               confirmPassword: "",
               phoneNum: ""
             }}
-            onSubmit={async (data) => {
-              try {
-                const response = await axios.post(
-                  `${API_URL}/auth/register`,
-                  {
-                    email: data.email,
-                    password: data.password,
-                    role: isMentor ? Role.Mentor : Role.Mentee,
-                    phoneNum: data.phoneNum
-                  },
-                  { headers: { "Content-Type": "application/json" } }
-                );
-                alert(response.data.message);
-              } catch (error) {
-                console.error("Login error:", error);
-                alert(error.response?.data?.message || "An error occurred.");
-              }
-            }}
+            onSubmit={(data) =>
+              register(data)
+                .then(() => navigate("/register/1"))
+                .catch((err) => {
+                  console.error(err);
+                  // TODO error modal
+                  alert(err);
+                })
+            }
           >
             {(formikProps) => (
               <Form

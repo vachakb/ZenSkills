@@ -24,8 +24,8 @@ function AvailableSessions() {
     <Card style={{ borderRadius: "10px" }}>
       <Card.Body className="d-flex flex-column gap-4">
         <Card.Title>
-          <h3 className="fw-bold">Available sessions</h3>
-          <h5>Book 1:1 sessions from the options based on your needs</h5>
+          <h5>Available sessions</h5>
+          <h6>Book 1:1 sessions from the options based on your needs</h6>
         </Card.Title>
         {sessions.map((session) => (
           <Card style={{ backgroundColor: "#F1F1F1", borderRadius: "10px" }}>
@@ -37,11 +37,11 @@ function AvailableSessions() {
                     style={{ backgroundColor: "#F4D35E" }}
                   >
                     <GiTwoCoins />
-                    {session.cost}
+                    <span>{session.cost}</span>
                   </div>
                 ) : null}
-                <h4 className="m-0">{session.name}</h4>
-                <h5 className="m-0">{session.duration}</h5>
+                <h5 className="m-0">{session.name}</h5>
+                <h6 className="m-0">{session.duration}</h6>
               </div>
               <Button
                 className="ms-auto my-auto"

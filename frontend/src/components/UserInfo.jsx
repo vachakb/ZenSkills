@@ -44,7 +44,7 @@ const UserInfo = ({ profile }) => {
                             <div className="d-flex flex-column">
                                 <div className="d-flex align-items-center gap-2">
                                     <h5 className="m-0">{workExperience.title}</h5>
-                                    <h6 className="m-0">{workExperience.from.toFormat("LLLL yyyy")} - {workExperience.to ? workExperience.to.toFormat("LLLL yyyy") : "present" }</h6>
+                                    <h6 className="m-0">{workExperience.from.toFormat("MMM yyyy")} - {workExperience.to ? workExperience.to.toFormat("MMM yyyy") : "present" }</h6>
                                 </div>
                                 <h6 style={{ color: "#0077B5" }}>{calculateDateDifference(workExperience)}</h6>
                             </div>

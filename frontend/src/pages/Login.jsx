@@ -4,18 +4,16 @@ import TextField from "../components/TextField";
 import * as yup from "yup";
 import { Formik } from "formik";
 import { useState } from "react";
-import { GoogleLogin } from '@react-oauth/google';
+import { GoogleLogin } from "@react-oauth/google";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
-// import { loginUser } from '../services/authServices'; 
+import {
+  googleCallback,
+  login,
+} from "../apis/user";
 
-const Role = Object.freeze({
-  Mentor: "mentor",
-  Mentee: "mentee"
-});
-
-const GOOGLE_CLIENT_ID = "172493269774-4qr965tabedoqajcv49jpu2btps6sg8v.apps.googleusercontent.com";
-const API_URL = "http://localhost:5000";
+// TODO put into env
+const GOOGLE_CLIENT_ID =
+  "172493269774-4qr965tabedoqajcv49jpu2btps6sg8v.apps.googleusercontent.com";
 
 function Login() {
   const [isMentor, setIsMentor] = useState(false);
@@ -33,7 +31,6 @@ function Login() {
       .min(8, "Password should be at least 8 characters"),
   });
 
-
   return (
     <Container className="d-flex vh-100 p-0" fluid>
       <Authcard />
@@ -45,27 +42,26 @@ function Login() {
               email: "",
               password: "",
             }}
-            onSubmit={async (data) => {
-              try {
-                const res = await axios.post(
-                  `${API_URL}/auth/login`, 
-                  {
-                    email: data.email, 
-                    password: data.password,
-                    role: isMentor ? Role.Mentor : Role.Mentee,
-                  },
-                  { headers: { 'Content-Type': 'application/json' } }
-                );
-                console.log("Login success:", res.data);
-                navigate('/mentee_welcome');
-              } catch (error) {
-                console.error('Login error:', error);
-              }
-            }}            
+            onSubmit={async (data) =>
+              login({ ...data, role: isMentor ? "mentor" : "mentee" })
+                .then(() => navigate("/mentee_welcome"))
+                .catch((err) => {
+                  console.error(err);
+                  // TODO error modal
+                  alert(err);
+                })
+            }
           >
             {(formikProps) => (
-              <Form className="d-flex flex-column gap-4" noValidate onSubmit={formikProps.handleSubmit}>
-                <div className="d-flex p-1 rounded" style={{ backgroundColor: "#ECF0FF" }}>
+              <Form
+                className="d-flex flex-column gap-4"
+                noValidate
+                onSubmit={formikProps.handleSubmit}
+              >
+                <div
+                  className="d-flex p-1 rounded"
+                  style={{ backgroundColor: "#ECF0FF" }}
+                >
                   <Button
                     className="flex-grow-1"
                     onClick={() => setIsMentor(true)}
@@ -136,34 +132,35 @@ function Login() {
                   Login
                 </Button>
                 <div className="d-flex align-items-center mt-4">
-                  <div style={{ borderTop: "2px black solid" }} className="flex-grow-1"></div>
+                  <div
+                    style={{ borderTop: "2px black solid" }}
+                    className="flex-grow-1"
+                  ></div>
                   <p className="m-0 mx-4">OR</p>
-                  <div style={{ borderTop: "2px black solid" }} className="flex-grow-1"></div>
+                  <div
+                    style={{ borderTop: "2px black solid" }}
+                    className="flex-grow-1"
+                  ></div>
                 </div>
 
               <div className="align-self-center">  <GoogleLogin
                   clientId={GOOGLE_CLIENT_ID}
-                  onSuccess={async (response) => {
-                    const { credential } = response;
-                    try {
-                      const res = await axios.post(
-                        `${API_URL}/auth/google/callback`,
-                        { token: credential },
-                        { headers: { 'Content-Type': 'application/json' } },
-                        { withCredentials: true }
-                      );
-                      console.log('Backend Response:', res.data);
-                    } catch (error) {
-                      console.error('Error during backend processing:', error);
-                    }
-                  }}
+                  onSuccess={async (response) =>
+                    googleCallback(response.credential)
+                      .then((res) => console.log(res))
+                      .catch(console.error(err))
+                  }
                   onError={() => {
-                    console.log('Login Failed');
+                    console.log("Login Failed");
                   }}
                 />
-                </div>
-                
-                <p className="m-0 mx-auto">Don't have an account? <a className="text-decoration-none" href="/register">Register</a></p>
+
+                <p className="m-0 mx-auto">
+                  Don't have an account?{" "}
+                  <a className="text-decoration-none" href="/register">
+                    Register
+                  </a>
+                </p>
               </Form>
             )}
           </Formik>

@@ -22,7 +22,9 @@ import UserInfo from "../components/UserInfo.jsx";
 import ProfileCard from "../components/ProfileCard.jsx";
 import MenteeProfile from "./MenteeProfile.jsx";
 import MenteeExploring from "./MenteeExploring.jsx";
-import Milestones from "../components/Milestones.jsx";
+import Milestone from "../components/Milestones.jsx";
+import JobList from "./Jobs.jsx";
+import Workshops from "./Workshop.jsx";
 
 
 const mentor = {
@@ -121,7 +123,18 @@ const router = createBrowserRouter([
         path: "mentee_exploring",
         element: <MenteeExploring />
       },
-    
+      {
+        path: "milestone",
+        element: <Milestone data={timelineData}/>
+      },
+      {
+        path: "jobs",
+        element: <JobList />
+      },
+      {
+        path: "workshops",
+        element: <Workshops demoTags={demoTags}/>
+      }
     ],
   },
 ]);
