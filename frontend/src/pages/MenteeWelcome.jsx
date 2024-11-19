@@ -27,10 +27,16 @@ function MenteeWelcome({ mentors_,events_}) {
   const userName = location.state?.name || "User";
 
   const [tasks, setTasks] = useState([
-    { label: "Complete your profile", done: false },
+    { label: "Complete your profile", done: true },
     { label: "Book your first session", done: false },
   ]);
   const [isVisible, setIsVisible] = useState(true);
+
+  useEffect(() => {
+    if (isVisible) {
+      setIsVisible(!tasks.every((task) => task.done));
+    }
+  }, [tasks])
  
   const [events, setEvents] = useState(events_);
   const progress = useMemo(() => {
@@ -117,17 +123,8 @@ function MenteeWelcome({ mentors_,events_}) {
                   {tasks.map((value, index) => (
                     <Form.Group key={index} className="d-flex align-content-center gap-2">
                       <Form.Check
+                        className="pe-none"
                         checked={value.done}
-                        onChange={() => {
-                          const copy = [...tasks];
-                          copy[index].done = !copy[index].done;
-                          setTasks(copy);
-
-                          // Close card if all tasks are done
-                          if (copy.every((task) => task.done)) {
-                            handleClose();
-                          }
-                        }}
                       />
                       <Form.Label
                         style={{

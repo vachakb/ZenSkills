@@ -2,6 +2,8 @@ import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import App from "./App.jsx";
 import "../../node_modules/bootstrap/dist/css/bootstrap.min.css";
+// import 'bootstrap/dist/css/bootstrap.min.css';
+import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 import "../styles/style.css";
 import "../styles/custom.scss";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
@@ -25,6 +27,7 @@ import MenteeExploring from "./MenteeExploring.jsx";
 import Milestone from "../components/Milestones.jsx";
 import JobList from "./Jobs.jsx";
 import Workshops from "./Workshop.jsx";
+import JobDetails from "./JobDetails.jsx";
 import SessionForm from "./CreateSession_1.jsx";
 import SessionForm1 from "./CreateSession2.jsx";
 
@@ -135,7 +138,17 @@ const router = createBrowserRouter([
       },
       {
         path: "jobs",
-        element: <JobList />
+        element: <JobList />,
+        children:[
+          {
+            path: ":id",
+            element: <JobDetails/>
+          }
+        ]
+      },
+      {
+        path: "jobdetails",
+        element: <JobDetails/>
       },
       {
         path: "workshops",

@@ -4,8 +4,7 @@ import "@fortawesome/fontawesome-free/css/all.min.css"; // Import Font Awesome C
 import getAddress from "./getCurrentLocation";
 import axios from "axios";
 import ReactPaginate from "react-paginate";
-import { alignPropType } from "react-bootstrap/esm/types";
-import { Modal } from "react-bootstrap";
+import JobApplicationModal from "../components/JobApplicationModal";
 
 const JobList = () => {
   const jobs = [
@@ -340,7 +339,7 @@ const JobList = () => {
         {filteredJobs.length > 0 ? (
           filteredJobs.map((job) => (
             <div key={job.id} className="col-lg-4 col-md-6">
-              <JobCard {...job} />
+              <JobCard {...job} key={job.id}/>
             </div>
           ))
         ) : (
@@ -366,6 +365,9 @@ const JobList = () => {
           activeClassName={"active"}
         />
       </div>
+
+      {/* Modal Component */}
+      <JobApplicationModal />
     </div>
   );
 };
