@@ -4,20 +4,12 @@ import TextField from "../components/TextField";
 import Select from "../components/Select";
 import * as yup from "yup";
 import { Formik } from "formik";
-import { useLocation, useNavigate } from "react-router-dom";
-import { countries } from "countries-list";
-import { useMemo } from "react";
+import { useNavigate } from "react-router-dom";
+import states from "../misc/states";
+import languages from "../misc/languages";
 
 function RegisterUserInfo() {
-  const prevForm = useLocation().state;
-
   const navigate = useNavigate();
-
-  const countriesNames = useMemo(() => {
-    return Object.values(countries)
-      .map((country) => country.name)
-      .sort();
-  }, []);
 
   const schema = yup.object({
     name: yup.string().required("This is a required field"),
@@ -25,14 +17,9 @@ function RegisterUserInfo() {
       .string()
       .oneOf(["Male", "Female", "Other"], "This is a required field")
       .required("This is a required field"),
-    language: yup.string().required("This is a required field"),
-    location: yup
-      .string()
-      .oneOf(countriesNames, "This is a required field")
-      .required("This is a required field"),
+    language: yup.string().oneOf(languages, "This is a required field"),
+    location: yup.string().oneOf(states, "This is a required field"),
   });
-
-  const email = prevForm?.email || "";
 
   return (
     <Container className="d-flex vh-100 p-0" fluid>
@@ -43,11 +30,11 @@ function RegisterUserInfo() {
             initialValues={{
               name: "",
               gender: "Gender",
-              language: "",
+              language: "English",
               location: "Location",
             }}
             onSubmit={(data) => {
-              navigate("/register/2", { state: { ...prevForm, ...data } });
+              navigate("/register/2", { state: data });
             }}
           >
             {(formikProps) => (
@@ -94,12 +81,11 @@ function RegisterUserInfo() {
                   error={formikProps.errors.gender}
                   required
                 />
-                <TextField
+                <Select
                   name="language"
                   label="Preferred Language"
-                  type="text"
                   value={formikProps.values.language}
-                  placeholder="English"
+                  options={languages}
                   onChange={formikProps.handleChange}
                   onBlur={formikProps.handleBlur}
                   isValid={
@@ -116,7 +102,7 @@ function RegisterUserInfo() {
                   name="location"
                   label="Location"
                   value={formikProps.values.location}
-                  options={countriesNames}
+                  options={states}
                   placeholder="Location"
                   onChange={formikProps.handleChange}
                   onBlur={formikProps.handleBlur}
