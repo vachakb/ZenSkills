@@ -20,11 +20,13 @@ const profile = {
   workExperiences: [
     {
       title: "Business Development",
+      company: "Meta",
       from: DateTime.fromObject({ year: 2022, month: 6 }),
       to: DateTime.fromObject({ year: 2024, month: 8 }),
     },
     {
       title: "UX/UI Designer",
+      company: "Amazon",
       from: DateTime.fromObject({ year: 2024, month: 8 }),
       to: null,
     },
