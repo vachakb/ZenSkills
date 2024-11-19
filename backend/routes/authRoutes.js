@@ -5,9 +5,22 @@ const { verifyEmail } = require("../controllers/emailVerificationController");
 const {
   registerUserProfile,
 } = require("../controllers/registerUserController");
+const passport = require("passport");
 
 // Login route
-router.post("/login", authController.login);
+passport.use("local", authController.login);
+
+// TODO error handling
+router.post(
+  "/login",
+  passport.authenticate("local", { failWithError: true }),
+  (_, res) => {
+    res.statusCode(200);
+  },
+  (_, res) => {
+    res.statusCode(500);
+  },
+);
 
 // Google OAuth callback route
 router.post("/google/callback", authController.googleCallback);

@@ -40,42 +40,22 @@ const generateToken = (user) => {
   );
 };
 
-// Login
-exports.login = async (req, res) => {
-  const { email, password, role } = req.body; // Get email, password, and role (Mentor/Mentee)
-  console.log("Login request:", req.body);
-  try {
-    const user = await prisma.user.findUnique({ where: { email } });
-    if (!user) {
-      return res.status(400).json({ message: "User not found" });
+exports.login = new LocalStrategy(
+  { usernameField: "email" },
+  async (email, password, done) => {
+    const user = await prisma.user.findUniqueOrThrow({
+      where: { email: email },
+    });
+
+    if (await argon2.verify(user.password, password)) {
+      done();
+    } else {
+      throw Error("Unauthorized");
     }
+  },
+);
 
-    const isMatch = await bcrypt.compare(password, user.password_hash);
-    if (!isMatch) {
-      return res.status(400).json({ message: "Invalid credentials" });
-    }
-
-    if (user.role !== role) {
-      return res.status(403).json({ message: "Unauthorized role" });
-    }
-
-    const token = jwt.sign(
-      { userId: user.id, email: user.email, role: user.role }, // Payload
-      process.env.JWT_SECRET,
-      { expiresIn: "1h" }
-    );
-
-    res.cookie("token", token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-    }); // Save token in a cookie
-    return res.json({ message: "Login successful", token });
-  } catch (error) {
-    console.error("Error during login:", error);
-    res.status(500).json({ message: "Server error" });
-  }
-};
-
+// TODO validation, error handling
 exports.register = async (req, res) => {
   const { email, password, role } = req.body;
 
