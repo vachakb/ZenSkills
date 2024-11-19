@@ -1,6 +1,15 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 
-const JobCard = ({ title, jobTypes, salary, company, location, applicants, logo }) => {
+const JobCard = ({ id, title, jobTypes, salary, company, location, applicants, logo }) => {
+
+  const navigate = useNavigate();
+
+  function handleJobDeailsClick(id){
+    console.log("navigationg to details of job with id: ", id)
+    navigate(`/jobs/${id}`)
+  }
+
   // Generate initials from the company name for the placeholder
   const getInitials = (name) => {
     return name
@@ -53,8 +62,10 @@ const JobCard = ({ title, jobTypes, salary, company, location, applicants, logo 
 
         {/* Action Buttons */}
         <div className="d-flex justify-content-between">
-          <button className="btn btn-outline-primary">View Details</button>
-          <button className="btn btn-primary">Apply Now</button>
+          <button className="btn btn-outline-primary" onClick={()=>handleJobDeailsClick(id)}>View Details</button>
+          <button className="btn btn-primary" type="button"
+          data-bs-toggle="modal"
+          data-bs-target="#applyJobModal">Apply Now</button>
         </div>
       </div>
     </div>
