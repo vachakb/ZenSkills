@@ -33,7 +33,6 @@ const registerUserProfile = async (req, res) => {
     const updatedUser = await prisma.user.update({
       where: { email },
       data: {
-        name: name,
         location: location,
         gender: gender,
         language: language,
@@ -43,7 +42,7 @@ const registerUserProfile = async (req, res) => {
     if (user.role === "mentee") {
       const updatedMentee = await prisma.mentee.update({
         where: { uid: user.uid },
-        data: { bio: bio },
+        data: { bio: bio, name: name },
       });
     } else if (user.role === "mentor") {
       const updatedMentor = await prisma.mentor.update({
@@ -52,6 +51,7 @@ const registerUserProfile = async (req, res) => {
           bio: bio,
           company: companyOrSchool,
           mentor_job_title: title,
+          name: name,
         },
       });
     }

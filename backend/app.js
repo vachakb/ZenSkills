@@ -6,6 +6,7 @@ const cors = require("cors");
 
 const authRoutes = require("./routes/authRoutes");
 const userRoutes = require("./routes/userRoutes");
+const mentorRoutes = require("./routes/mentorRoutes");
 
 const app = express();
 
@@ -21,7 +22,8 @@ app.use(cookieParser());
 
 // Use routes
 app.use("/auth", authRoutes);
-app.use("/user", userRoutes);
+app.use("/api/", userRoutes);
+app.use("/api/mentors", mentorRoutes);
 
 // Start server
 const PORT = process.env.PORT || 5000;
