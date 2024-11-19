@@ -8,17 +8,39 @@ const authRoutes = require("./routes/authRoutes");
 const userRoutes = require("./routes/userRoutes");
 const mentorRoutes = require("./routes/mentorRoutes");
 
+const session = require("express-session");
+const { PrismaSessionStore } = require("@quixo3/prisma-session-store");
+const prisma = require("./models/prismaClient");
+
+const passport = require("passport");
+
 const app = express();
 
 app.use(
   cors({
     origin: "http://localhost:5173", // Frontend URL
     credentials: true,
-  })
+  }),
 );
 
 app.use(bodyParser.json());
 app.use(cookieParser());
+app.use(
+  session({
+    secret: process.env.AUTH_SECRET,
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+    },
+    store: new PrismaSessionStore(prisma, {
+      checkPeriod: 2 * 60 * 1000,
+      dbRecordIdIsSessionId: true,
+      dbRecordIdFunction: undefined,
+    }),
+  }),
+);
+app.use(passport.authenticate("session"));
 
 // Use routes
 app.use("/auth", authRoutes);

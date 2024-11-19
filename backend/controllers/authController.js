@@ -17,7 +17,7 @@ const sendVerificationEmail = async (email, token) => {
     },
   });
 
-  const verificationUrl = `http://localhost:5173/verify-email?token=${token}`;
+  const verificationUrl = `http://localhost:5173/verify/callback?token=${token}`;
 
   await transporter.sendMail({
     from: '"Mentoring Platform" <no-reply@example.com>',
@@ -36,7 +36,7 @@ const generateToken = (user) => {
   return jwt.sign(
     { id: user.uid, email: user.email, role: user.role },
     process.env.JWT_SECRET,
-    { expiresIn: "1h" }
+    { expiresIn: "1h" },
   );
 };
 
@@ -69,15 +69,45 @@ exports.register = async (req, res) => {
     return;
   }
 
-  await prisma.tempuser.create({
+  try {
+    await prisma.tempuser.create({
+      data: {
+        email: email,
+        password: hashedPassword,
+        role: role,
+      },
+    });
+
+    return res.sendStatus(200);
+  } catch (err) {
+    console.error(err);
+    return res.sendStatus(500);
+  }
+};
+
+exports.sendEmail = (user, token) => {
+  return sendVerificationEmail(user.email, token);
+};
+
+exports.verifyEmail = async (user) => {
+  const tempuser = await prisma.tempuser.findUnique({
+    where: { email: user.email },
+  });
+
+  const newUser = await prisma.user.create({
     data: {
-      email: email,
-      password: hashedPassword,
-      role: role,
+      email: tempuser.email,
+      password: tempuser.password,
+      role: tempuser.role,
+      is_deleted: false,
+      status: "active",
+      is_verified: true,
     },
   });
 
-  res.sendStatus(200);
+  await prisma.tempuser.delete({ where: { email: tempuser.email } });
+
+  return newUser;
 };
 
 // Google OAuth Callback

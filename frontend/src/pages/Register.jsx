@@ -41,7 +41,7 @@ function Register() {
             }}
             onSubmit={(data) =>
               register({ ...data, role: isMentor ? "mentor" : "mentee" })
-                .then(() => navigate("/register/1"))
+                .then(() => navigate("/verify", { state: data }))
                 .catch((err) => {
                   console.error(err);
                   // TODO error modal

@@ -15,8 +15,8 @@ import { GoogleOAuthProvider } from "@react-oauth/google";
 import MenteeWelcome from "./MenteeWelcome.jsx";
 import MentorWelcome from "./MentorWelcome.jsx";
 import ExploreMentor from "./ExloreMentors.jsx";
-
 import VerifyEmail from "./VerifyEmail.jsx";
+import VerifyEmailCallback from "./VerifyEmailCallback.jsx";
 
 import UserInfo from "../components/UserInfo.jsx";
 import ProfileCard from "../components/ProfileCard.jsx";
@@ -137,8 +137,12 @@ const router = createBrowserRouter([
         // this array is just passed for test/preview
       },
       {
-        path: "verify-email",
+        path: "verify",
         element: <VerifyEmail />,
+      },
+      {
+        path: "verify/callback",
+        element: <VerifyEmailCallback />,
       },
       {
         path: "mentee_profile",
@@ -169,9 +173,7 @@ const router = createBrowserRouter([
 ]);
 
 createRoot(document.getElementById("root")).render(
-  <StrictMode>
-    <GoogleOAuthProvider clientId="172493269774-4qr965tabedoqajcv49jpu2btps6sg8v.apps.googleusercontent.com">
-      <RouterProvider router={router} />
-    </GoogleOAuthProvider>
-  </StrictMode>
+  <GoogleOAuthProvider clientId="172493269774-4qr965tabedoqajcv49jpu2btps6sg8v.apps.googleusercontent.com">
+    <RouterProvider router={router} />
+  </GoogleOAuthProvider>
 );
