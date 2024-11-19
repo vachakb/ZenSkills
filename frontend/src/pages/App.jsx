@@ -2,6 +2,7 @@ import { Outlet, useLocation } from "react-router-dom";
 import Header from "../components/Header";
 import SideBar from "../components/SideBar";
 import { useState } from "react";
+import classNames from "classnames";
 
 const excludedRoutes = [
   "/login",
@@ -24,11 +25,15 @@ function App() {
       <div className="d-flex flex-grow-1">
         {excludedRoutes.includes(path) ? null : <SideBar show={showSideBar} />}
         <div
-          className={
-            excludedRoutes.includes(path) ? "flex-grow-1" : "p-3 flex-grow-1"
-          }
+          style={{ overflowY: "auto", overflowX: "hidden" }}
+          className={classNames({
+            "flex-grow-1 position-relative": true,
+            "p-3": !excludedRoutes.includes(path)
+          })}
         >
+          <div className="position-absolute w-100">
           <Outlet />
+          </div>
         </div>
       </div>
     </>
