@@ -154,7 +154,6 @@ exports.googleCallback = async (req, res) => {
           status: "active",
           is_deleted: false,
           gender: "prefer_not_to_say",
-          name: payload.name || "Unknown",
           phone_number: "0000000000",
           location: "Unknown",
           password_hash: "",
