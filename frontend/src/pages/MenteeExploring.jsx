@@ -8,6 +8,7 @@ import { DateTime } from "luxon";
 import Milestones from "../components/Milestones";
 import ReviewCard from "../components/ReviewCard";
 import ReviewsTab from "../components/ReviewsTab";
+import ResourcesTab from "../components/Resources";
 
 const profile = {
   isMentor: true,
@@ -73,6 +74,7 @@ function MenteeExploring() {
     { name: "Overview", value: "1" },
     { name: "Milestones", value: "2" },
     { name: "Reviews", value: "3" },
+    {name:"Resources",value:"4"}
 
   ];
 
@@ -126,6 +128,7 @@ function MenteeExploring() {
 
             {radioValue === "2" && <Milestones data={timelineData}/>}
             {radioValue === "3" && <ReviewsTab/>}
+            {radioValue === "4" && <ResourcesTab/>}
           </div>
         </div>
 
