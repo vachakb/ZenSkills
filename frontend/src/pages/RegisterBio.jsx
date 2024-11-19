@@ -5,9 +5,8 @@ import * as yup from "yup";
 import { Formik } from "formik";
 import { useLocation } from "react-router-dom";
 import { useMemo } from "react";
-import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
+import { registerUser } from "../apis/user";
 
 function RegisterBio() {
   const prevForm = useLocation().state;
@@ -38,22 +37,25 @@ function RegisterBio() {
               expertise: "",
               bio: "",
             }}
-            onSubmit={async (data) => {
-              const response = await axios.post(
-                "http://localhost:5000/auth/register-user",
-                { ...prevForm, ...data }
-              );
-              console.log({ ...prevForm, ...data });
-              if (!prevForm.isMentor) {
-                navigate("/mentee_welcome", {
-                  state: { ...prevForm, ...data },
-                });
-              } else {
-                navigate("/mentor_welcome", {
-                  state: { ...prevForm, ...data },
-                });
-              }
-            }}
+            onSubmit={async (data) =>
+              registerUser({ ...prevForm, ...data })
+                .then(() => {
+                  if (!prevForm.isMentor) {
+                    navigate("/mentee_welcome", {
+                      state: { ...prevForm, ...data },
+                    });
+                  } else {
+                    navigate("/mentor_welcome", {
+                      state: { ...prevForm, ...data },
+                    });
+                  }
+                })
+                .catch((err) => {
+                  console.error(error);
+                  // TODO error modal
+                  alert(err);
+                })
+            }
           >
             {(formikProps) => (
               <Form
