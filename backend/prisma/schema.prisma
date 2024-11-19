@@ -81,6 +81,7 @@ model tempuser {
   password_hash String
   temp_uid      String   @id(map: "tempuser_pk") @default(uuid())
   role          UserRole
+  expires_at    DateTime
 }
 
 enum gender_enum {
