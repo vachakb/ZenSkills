@@ -48,7 +48,7 @@ exports.login = new LocalStrategy(
     });
 
     if (await argon2.verify(user.password, password)) {
-      done();
+      done(null, user);
     } else {
       throw Error("Unauthorized");
     }
