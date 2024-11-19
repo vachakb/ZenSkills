@@ -6,6 +6,10 @@ import { Formik } from "formik";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import PhoneInput from 'react-phone-input-2'
+import 'react-phone-input-2/lib/style.css'
+
+
 
 const API_URL = "http://localhost:5000";
 const Role = Object.freeze({
@@ -15,6 +19,7 @@ const Role = Object.freeze({
 
 function Register() {
   const [isMentor, setIsMentor] = useState(false);
+  const [value, setValue] = useState()
 
   const navigate = useNavigate();
 
@@ -27,6 +32,15 @@ function Register() {
       .string()
       .required("This is a required field")
       .min(8, "Password should be at least 8 characters"),
+      phoneNum: yup
+    .string()
+    .required("This is a required field")
+    .test(
+      'is-valid-phone',
+      'Phone number is invalid',
+      (value) => value && value.length >= 10 // Or use a regex for more accuracy
+    ),
+    
     confirmPassword: yup
       .string()
       .oneOf([yup.ref("password"), null], "The passwords don't match")
@@ -44,6 +58,7 @@ function Register() {
               email: "",
               password: "",
               confirmPassword: "",
+              phoneNum: ""
             }}
             onSubmit={async (data) => {
               try {
@@ -53,6 +68,7 @@ function Register() {
                     email: data.email,
                     password: data.password,
                     role: isMentor ? Role.Mentor : Role.Mentee,
+                    phoneNum: data.phoneNum
                   },
                   { headers: { "Content-Type": "application/json" } }
                 );
@@ -151,13 +167,29 @@ function Register() {
                   error={formikProps.errors.confirmPassword}
                   required
                 />
+               
+                
+                  
+               <PhoneInput
+                
+               name="phoneNum"
+  country={'in'}
+  value={formikProps.values.phoneNum}
+
+  onChange={(value) => formikProps.setFieldValue('phoneNum', value)}
+  onBlur={() => formikProps.setFieldTouched('phoneNum', true)}
+/>
+{formikProps.touched.phoneNum && formikProps.errors.phoneNum && (
+  <div className="text-danger">{formikProps.errors.phoneNum}</div>
+)}
                 <Button
                   type="submit"
-                  disabled={
+                 /* disabled={
                     formikProps.isValidating ||
                     formikProps.isSubmitting ||
                     !(formikProps.isValid && formikProps.dirty)
-                  }
+                  }*/
+                  onClick={()=>console.log(formikProps.values.phoneNum)}
                 >
                   Create Account
                 </Button>

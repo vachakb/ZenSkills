@@ -1,6 +1,6 @@
 import React from "react";
 
-function Timeline({ data }) {
+function Milestones({ data }) {
   return (
     <div
       className="border p-4"
@@ -56,4 +56,4 @@ function Timeline({ data }) {
   );
 }
 
-export default Timeline;
+export default Milestones;

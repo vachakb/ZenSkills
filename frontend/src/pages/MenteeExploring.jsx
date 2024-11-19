@@ -5,6 +5,7 @@ import { useState } from "react";
 import Statistics from "../components/Statistics";
 import AvailableSessions from "./AvailableSessions";
 import { DateTime } from "luxon";
+import Milestones from "../components/Milestones";
 
 const profile = {
   isMentor: true,
@@ -26,7 +27,36 @@ const profile = {
     },
   ],
 };
-
+const timelineData = [
+  {
+    date: "May 2001",
+    category: "The origin",
+    title: "Acme was founded in Milan, Italy",
+    description:
+      "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut pharetra pharetra massa.",
+  },
+  {
+    date: "May 2007",
+    category: "The milestone",
+    title: "Reached 5K customers",
+    description:
+      "Praesent eu neque aliquam vestibulum morbi blandit cursus risus at ultrices.",
+  },
+  {
+    date: "May 2012",
+    category: "The acquisition",
+    title: "Acquired various companies, including Technology Inc.",
+    description:
+      "Pellentesque habitant morbi tristique senectus et netus et malesuada.",
+  },
+  {
+    date: "May 2022",
+    category: "The IPO",
+    title: "Went public at the New York Stock Exchange",
+    description:
+      "Adipiscing enim eu neque aliquam vestibulum morbi blandit cursus risus.",
+  },
+];
 function MenteeExploring() {
   const [radioValue, setRadioValue] = useState("1");
 
@@ -83,7 +113,7 @@ function MenteeExploring() {
           <div className="mt-3">
             {radioValue === "1" && <UserInfo profile={profile} />}
 
-            {radioValue === "2" && <div>Milestones Content Coming Soon!</div>}
+            {radioValue === "2" && <Milestones data={timelineData}/>}
           </div>
         </div>
 

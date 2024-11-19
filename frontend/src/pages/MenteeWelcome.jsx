@@ -19,6 +19,7 @@ import { RiCopperCoinLine } from "react-icons/ri";
 import EventCard from "../components/Events";
 import MentorCard from "../components/MentorCard";
 import axios from "axios";
+import Achievements from "../components/Achievements";
 
 function MenteeWelcome({ mentors_,events_}) {
   const [mentors, setMentors] = useState(mentors_);
@@ -178,8 +179,8 @@ function MenteeWelcome({ mentors_,events_}) {
           </div>
         </div>
 
-        <div className="flex-grow-0 ms-auto" style={{ position: "fixed", right: "15px" }}>
-          <Card
+        <div className="d-flex flex-column flex-grow-0 ms-auto " style={{ position: "fixed", right: "15px", columnGap:'100px' }}>
+         {/* <Card
             bg="primary"
             className="mb-5"
             style={{ width: "320px", height: "130px", color: "#ffa426", boxShadow: '6px 6px 10px gray' }}
@@ -196,7 +197,8 @@ function MenteeWelcome({ mentors_,events_}) {
               {profilestatus}
               <PiPlantFill className="mx-2" style={{ color: "#33a70d" }} />
             </Card.Text>
-          </Card>
+          </Card>*/}
+          
           <Card
             text="primary"
             bg="white"

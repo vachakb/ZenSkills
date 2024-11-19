@@ -141,7 +141,7 @@ function Login() {
                   <div style={{ borderTop: "2px black solid" }} className="flex-grow-1"></div>
                 </div>
 
-                <GoogleLogin
+              <div className="align-self-center">  <GoogleLogin
                   clientId={GOOGLE_CLIENT_ID}
                   onSuccess={async (response) => {
                     const { credential } = response;
@@ -161,6 +161,7 @@ function Login() {
                     console.log('Login Failed');
                   }}
                 />
+                </div>
                 
                 <p className="m-0 mx-auto">Don't have an account? <a className="text-decoration-none" href="/register">Register</a></p>
               </Form>
