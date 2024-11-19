@@ -21,7 +21,9 @@ import MentorCard from "../components/MentorCard";
 import axios from "axios";
 import Calendar from "../components/Calendar";
 
-function MenteeWelcome({ mentors_,events_}) {
+const API_URL = "http://localhost:5000";
+
+function MenteeWelcome({ mentors_, events_ }) {
   const [mentors, setMentors] = useState(mentors_);
   const location = useLocation();
   const userName = location.state?.name || "User";
@@ -31,7 +33,6 @@ function MenteeWelcome({ mentors_,events_}) {
     { label: "Book your first session", done: false },
   ]);
   const [isVisible, setIsVisible] = useState(true);
- 
   const [events, setEvents] = useState(events_);
   const progress = useMemo(() => {
     let done = 0;
@@ -54,21 +55,21 @@ function MenteeWelcome({ mentors_,events_}) {
   const navigate = useNavigate();
 
   // Fetch mentors and events
-  /*useEffect(() => {
+  useEffect(() => {
     async function fetchData() {
       try {
         const [mentorsResponse, eventsResponse] = await Promise.all([
-          axios.get("/api/mentors"),
-          axios.get("/api/events"),
+          axios.get(`${API_URL}/api/mentors`),
+          // axios.get(`${API_URL}/api/events`),
         ]);
         setMentors(mentorsResponse.data.mentors || []);
-        setEvents(eventsResponse.data.events || []);
+        // setEvents(eventsResponse.data.events || []);
       } catch (error) {
         console.error("Error fetching data: ", error);
       }
     }
     fetchData();
-  }, []);*/
+  }, []);
 
   return (
     <Container className="d-flex flex-column gap-4" fluid>
@@ -115,7 +116,10 @@ function MenteeWelcome({ mentors_,events_}) {
                   </div>
                   <ProgressBar now={progress} />
                   {tasks.map((value, index) => (
-                    <Form.Group key={index} className="d-flex align-content-center gap-2">
+                    <Form.Group
+                      key={index}
+                      className="d-flex align-content-center gap-2"
+                    >
                       <Form.Check
                         checked={value.done}
                         onChange={() => {
@@ -133,7 +137,9 @@ function MenteeWelcome({ mentors_,events_}) {
                         style={{
                           color: "#037f7d",
                         }}
-                        className={value.done ? "text-decoration-line-through" : ""}
+                        className={
+                          value.done ? "text-decoration-line-through" : ""
+                        }
                       >
                         {value.label}
                       </Form.Label>
@@ -150,10 +156,16 @@ function MenteeWelcome({ mentors_,events_}) {
               perfectly tailored to your needs!
             </h6>
           </div>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(4, minmax(0, 1fr))" }} className="gap-4">
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(4, minmax(0, 1fr))",
+            }}
+            className="gap-4"
+          >
             {mentors.length > 0 ? (
               mentors.map((mentor) => (
-                <MentorCard key={mentor.id} mentor={mentor} />
+                <MentorCard key={mentor.mentor_id} mentor={mentor} />
               ))
             ) : (
               <p>No mentors available.</p>
@@ -165,27 +177,39 @@ function MenteeWelcome({ mentors_,events_}) {
               To help you connect and grow.
             </h6>
           </div>
-          <div className="d-flex flex-column flex-wrap justify-content-flex-start" style={{
+          <div
+            className="d-flex flex-column flex-wrap justify-content-flex-start"
+            style={{
               maxWidth: "100%",
-              columnGap: '163px'
-            }}>
+              columnGap: "163px",
+            }}
+          >
             {events.length > 0 ? (
-              events.map((event) => (
-                <EventCard key={event.id} event={event} />
-              ))
+              events.map((event) => <EventCard key={event.id} event={event} />)
             ) : (
               <p>No events available.</p>
             )}
           </div>
         </div>
 
-        <div className="flex-grow-0 ms-auto" style={{ position: "fixed", right: "15px" }}>
+        <div
+          className="flex-grow-0 ms-auto"
+          style={{ position: "fixed", right: "15px" }}
+        >
           <Card
             bg="primary"
             className="mb-5"
-            style={{ width: "320px", height: "130px", color: "#ffa426", boxShadow: '6px 6px 10px gray' }}
+            style={{
+              width: "320px",
+              height: "130px",
+              color: "#ffa426",
+              boxShadow: "6px 6px 10px gray",
+            }}
           >
-            <Card.Title className="mx-4 mt-4 py-0 mb-0" style={{ fontSize: "15px" }}>
+            <Card.Title
+              className="mx-4 mt-4 py-0 mb-0"
+              style={{ fontSize: "15px" }}
+            >
               Your profile strength
               <MdKeyboardArrowRight
                 size={"30px"}
@@ -205,7 +229,11 @@ function MenteeWelcome({ mentors_,events_}) {
             text="primary"
             bg="white"
             border="primary"
-            style={{ width: "320px", height: "130px", boxShadow: '4px 4px 10px gray' }}
+            style={{
+              width: "320px",
+              height: "130px",
+              boxShadow: "4px 4px 10px gray",
+            }}
           >
             <Card.Title
               className="mt-4 py-0 mb-0"
