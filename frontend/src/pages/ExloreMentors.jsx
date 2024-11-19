@@ -1,45 +1,46 @@
 import { useEffect, useState } from "react";
-import Mentorcard from "../components/MentorCard";
+import MentorCard from "../components/MentorCard";
 import ReactPaginate from "react-paginate";
 import axios from "axios";
 
 // remove mentors_ and allTags aguments when api is live
-const API_URL = "http://localhost:5000";
+
 export default function ExploreMentor({ mentors_, demoTags }) {
   const [mentors, setMentors] = useState(mentors_);
   const [searchTerm, setSearchTerm] = useState("");
   const [allTags, setAllTags] = useState([]);
   const [selectedTags, setSelectedTags] = useState([]);
-  const [noOfMenteesMentored, setNoOfMenteedMentored] = useState(0);
+  const [noOfMenteesMentored, setNoOfMenteesMentored] = useState(0);
   const [currentPage, setCurrentpage] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
-  const [filterDropdownVisibility, setFilterDropdownVisibility] = useState(false);
+  const [filterDropdownVisibility, setFilterDropdownVisibility] =
+    useState(false);
   const itemsPerPage = 10;
 
-  useEffect(() => {
-    // fetch cards from backend by api
-    async function fetchMentors() {
-      const responce = await axios.get(`${API_URL}/api/mentors`, {
-        params: {
-          page: currentPage,
-          limit: itemsPerPage,
-          search: searchTerm,
-          selectedTags: selectedTags,
-          noOfMenteesMentored: noOfMenteesMentored,
-        },
-      });
-      setMentors(responce.data.mentors);
-      setTotalPages(Math.ceil(responce.data.totalMentorsCount / itemsPerPage));
-    }
-    fetchMentors();
-  }, [currentPage, noOfMenteesMentored]);
+  // useEffect(()=>{
+  //     // fetch cards from backend by api
+  //     async function fetchMentors(){
+  //         const responce = await axios.get('/api/mentors', {
+  //             params:{
+  //                 page: currentPage,
+  //                 limit: itemsPerPage,
+  //                 search: searchTerm,
+  //                 selectedTags: selectedTags,
+  //                 noOfMenteesMentored: noOfMenteesMentored
+  //             }
+  //         })
+  //         setMentors(responce.data.mentors)
+  //         setTotalPages(Math.ceil(responce.data.totalMentorsCount/itemsPerPage))
+  //     }
+  //     fetchMentors()
+  // }, [currentPage, noOfMenteesMentored])
 
   async function handleSearchButtonClick() {
     // if(!searchTerm && selectedTags?.length===0)    return
     try {
-      const responce = await axios.get(`${API_URL}/api/mentors`, {
+      const responce = await axios.get("/api/mentors", {
         params: {
-          page: currentPage,
+          page: currentPage + 1,
           limit: itemsPerPage,
           search: searchTerm,
           selectedTags: selectedTags,
@@ -61,7 +62,7 @@ export default function ExploreMentor({ mentors_, demoTags }) {
   useEffect(() => {
     async function fetchTags() {
       try {
-        const responce = await axios.get(`${API_URL}/api/tags`);
+        const responce = await axios.get("/api/mentors");
         setAllTags(responce.data.tags || demoTags);
       } catch (error) {
         console.error("error fetching data: ", error);
@@ -85,8 +86,8 @@ export default function ExploreMentor({ mentors_, demoTags }) {
   }
 
   return (
-    <div className="container-fluid mt-4">
-      {/* search and filter bar */}
+    <div className="container-fluid px-4 mt-4">
+      {/* Search and Filter Section */}
       <div className="row mb-4">
         <div className="col-12 col-md-8 mb-3 mb-md-0">
           <input
@@ -128,7 +129,7 @@ export default function ExploreMentor({ mentors_, demoTags }) {
           {allTags.map((tag) => {
             return (
               <button
-                className={`btn btn-sm rounded-pill m-1`}
+                className="btn btn-sm rounded-pill m-1"
                 style={{
                   backgroundColor: selectedTags.includes(tag)
                     ? "#07d100"
@@ -143,7 +144,7 @@ export default function ExploreMentor({ mentors_, demoTags }) {
         </div>
       )}
 
-      {selectedTags?.length !== 0 && (
+{selectedTags?.length !== 0 && (
         <div className="">
           Filters applied:
           {/* {selectedTags.map((tag)=>{
@@ -156,16 +157,14 @@ export default function ExploreMentor({ mentors_, demoTags }) {
                 style={{ backgroundColor: "rgb(233, 236, 239)" }}
               >
                 <span>{tag}</span>
-                <button
-                  type="button"
-                  className="btn"
+                <button type="button" className="btn"
                   style={{
-                    background: "",
-                    border: "none",
-                    fontSize: "1rem",
-                    cursor: "pointer",
-                    transition: "background-color 0.3s ease",
-                    borderRadius: "50%",
+                    background: '',
+                    border: 'none',
+                    fontSize: '1rem',
+                    cursor: 'pointer',
+                    transition: 'background-color 0.3s ease',
+                    borderRadius: '50%'
                   }}
                   // onMouseEnter={(e) => {
                   //   e.target.style.backgroundColor = 'rgba(0, 0, 0, 0.1)'; // Hover background color
@@ -173,10 +172,7 @@ export default function ExploreMentor({ mentors_, demoTags }) {
                   // onMouseLeave={(e) => {
                   //   e.target.style.backgroundColor = ''; // Reset background on mouse leave
                   // }}
-                  onClick={() => handleTagClick(tag)}
-                >
-                  &times;
-                </button>
+                  onClick={()=>handleTagClick(tag)}>&times;</button>
                 {/* <i
                   className="fas fa-times custom-close"
                   onClick={() => handleTagClick(tag)}
@@ -189,24 +185,23 @@ export default function ExploreMentor({ mentors_, demoTags }) {
         </div>
       )}
 
-      {/* card grid */}
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(4, minmax(0, 1fr))",
-        }}
-        className="gap-4"
-      >
-        {mentors.map((mentor) => {
-          console.log(mentor);
-          return <Mentorcard mentor={mentor} />;
-        })}
-        {mentors.length === 0 && <p>No mentors found.</p>}
+
+
+      {/* Cards Section */}
+      <div className="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
+        {mentors.length > 0 ? (
+          mentors.map((mentor, index) => (
+            <div className="col" key={index}>
+              <MentorCard mentor={mentor} />
+            </div>
+          ))
+        ) : (
+          <p className="text-center">No mentors found.</p>
+        )}
       </div>
 
-      {/* pagination */}
+      {/* Pagination */}
       <div className="mt-4 d-flex justify-content-center">
-        {/* TODO use bootstrap pagination component */}
         <ReactPaginate
           previousLabel={"Previous"}
           nextLabel={"Next"}

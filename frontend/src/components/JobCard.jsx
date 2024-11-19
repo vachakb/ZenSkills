@@ -1,6 +1,6 @@
 import React from 'react';
 
-const JobCard = ({ title, jobType, salary, company, location, applicants, logo }) => {
+const JobCard = ({ title, jobTypes, salary, company, location, applicants, logo }) => {
   // Generate initials from the company name for the placeholder
   const getInitials = (name) => {
     return name
@@ -22,8 +22,13 @@ const JobCard = ({ title, jobType, salary, company, location, applicants, logo }
         <h5 className="card-title">{title}</h5>
 
         {/* Job Type and Salary */}
+        <div className="mb-3">
+          {jobTypes.map(jobType=>{
+            return <span className="badge bg-success mx-1">{jobType}</span>
+          })}
+        </div>
+
         <div className="d-flex justify-content-between mb-3">
-          <span className="badge bg-success">{jobType}</span>
           <span className="text-muted">Salary: {salary}</span>
         </div>
 
