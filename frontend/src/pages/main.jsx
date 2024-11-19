@@ -25,6 +25,8 @@ import MenteeExploring from "./MenteeExploring.jsx";
 import Milestone from "../components/Milestones.jsx";
 import JobList from "./Jobs.jsx";
 import Workshops from "./Workshop.jsx";
+import SessionForm from "./CreateSession_1.jsx";
+import SessionForm1 from "./CreateSession2.jsx";
 
 
 const mentor = {
@@ -138,6 +140,14 @@ const router = createBrowserRouter([
       {
         path: "workshops",
         element: <Workshops demoTags={demoTags}/>
+      },
+      {
+        path: "createsession_1",
+        element: <SessionForm/>
+      },
+      {
+        path: "createsession_2",
+        element: <SessionForm1/>
       }
     ],
   },
