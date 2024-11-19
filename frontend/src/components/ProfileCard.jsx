@@ -57,10 +57,10 @@ const ProfileCard = ({ profile }) => {
             </Dropdown.Toggle>
 
             <Dropdown.Menu>
-              <Dropdown.Item onClick={() => handleMoreClick("View Profile")}>
+              <Dropdown.Item >
                 Report Profile
               </Dropdown.Item>
-              <Dropdown.Item onClick={() => handleMoreClick("Report")}>
+              <Dropdown.Item >
                 Block
               </Dropdown.Item>
             </Dropdown.Menu>

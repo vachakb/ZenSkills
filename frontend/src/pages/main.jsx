@@ -99,7 +99,7 @@ const router = createBrowserRouter([
       },
       {
         path: "mentor_welcome",
-        element: <MentorWelcome />,
+        element: <MentorWelcome events_={events} />,
       },
       {
         path: "explore",
@@ -125,7 +125,7 @@ const router = createBrowserRouter([
       },
       {
         path: "milestone",
-        element: <Milestone data={timelineData}/>
+        element: <Milestone />
       },
       {
         path: "jobs",

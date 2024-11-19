@@ -6,6 +6,8 @@ import Statistics from "../components/Statistics";
 import AvailableSessions from "../components/AvailableSessions";
 import { DateTime } from "luxon";
 import Milestones from "../components/Milestones";
+import ReviewCard from "../components/ReviewCard";
+import ReviewsTab from "../components/ReviewsTab";
 
 const profile = {
   isMentor: true,
@@ -57,12 +59,21 @@ const timelineData = [
       "Adipiscing enim eu neque aliquam vestibulum morbi blandit cursus risus.",
   },
 ];
+const reviewData = {
+  username: "John Doe",
+  date: "2023-04-18",
+  rating: 4,
+  reviewText: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi molestie."
+};
+
 function MenteeExploring() {
   const [radioValue, setRadioValue] = useState("1");
 
   const radios = [
     { name: "Overview", value: "1" },
     { name: "Milestones", value: "2" },
+    { name: "Reviews", value: "3" },
+
   ];
 
   const getButtonStyle = (value) => {
@@ -114,6 +125,7 @@ function MenteeExploring() {
             {radioValue === "1" && <UserInfo profile={profile} />}
 
             {radioValue === "2" && <Milestones data={timelineData}/>}
+            {radioValue === "3" && <ReviewsTab/>}
           </div>
         </div>
 

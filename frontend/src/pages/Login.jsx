@@ -154,6 +154,7 @@ function Login() {
                     console.log("Login Failed");
                   }}
                 />
+                </div>
 
                 <p className="m-0 mx-auto">
                   Don't have an account?{" "}

@@ -19,11 +19,7 @@ import { RiCopperCoinLine } from "react-icons/ri";
 import EventCard from "../components/Events";
 import MentorCard from "../components/MentorCard";
 import axios from "axios";
-<<<<<<< HEAD
-import Achievements from "../components/Achievements";
-=======
 import Calendar from "../components/Calendar";
->>>>>>> c93ef0899feac2e42b1c5e31f99c8c155a54340c
 
 function MenteeWelcome({ mentors_,events_}) {
   const [mentors, setMentors] = useState(mentors_);
@@ -201,15 +197,10 @@ function MenteeWelcome({ mentors_,events_}) {
               {profilestatus}
               <PiPlantFill className="mx-2" style={{ color: "#33a70d" }} />
             </Card.Text>
-<<<<<<< HEAD
           </Card>*/}
-          
-=======
-          </Card>
           <div className="mb-5">
             <Calendar />
           </div>
->>>>>>> c93ef0899feac2e42b1c5e31f99c8c155a54340c
           <Card
             text="primary"
             bg="white"

@@ -19,7 +19,8 @@ import {
   import EventCard from "../components/Events";
   import MentorCard from "../components/MentorCard"
   import "../styles/style.css";
-export default function MentorWelcome(){
+export default function MentorWelcome({events_}){
+  const [events, setEvents] = useState(events_);
     
     const location = useLocation();
 
@@ -60,6 +61,22 @@ export default function MentorWelcome(){
     const profilestatus = "Beginner";
   
     const navigate = useNavigate();
+    // Fetch mentors and events
+  /*useEffect(() => {
+    async function fetchData() {
+      try {
+        const [eventsResponse] = await Promise.all([
+       
+          axios.get("/api/events"),
+        ]);
+      
+        setEvents(eventsResponse.data.events || []);
+      } catch (error) {
+        console.error("Error fetching data: ", error);
+      }
+    }
+    fetchData();
+  }, []);*/
   
     return(
 <Container className="d-flex flex-column gap-4" fluid>
@@ -134,21 +151,26 @@ export default function MentorWelcome(){
       )}
     </>
           
-          <div>
+    <div>
             <h3 className="fw-bold">Events</h3>
             <h6 style={{ color: "#436DA7" }} className="m-0">
-            To help you connect and grow.
+              To help you connect and grow.
             </h6>
           </div>
           <div className="d-flex flex-column flex-wrap justify-content-flex-start" style={{
               maxWidth: "100%",
-              columnGap:'163px'
-             
-            }}><EventCard></EventCard>
-            <EventCard></EventCard>
-            <EventCard></EventCard></div>
+              columnGap: '163px'
+            }}>
+            {events.length > 0 ? (
+              events.map((event) => (
+                <EventCard key={event.id} event={event} />
+              ))
+            ) : (
+              <p>No events available.</p>
+            )}
+          </div>
         </div>
-       
+
         
       
         <div className="flex-grow-0 ms-auto" style={{position:'fixed', right:'15px'}}>

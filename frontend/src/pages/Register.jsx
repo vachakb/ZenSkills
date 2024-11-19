@@ -6,6 +6,8 @@ import { Formik } from "formik";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { register } from "../apis/user";
+import PhoneInput from 'react-phone-input-2'
+import 'react-phone-input-2/lib/style.css'
 
 function Register() {
   const [isMentor, setIsMentor] = useState(false);
@@ -149,7 +151,7 @@ function Register() {
                   required
                 />
                
-                
+               
                   
                <PhoneInput
                 
@@ -159,7 +161,11 @@ function Register() {
 
   onChange={(value) => formikProps.setFieldValue('phoneNum', value)}
   onBlur={() => formikProps.setFieldTouched('phoneNum', true)}
+  
+  inputClass="form-control" 
+  
 />
+
 {formikProps.touched.phoneNum && formikProps.errors.phoneNum && (
   <div className="text-danger">{formikProps.errors.phoneNum}</div>
 )}
