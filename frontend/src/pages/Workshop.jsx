@@ -142,6 +142,11 @@ const WorkshopsPage = ({demoTags}) => {
     // }
   };
 
+  useEffect(()=>{
+    setSearch("")
+    setCurrentPage(0)
+  }, [activeTab])
+
   useEffect(() => {
     fetchWorkshops(currentPage, search, activeTab === "all" ? "" : activeTab);
   }, [currentPage, search, activeTab]);
@@ -271,14 +276,14 @@ const WorkshopsPage = ({demoTags}) => {
             Completed
           </button>
         </li>
-        <li className="nav-item">
+        {/* <li className="nav-item">
           <button
             className={`nav-link ${activeTab === "all" ? "active" : ""}`}
             onClick={() => setActiveTab("all")}
           >
             All Workshops
           </button>
-        </li>
+        </li> */}
       </ul>
 
       {/* Workshop Cards */}
