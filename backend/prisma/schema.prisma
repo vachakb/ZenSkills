@@ -13,7 +13,7 @@ model User {
   gender        gender_enum?
   is_deleted    Boolean
   location      String?
-  password_hash String
+  password      String
   phone_number  String?      @db.VarChar(13)
   status        UserStatus   @default(active)
   uid           String       @id @default(uuid())
