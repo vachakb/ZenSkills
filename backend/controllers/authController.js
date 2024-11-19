@@ -5,6 +5,8 @@ const { OAuth2Client } = require("google-auth-library");
 const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 const nodemailer = require("nodemailer");
 const validator = require("validator");
+const LocalStrategy = require("passport-local");
+const argon2 = require("argon2");
 
 const sendVerificationEmail = async (email, token) => {
   const transporter = nodemailer.createTransport({
@@ -74,57 +76,28 @@ exports.login = async (req, res) => {
   }
 };
 
-// Register
 exports.register = async (req, res) => {
-  const { email, password, role, gender, name, phone_number, location, title } =
-    req.body;
-  try {
-    if (!validator.isEmail(email)) {
-      return res.status(400).json({ message: "Invalid email format" });
-    }
+  const { email, password, role } = req.body;
 
-    const existingUser = await prisma.user.findUnique({ where: { email } });
-    if (existingUser) {
-      return res.status(400).json({ message: "Email already exists" });
-    }
+  const hashedPassword = await argon2.hash(password);
 
-    const validRoles = ["admin", "mentor", "mentee"];
-    if (!validRoles.includes(role)) {
-      return res.status(400).json({ message: "Invalid role" });
-    }
-
-    const token = jwt.sign({ email }, process.env.JWT_SECRET, {
-      expiresIn: "1h", // Token valid for 1 hour
-    });
-
-    const expiresAt = new Date(Date.now() + 60 * 60 * 1000); // 1 hour
-
-    const hashedPassword = await bcrypt.hash(password, 10);
-
-    await prisma.tempuser.create({
-      data: {
-        email: email,
-        password_hash: hashedPassword,
-        role: role,
-        created_date: new Date(),
-        expires_at: expiresAt,
-      },
-    });
-    console.log("Temp user created for email:", email);
-
-    await sendVerificationEmail(email, token);
-    console.log("Verification email sent to:", email);
-
-    return res.status(200).json({
-      message: "Verification email sent. Please check your inbox.",
-    });
-  } catch (err) {
-    if (err.code === "P2002") {
-      return res.status(400).json({ error: "Email already exists." });
-    }
-    console.error(err);
-    res.status(500).json({ error: "Server error." });
+  if (
+    (await prisma.user.exists({ email: email })) ||
+    (await prisma.tempuser.exists({ email: email }))
+  ) {
+    res.sendStatus(422);
+    return;
   }
+
+  await prisma.tempuser.create({
+    data: {
+      email: email,
+      password: hashedPassword,
+      role: role,
+    },
+  });
+
+  res.sendStatus(200);
 };
 
 // Google OAuth Callback

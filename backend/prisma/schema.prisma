@@ -76,10 +76,10 @@ model tags {
 }
 
 model tempuser {
+  id            String   @id(map: "tempuser_pk") @default(uuid())
   email         String   @db.VarChar(100)
-  created_date  DateTime @db.Timestamptz(6)
-  password_hash String
-  temp_uid      String   @id(map: "tempuser_pk") @default(uuid())
+  created_at    DateTime @db.Timestamptz(6) @default(now())
+  password      String
   role          UserRole
 }
 
