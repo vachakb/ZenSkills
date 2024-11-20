@@ -26,7 +26,6 @@ import Milestone from "../components/Milestones.jsx";
 import JobList from "./Jobs.jsx";
 import Workshops from "./Workshop.jsx";
 
-
 const mentor = {
   id: "id",
   name: "mentor",
@@ -35,17 +34,14 @@ const mentor = {
   noOfSessions: 19,
   noOfReviews: 4,
   Experience: 23,
-  creditScore: 95
-}
-const eventdetails={
-  name:"Bergen International Film Festival",
-  desc:" Films from all over the world gather all film enthusiasts for unique moments at the Bergen International Film Festival.",
-  date: "28/11",
-  time: "17:00"
-
-
+  creditScore: 95,
 };
-
+const eventdetails = {
+  name: "Bergen International Film Festival",
+  desc: " Films from all over the world gather all film enthusiasts for unique moments at the Bergen International Film Festival.",
+  date: "28/11",
+  time: "17:00",
+};
 
 const demoTags = [
   "Technology",
@@ -91,7 +87,6 @@ const timelineData = [
       "Adipiscing enim eu neque aliquam vestibulum morbi blandit cursus risus.",
   },
 ];
-
 
 const router = createBrowserRouter([
   {
@@ -142,28 +137,28 @@ const router = createBrowserRouter([
       },
       {
         path: "mentee_profile/:menteeId",
-        element: <MenteeProfile/>
+        element: <MenteeProfile />,
       },
       {
         path: "profilecard",
-        element: <ProfileCard/>
+        element: <ProfileCard />,
       },
       {
-        path: "mentee_exploring",
-        element: <MenteeExploring />
+        path: "mentee_exploring/:mentorId",
+        element: <MenteeExploring />,
       },
       {
         path: "milestone",
-        element: <Milestone data={timelineData}/>
+        element: <Milestone data={timelineData} />,
       },
       {
         path: "jobs",
-        element: <JobList />
+        element: <JobList />,
       },
       {
         path: "workshops",
-        element: <Workshops demoTags={demoTags}/>
-      }
+        element: <Workshops demoTags={demoTags} />,
+      },
     ],
   },
 ]);

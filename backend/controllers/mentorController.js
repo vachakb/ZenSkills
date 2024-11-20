@@ -86,4 +86,45 @@ const getTags = async (req, res) => {
   }
 };
 
-module.exports = { getMentors, getTags };
+const getMentorProfile = async (req, res) => {
+  try {
+    const { mentorId } = req.params;
+    // Validate mentorId
+    if (!mentorId) {
+      return res.status(400).json({ error: "Mentor ID is required" });
+    }
+    console.log("Mentor ID:", mentorId);
+
+    // Fetch mentor profile
+    const mentor = await prisma.mentor.findUnique({
+      where: { mentor_id: mentorId },
+      include: {
+        mentor_expertise: {
+          include: { tags: true }, // Include expertise tags
+        },
+        User: true,
+      },
+    });
+
+    // If mentor not found
+    if (!mentor) {
+      return res.status(404).json({ error: "Mentor not found" });
+    }
+
+    const mentorProfile = {
+      name: mentor.name,
+      bio: mentor.bio,
+      occupation: mentor.mentor_job_title,
+      rating: mentor.rating,
+      workExperiences: [], // Populate this with custom logic if needed
+      expertise: mentor.mentor_expertise.map((i) => i.tags.tag_name),
+      isMentor: true,
+    };
+    res.status(200).json(mentorProfile);
+  } catch (error) {
+    console.error("Error fetching mentor profile:", error);
+    res.status(500).json({ error: "Error fetching mentor profile" });
+  }
+};
+
+module.exports = { getMentors, getTags, getMentorProfile };
