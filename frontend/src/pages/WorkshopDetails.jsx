@@ -10,7 +10,8 @@ const WorkshopDetails = () => {
     date: "",
     time: "",
     venue: "",
-    status: false,
+    bookStatus: false,
+    completionStatus: false,
   });
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
@@ -18,12 +19,14 @@ const WorkshopDetails = () => {
   // Mock data for the workshop (Replace with actual data fetch logic)
   const workshopData_ = {
     title: "React and Bootstrap Workshop",
+    host: "Donald Trump",
     description:
       "Learn the basics of React and how to style your applications using Bootstrap. This workshop is perfect for beginners who want to dive into modern web development.",
     date: "25th November 2024",
     time: "10:00 AM - 4:00 PM",
     venue: "Tech Hall, Main Campus",
-    status: false,
+    bookStatus: false,
+    completionStatus: false,
   };
 
   async function fetchWorkshopData() {
@@ -48,7 +51,7 @@ const WorkshopDetails = () => {
   }, []);
 
   const handleBooking = async () => {
-    setLoading(true)
+    setLoading(true);
     const responce = await fetch(`/api/workshops/${workshopId}`, {
       method: "POST",
       headers: {
@@ -67,11 +70,11 @@ const WorkshopDetails = () => {
     } else {
       alert("Unable to book seat");
     }
-    setLoading(false)
+    setLoading(false);
   };
 
   async function handleCancelBooking() {
-    setLoading(true)
+    setLoading(true);
     const responce = await fetch(`/api/workshops/${workshopId}`, {
       method: "DELETE",
       headers: {
@@ -89,16 +92,19 @@ const WorkshopDetails = () => {
     } else {
       alert("unable to cancel seat");
     }
-    setLoading(false)
+    setLoading(false);
   }
 
   return (
     <div className="container my-5">
       <div className="card">
         <div className="card-header text-center bg-primary text-white">
-          <h2>{workshopData.title}</h2>
+          <h2 className="h4">{workshopData.title}</h2>
         </div>
         <div className="card-body">
+          <p>
+            <strong>Host:</strong> {workshopData.host}
+          </p>
           <p>
             <strong>Description:</strong> {workshopData.description}
           </p>
@@ -113,22 +119,26 @@ const WorkshopDetails = () => {
           </p>
         </div>
         <div className="card-footer text-center">
-          {!workshopData.status ? (
-            <button
-              className="btn btn-success border"
-              onClick={handleBooking}
-              disabled={workshopData.status || loading}
-            >
-              Book seat
-            </button>
+          {!workshopData.completionStatus ? (
+            !workshopData.bookStatus ? (
+              <button
+                className="btn btn-success border w-100"
+                onClick={handleBooking}
+                disabled={workshopData.bookStatus || loading}
+              >
+                Book seat
+              </button>
+            ) : (
+              <button
+                className="btn btn-danger border w-100"
+                onClick={handleCancelBooking}
+                disabled={workshopData.bookStatus || loading}
+              >
+                Cancel Booking
+              </button>
+            )
           ) : (
-            <button
-              className="btn btn-danger border"
-              onClick={handleCancelBooking}
-              disabled={workshopData.status || loading}
-            >
-              Cancel Booking
-            </button>
+            <div className="text-truncate">Workshop is Ended</div>
           )}
         </div>
       </div>
