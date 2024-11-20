@@ -104,7 +104,7 @@ exports.register = async (req, res) => {
     await prisma.tempuser.create({
       data: {
         email: email,
-        password_hash: hashedPassword,
+        password: hashedPassword,
         role: role,
         created_date: new Date(),
         expires_at: expiresAt,
