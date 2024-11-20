@@ -21,6 +21,7 @@ async function getMenteeProfile(req, res) {
       occupation: mentee.company,
       title: mentee.mentee_title,
       interests: mentee.mentee_interests.map((i) => i.tags.tag_name),
+      isMentor: false,
     };
 
     res.json(response);
