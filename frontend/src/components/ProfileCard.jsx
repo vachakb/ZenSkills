@@ -22,7 +22,7 @@ const ProfileCard = ({ profile }) => {
   };
 
   return (
-    <div className="container-fluid">
+    <div className="container-fluid mx-0 px-0">
       <div className="text-primary mb-0 pb-0">
         {/* Top Buttons */}
         <div
@@ -57,10 +57,10 @@ const ProfileCard = ({ profile }) => {
             </Dropdown.Toggle>
 
             <Dropdown.Menu>
-              <Dropdown.Item onClick={() => handleMoreClick("View Profile")}>
+              <Dropdown.Item >
                 Report Profile
               </Dropdown.Item>
-              <Dropdown.Item onClick={() => handleMoreClick("Report")}>
+              <Dropdown.Item >
                 Block
               </Dropdown.Item>
             </Dropdown.Menu>

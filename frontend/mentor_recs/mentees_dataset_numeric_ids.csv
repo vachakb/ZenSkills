@@ -1,0 +1,101 @@
+Mentee_ID,Primary_Interest,Secondary_Interests
+1,Web Development,"JavaScript, HTML, React"
+2,Data Science,"R, Machine Learning, SQL"
+3,Web Development,"HTML, Django"
+4,Data Science,"Python, R"
+5,AI/ML,"TensorFlow, Deep Learning, PyTorch"
+6,AI/ML,"Computer Vision, TensorFlow, Deep Learning"
+7,AI/ML,"PyTorch, Deep Learning"
+8,AI/ML,"PyTorch, NLP"
+9,Cloud Computing,"Google Cloud, AWS"
+10,Data Science,"R, Machine Learning, SQL"
+11,AI/ML,TensorFlow
+12,Web Development,React
+13,AI/ML,"Computer Vision, TensorFlow"
+14,Data Science,Python
+15,AI/ML,"PyTorch, TensorFlow"
+16,Data Science,R
+17,Data Science,"Statistics, Python"
+18,Data Science,"R, Python, Machine Learning"
+19,AI/ML,"TensorFlow, NLP, PyTorch"
+20,Web Development,"CSS, JavaScript"
+21,Web Development,React
+22,Data Science,"Machine Learning, SQL, R"
+23,AI/ML,"Computer Vision, PyTorch, NLP"
+24,Cybersecurity,Penetration Testing
+25,Cloud Computing,"Azure, Kubernetes, DevOps"
+26,Web Development,"HTML, Django"
+27,Cloud Computing,"Kubernetes, Azure, Google Cloud"
+28,Data Science,Python
+29,Web Development,"React, Django, CSS"
+30,AI/ML,"Deep Learning, PyTorch"
+31,AI/ML,NLP
+32,Data Science,"Statistics, Python, R"
+33,Web Development,"CSS, Django, React"
+34,Data Science,"SQL, Statistics"
+35,AI/ML,"PyTorch, Computer Vision"
+36,Cybersecurity,"SIEM, Forensics"
+37,Cybersecurity,"Penetration Testing, Cryptography"
+38,AI/ML,"PyTorch, NLP, Computer Vision"
+39,Data Science,"Python, SQL"
+40,Web Development,"Django, HTML, CSS"
+41,Web Development,Django
+42,Web Development,"CSS, JavaScript"
+43,Data Science,"R, Python"
+44,Web Development,"JavaScript, React, CSS"
+45,AI/ML,"NLP, TensorFlow, Deep Learning"
+46,Data Science,SQL
+47,Data Science,"Machine Learning, SQL, Python"
+48,AI/ML,NLP
+49,AI/ML,"NLP, PyTorch"
+50,AI/ML,Computer Vision
+51,Data Science,SQL
+52,Cybersecurity,SIEM
+53,Data Science,"SQL, R, Python"
+54,Data Science,"SQL, Python, Machine Learning"
+55,Data Science,Machine Learning
+56,Cybersecurity,"SIEM, Cryptography, Network Security"
+57,Data Science,"Python, Machine Learning"
+58,Web Development,CSS
+59,Cybersecurity,"Network Security, SIEM"
+60,Data Science,"Python, SQL, R"
+61,Web Development,"JavaScript, HTML"
+62,Web Development,"JavaScript, React, Django"
+63,AI/ML,"TensorFlow, NLP"
+64,AI/ML,"TensorFlow, Deep Learning"
+65,Cybersecurity,SIEM
+66,Web Development,Django
+67,AI/ML,"Computer Vision, TensorFlow, Deep Learning"
+68,Cybersecurity,Network Security
+69,Data Science,Machine Learning
+70,Cybersecurity,"Cryptography, Penetration Testing, SIEM"
+71,Data Science,R
+72,AI/ML,"Computer Vision, NLP, Deep Learning"
+73,Web Development,"React, HTML"
+74,Web Development,JavaScript
+75,AI/ML,"PyTorch, Computer Vision"
+76,AI/ML,Deep Learning
+77,Cybersecurity,SIEM
+78,Cybersecurity,"Cryptography, Network Security, Penetration Testing"
+79,AI/ML,Computer Vision
+80,Web Development,React
+81,Cloud Computing,"AWS, DevOps, Kubernetes"
+82,Web Development,"CSS, Django, HTML"
+83,Data Science,"Python, SQL"
+84,Data Science,"Statistics, SQL"
+85,Data Science,SQL
+86,Data Science,"Python, Machine Learning, Statistics"
+87,Data Science,SQL
+88,Cybersecurity,Network Security
+89,Cybersecurity,"Penetration Testing, Network Security"
+90,Cybersecurity,Cryptography
+91,Data Science,Statistics
+92,Cybersecurity,"SIEM, Penetration Testing"
+93,AI/ML,Computer Vision
+94,AI/ML,"Computer Vision, PyTorch"
+95,Cybersecurity,"Forensics, SIEM"
+96,Data Science,Python
+97,Cloud Computing,"AWS, Azure, Google Cloud"
+98,Cloud Computing,AWS
+99,Web Development,"HTML, React"
+100,Data Science,"SQL, R, Machine Learning"

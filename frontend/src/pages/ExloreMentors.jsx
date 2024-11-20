@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import Mentorcard from "../components/MentorCard";
+import MentorCard from "../components/MentorCard";
 import ReactPaginate from "react-paginate";
 import axios from "axios";
 
@@ -10,10 +10,11 @@ export default function ExploreMentor({ mentors_, demoTags }) {
   const [searchTerm, setSearchTerm] = useState("");
   const [allTags, setAllTags] = useState([]);
   const [selectedTags, setSelectedTags] = useState([]);
-  const [noOfMenteesMentored, setNoOfMenteedMentored] = useState(0);
+  const [noOfMenteesMentored, setNoOfMenteesMentored] = useState(0);
   const [currentPage, setCurrentpage] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
-  const [filterDropdownVisibility, setFilterDropdownVisibility] = useState(false);
+  const [filterDropdownVisibility, setFilterDropdownVisibility] =
+    useState(false);
   const itemsPerPage = 10;
 
   useEffect(() => {
@@ -85,8 +86,8 @@ export default function ExploreMentor({ mentors_, demoTags }) {
   }
 
   return (
-    <div className="container-fluid mt-4">
-      {/* search and filter bar */}
+    <div className="container-fluid px-4 mt-4">
+      {/* Search and Filter Section */}
       <div className="row mb-4">
         <div className="col-12 col-md-8 mb-3 mb-md-0">
           <input
@@ -128,7 +129,7 @@ export default function ExploreMentor({ mentors_, demoTags }) {
           {allTags.map((tag) => {
             return (
               <button
-                className={`btn btn-sm rounded-pill m-1`}
+                className="btn btn-sm rounded-pill m-1"
                 style={{
                   backgroundColor: selectedTags.includes(tag)
                     ? "#07d100"
@@ -143,7 +144,7 @@ export default function ExploreMentor({ mentors_, demoTags }) {
         </div>
       )}
 
-      {selectedTags?.length !== 0 && (
+{selectedTags?.length !== 0 && (
         <div className="">
           Filters applied:
           {/* {selectedTags.map((tag)=>{
@@ -160,12 +161,12 @@ export default function ExploreMentor({ mentors_, demoTags }) {
                   type="button"
                   className="btn"
                   style={{
-                    background: "",
-                    border: "none",
-                    fontSize: "1rem",
-                    cursor: "pointer",
-                    transition: "background-color 0.3s ease",
-                    borderRadius: "50%",
+                    background: '',
+                    border: 'none',
+                    fontSize: '1rem',
+                    cursor: 'pointer',
+                    transition: 'background-color 0.3s ease',
+                    borderRadius: '50%'
                   }}
                   // onMouseEnter={(e) => {
                   //   e.target.style.backgroundColor = 'rgba(0, 0, 0, 0.1)'; // Hover background color
@@ -189,24 +190,21 @@ export default function ExploreMentor({ mentors_, demoTags }) {
         </div>
       )}
 
-      {/* card grid */}
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(4, minmax(0, 1fr))",
-        }}
-        className="gap-4"
-      >
-        {mentors.map((mentor) => {
-          console.log(mentor);
-          return <Mentorcard mentor={mentor} />;
-        })}
-        {mentors.length === 0 && <p>No mentors found.</p>}
+      {/* Cards Section */}
+      <div className="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
+        {mentors.length > 0 ? (
+          mentors.map((mentor, index) => (
+            <div className="col" key={index}>
+              <MentorCard mentor={mentor} />
+            </div>
+          ))
+        ) : (
+          <p className="text-center">No mentors found.</p>
+        )}
       </div>
 
-      {/* pagination */}
+      {/* Pagination */}
       <div className="mt-4 d-flex justify-content-center">
-        {/* TODO use bootstrap pagination component */}
         <ReactPaginate
           previousLabel={"Previous"}
           nextLabel={"Next"}

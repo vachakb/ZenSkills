@@ -34,7 +34,7 @@ function AvailableSessions() {
                 {session.cost > 0 ? (
                   <div
                     className="d-flex gap-2 align-items-center py-2 px-3 rounded-pill me-auto"
-                    style={{ backgroundColor: "#F4D35E" }}
+                    style={{ backgroundColor: "#F4D35E",height:'10px',width:'90px' }}
                   >
                     <GiTwoCoins />
                     <span>{session.cost}</span>

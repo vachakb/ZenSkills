@@ -1,0 +1,12 @@
+Mentor_ID,Primary_Skill,Secondary_Skills,Experience,Name,Rating,CurrentPost,NoOfSessions,NoOfReviews,CreditScore
+1,Data Science,"R, Statistics",90,Mentor_1,3.0,Post_1,24,49,690
+2,AI/ML,"TensorFlow, PyTorch",54,Mentor_2,4.6,Post_2,16,42,573
+3,Cybersecurity,"Network Security, Cryptography, SIEM",82,Mentor_3,3.9,Post_3,13,46,604
+4,Cloud Computing,AWS,32,Mentor_4,4.4,Post_4,88,36,815
+5,Data Science,"R, Machine Learning",95,Mentor_5,5.0,Post_5,80,38,827
+6,Data Science,"Machine Learning, SQL",12,Mentor_6,4.9,Post_6,38,48,710
+7,Web Development,React,66,Mentor_7,3.9,Post_7,89,25,565
+8,Web Development,"Django, HTML, React",17,Mentor_8,4.6,Post_8,95,30,346
+9,AI/ML,Computer Vision,69,Mentor_9,3.6,Post_9,50,42,758
+10,AI/ML,"TensorFlow, PyTorch",55,Mentor_10,4.5,Post_10,19,25,341
+11,AI/ML,PyTorch,55,Mentor_11,3.9,Post_11,64,8,476

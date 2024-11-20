@@ -49,15 +49,14 @@ const getMentors = async (req, res) => {
       skip: offset,
       take: parseInt(limit),
       include: {
-        User: true,
+        User: true, 
         mentor_expertise: {
           include: {
-            tags: true,
+            tags: true, 
           },
         },
       },
     });
-
     const totalMentorsCount = await prisma.mentor.count({
       where: whereClause,
     });

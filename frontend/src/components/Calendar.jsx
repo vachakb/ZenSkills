@@ -5,10 +5,14 @@ import classNames from "classnames";
 import { Link } from "react-router-dom";
 
 function Calendar() {
+  const [selectedDate, setSelectedDate] = useState(DateTime.local());
+
   const [weekOffset, setWeekOffset] = useState(0);
 
+  const [showDatePicker, setShowDatePicker] = useState(false);
+
   const week = useMemo(() => {
-    const weekDateTime = DateTime.local().plus({ week: weekOffset });
+    const weekDateTime = selectedDate.plus({ week: weekOffset });
 
     const weekStart = weekDateTime.startOf("week", {
       useLocaleWeeks: true,
@@ -27,7 +31,7 @@ function Calendar() {
     }
 
     return days;
-  }, [weekOffset]);
+  }, [selectedDate, weekOffset]);
 
   return (
     <Card
@@ -46,10 +50,26 @@ function Calendar() {
             src="/arrow-left.svg"
             onClick={() => setWeekOffset(weekOffset - 1)}
           />
-          <h6 className="fw-bold m-0">
-            {week[0].toFormat("dd MMM")} -{" "}
-            {week[week.length - 1].toFormat("dd MMM")}
-          </h6>
+          {showDatePicker ? (
+            <input
+              type="date"
+              onChange={(ev) => {
+                setSelectedDate(
+                  DateTime.fromFormat(ev.currentTarget.value, "yyyy-MM-dd"),
+                );
+                setShowDatePicker(false);
+              }}
+            />
+          ) : (
+            <h6
+              style={{ cursor: "pointer" }}
+              className="fw-bold m-0"
+              onClick={() => setShowDatePicker(true)}
+            >
+              {week[0].toFormat("dd MMM")} -{" "}
+              {week[week.length - 1].toFormat("dd MMM")}
+            </h6>
+          )}
           <img
             style={{
               cursor: "pointer",

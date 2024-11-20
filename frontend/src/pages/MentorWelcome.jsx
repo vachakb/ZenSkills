@@ -7,7 +7,7 @@ import {
     Card,
     ProgressBar,
   } from "react-bootstrap";
-  import { useMemo, useState } from "react";
+  import { useEffect, useMemo, useState } from "react";
   import { useNavigate } from "react-router-dom";
   import { useLocation } from "react-router-dom";
   import { GiHand } from "react-icons/gi";
@@ -19,7 +19,8 @@ import {
   import EventCard from "../components/Events";
   import MentorCard from "../components/MentorCard"
   import "../styles/style.css";
-export default function MentorWelcome(){
+export default function MentorWelcome({events_}){
+  const [events, setEvents] = useState(events_);
     
     const location = useLocation();
 
@@ -31,15 +32,21 @@ export default function MentorWelcome(){
     ];
   
     const [tasks, setTasks] = useState([
-        { label: "Complete your profile", done: false },
+        { label: "Complete your profile", done: true },
         { label: "Setup your calendar", done: false },
         { label: "Create your first session", done: false },
       
       
       
     ]);
-     const [isVisible, setIsVisible] = useState(true);
-  
+    const [isVisible, setIsVisible] = useState(true);
+
+    useEffect(() => {
+      if (isVisible) {
+        setIsVisible(!tasks.every((task) => task.done));
+      }
+    }, [tasks])
+
     const progress = useMemo(() => {
       let done = 0;
   
@@ -60,6 +67,22 @@ export default function MentorWelcome(){
     const profilestatus = "Beginner";
   
     const navigate = useNavigate();
+    // Fetch mentors and events
+  /*useEffect(() => {
+    async function fetchData() {
+      try {
+        const [eventsResponse] = await Promise.all([
+       
+          axios.get("/api/events"),
+        ]);
+      
+        setEvents(eventsResponse.data.events || []);
+      } catch (error) {
+        console.error("Error fetching data: ", error);
+      }
+    }
+    fetchData();
+  }, []);*/
   
     return(
 <Container className="d-flex flex-column gap-4" fluid>
@@ -107,17 +130,8 @@ export default function MentorWelcome(){
             {tasks.map((value, index) => (
               <Form.Group key={index} className="d-flex align-content-center gap-2">
                 <Form.Check
+                  className="pe-none"
                   checked={value.done}
-                  onChange={() => {
-                    const copy = [...tasks];
-                    copy[index].done = !copy[index].done;
-                    setTasks(copy);
-
-                    // Close card if all tasks are done
-                    if (copy.every(task => task.done)) {
-                      handleClose();
-                    }
-                  }}
                 />
                 <Form.Label
                   style={{
@@ -134,21 +148,26 @@ export default function MentorWelcome(){
       )}
     </>
           
-          <div>
+    <div>
             <h3 className="fw-bold">Events</h3>
             <h6 style={{ color: "#436DA7" }} className="m-0">
-            To help you connect and grow.
+              To help you connect and grow.
             </h6>
           </div>
           <div className="d-flex flex-column flex-wrap justify-content-flex-start" style={{
               maxWidth: "100%",
-              columnGap:'163px'
-             
-            }}><EventCard></EventCard>
-            <EventCard></EventCard>
-            <EventCard></EventCard></div>
+              columnGap: '163px'
+            }}>
+            {events.length > 0 ? (
+              events.map((event) => (
+                <EventCard key={event.id} event={event} />
+              ))
+            ) : (
+              <p>No events available.</p>
+            )}
+          </div>
         </div>
-       
+
         
       
         <div className="flex-grow-0 ms-auto" style={{position:'fixed', right:'15px'}}>

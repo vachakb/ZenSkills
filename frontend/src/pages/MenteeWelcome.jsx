@@ -29,10 +29,17 @@ function MenteeWelcome({ mentors_, events_ }) {
   const userName = location.state?.name || "User";
 
   const [tasks, setTasks] = useState([
-    { label: "Complete your profile", done: false },
+    { label: "Complete your profile", done: true },
     { label: "Book your first session", done: false },
   ]);
   const [isVisible, setIsVisible] = useState(true);
+
+  useEffect(() => {
+    if (isVisible) {
+      setIsVisible(!tasks.every((task) => task.done));
+    }
+  }, [tasks])
+ 
   const [events, setEvents] = useState(events_);
   const progress = useMemo(() => {
     let done = 0;
@@ -121,17 +128,8 @@ function MenteeWelcome({ mentors_, events_ }) {
                       className="d-flex align-content-center gap-2"
                     >
                       <Form.Check
+                        className="pe-none"
                         checked={value.done}
-                        onChange={() => {
-                          const copy = [...tasks];
-                          copy[index].done = !copy[index].done;
-                          setTasks(copy);
-
-                          // Close card if all tasks are done
-                          if (copy.every((task) => task.done)) {
-                            handleClose();
-                          }
-                        }}
                       />
                       <Form.Label
                         style={{
@@ -192,11 +190,9 @@ function MenteeWelcome({ mentors_, events_ }) {
           </div>
         </div>
 
-        <div
-          className="flex-grow-0 ms-auto"
-          style={{ position: "fixed", right: "15px" }}
-        >
-          <Card
+
+        <div className="d-flex flex-column flex-grow-0 ms-auto " style={{ position: "fixed", right: "15px", columnGap:'100px' }}>
+         {/* <Card
             bg="primary"
             className="mb-5"
             style={{
@@ -221,7 +217,7 @@ function MenteeWelcome({ mentors_, events_ }) {
               {profilestatus}
               <PiPlantFill className="mx-2" style={{ color: "#33a70d" }} />
             </Card.Text>
-          </Card>
+          </Card>*/}
           <div className="mb-5">
             <Calendar />
           </div>

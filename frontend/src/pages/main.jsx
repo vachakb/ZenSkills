@@ -2,6 +2,8 @@ import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import App from "./App.jsx";
 import "../../node_modules/bootstrap/dist/css/bootstrap.min.css";
+// import 'bootstrap/dist/css/bootstrap.min.css';
+import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 import "../styles/style.css";
 import "../styles/custom.scss";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
@@ -15,8 +17,8 @@ import { GoogleOAuthProvider } from "@react-oauth/google";
 import MenteeWelcome from "./MenteeWelcome.jsx";
 import MentorWelcome from "./MentorWelcome.jsx";
 import ExploreMentor from "./ExloreMentors.jsx";
-
 import VerifyEmail from "./VerifyEmail.jsx";
+import VerifyEmailCallback from "./VerifyEmailCallback.jsx";
 
 import UserInfo from "../components/UserInfo.jsx";
 import ProfileCard from "../components/ProfileCard.jsx";
@@ -25,6 +27,11 @@ import MenteeExploring from "./MenteeExploring.jsx";
 import Milestone from "../components/Milestones.jsx";
 import JobList from "./Jobs.jsx";
 import Workshops from "./Workshop.jsx";
+import JobDetails from "./JobDetails.jsx";
+import SessionForm from "./CreateSession_1.jsx";
+import SessionForm1 from "./CreateSession2.jsx";
+import Meeting from "./Meeting.jsx";
+import WorkshopDetails from "./WorkshopDetails.jsx";
 
 const mentor = {
   id: "id",
@@ -57,36 +64,7 @@ const demoTags = [
 const mentors = Array(12).fill(mentor);
 const events = Array(6).fill(eventdetails);
 
-const timelineData = [
-  {
-    date: "May 2001",
-    category: "The origin",
-    title: "Acme was founded in Milan, Italy",
-    description:
-      "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut pharetra pharetra massa.",
-  },
-  {
-    date: "May 2007",
-    category: "The milestone",
-    title: "Reached 5K customers",
-    description:
-      "Praesent eu neque aliquam vestibulum morbi blandit cursus risus at ultrices.",
-  },
-  {
-    date: "May 2012",
-    category: "The acquisition",
-    title: "Acquired various companies, including Technology Inc.",
-    description:
-      "Pellentesque habitant morbi tristique senectus et netus et malesuada.",
-  },
-  {
-    date: "May 2022",
-    category: "The IPO",
-    title: "Went public at the New York Stock Exchange",
-    description:
-      "Adipiscing enim eu neque aliquam vestibulum morbi blandit cursus risus.",
-  },
-];
+
 
 const router = createBrowserRouter([
   {
@@ -123,7 +101,7 @@ const router = createBrowserRouter([
       },
       {
         path: "mentor_welcome",
-        element: <MentorWelcome />,
+        element: <MentorWelcome events_={events} />,
       },
       {
         path: "explore",
@@ -132,12 +110,16 @@ const router = createBrowserRouter([
         // this array is just passed for test/preview
       },
       {
-        path: "verify-email",
+        path: "verify",
         element: <VerifyEmail />,
       },
       {
+        path: "verify/callback",
+        element: <VerifyEmailCallback />,
+      },
+      {
         path: "mentee_profile/:menteeId",
-        element: <MenteeProfile />,
+        element: <MenteeProfile/>
       },
       {
         path: "profilecard",
@@ -149,24 +131,50 @@ const router = createBrowserRouter([
       },
       {
         path: "milestone",
-        element: <Milestone data={timelineData} />,
+        element: <Milestone />
       },
       {
         path: "jobs",
         element: <JobList />,
       },
       {
-        path: "workshops",
-        element: <Workshops demoTags={demoTags} />,
+        path: "jobs/:id",
+        element: <JobDetails/>
       },
+      // {
+      //   path: "jobdetails",
+      //   element: <JobDetails/>
+      // },
+      {
+        path: "workshops",
+        element: <Workshops demoTags={demoTags}/>,
+      },
+      {
+        path: "workshops/:workshopId",
+        element: <WorkshopDetails/>
+      },
+      {
+        path: "createsession_1",
+        element: <SessionForm/>
+      },
+      {
+        path: "createsession_2",
+        element: <SessionForm1/>
+      },
+      {
+        path: "meeting",
+        element: <Meeting />
+      },
+      {
+        path: "meeting/:meetingId",
+        element: <Meeting />
+      }
     ],
   },
 ]);
 
 createRoot(document.getElementById("root")).render(
-  <StrictMode>
-    <GoogleOAuthProvider clientId="172493269774-4qr965tabedoqajcv49jpu2btps6sg8v.apps.googleusercontent.com">
-      <RouterProvider router={router} />
-    </GoogleOAuthProvider>
-  </StrictMode>
+  <GoogleOAuthProvider clientId="172493269774-4qr965tabedoqajcv49jpu2btps6sg8v.apps.googleusercontent.com">
+    <RouterProvider router={router} />
+  </GoogleOAuthProvider>
 );

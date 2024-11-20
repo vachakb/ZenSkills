@@ -4,127 +4,110 @@ import "@fortawesome/fontawesome-free/css/all.min.css"; // Import Font Awesome C
 import getAddress from "./getCurrentLocation";
 import axios from "axios";
 import ReactPaginate from "react-paginate";
+import JobApplicationModal from "../components/JobApplicationModal";
 
 const JobList = () => {
   const jobs = [
     {
       id: 1,
-      title: "Frontend Developer",
-      jobType: "Full-Time",
-      salary: "40,000 INR - 60,000 INR",
-      company: "Flipkart",
+      title: "Cloud Engineer Intern",
+      jobTypes: ["Internship", "Remote Full-Time"],
+      salary: "10,000 INR - 15,000 INR",
+      company: "AWS",
       location: "Bangalore, India",
-      applicants: "12+",
+      applicants: "40+",
     },
     {
       id: 2,
-      title: "Graphic Designer",
-      jobType: "Part-Time",
+      title: "Temporary Technical Support",
+      jobTypes: ["Temporary", "Contract"],
       salary: "20,000 INR - 30,000 INR",
-      company: "Zomato",
+      company: "Microsoft",
       location: "Mumbai, India",
-      applicants: "8+",
+      applicants: "5+",
     },
     {
       id: 3,
-      title: "Data Scientist",
-      jobType: "Full-Time",
-      salary: "80,000 INR - 1,20,000 INR",
-      company: "Google",
-      location: "Hyderabad, India",
-      applicants: "25+",
-    },
-    {
-      id: 4,
-      title: "Content Writer",
-      jobType: "Freelance",
-      salary: "15,000 INR - 25,000 INR",
-      company: "Freelancer",
+      title: "Backend Developer",
+      jobTypes: ["Remote Full-Time", "Contract-to-Hire"],
+      salary: "50,000 INR - 70,000 INR",
+      company: "Netflix",
       location: "Remote",
-      applicants: "50+",
-    },
-    {
-      id: 5,
-      title: "Blockchain Developer",
-      jobType: "Full-Time",
-      salary: "1,00,000 INR - 1,50,000 INR",
-      company: "Polygon",
-      location: "Pune, India",
-      applicants: "10+",
-    },
-    {
-      id: 6,
-      title: "Mobile App Developer",
-      jobType: "Full-Time",
-      salary: "60,000 INR - 80,000 INR",
-      company: "Paytm",
-      location: "Noida, India",
-      applicants: "15+",
-    },
-    {
-      id: 7,
-      title: "Digital Marketing Specialist",
-      jobType: "Contract",
-      salary: "30,000 INR - 50,000 INR",
-      company: "Byju’s",
-      location: "Delhi, India",
       applicants: "20+",
     },
     {
-      id: 8,
-      title: "Network Administrator",
-      jobType: "Full-Time",
-      salary: "50,000 INR - 70,000 INR",
-      company: "Cisco",
+      id: 4,
+      title: "Contract-to-Hire Project Manager",
+      jobTypes: ["Contract-to-Hire", "Hybrid"],
+      salary: "60,000 INR - 80,000 INR",
+      company: "TCS",
+      location: "Delhi, India",
+      applicants: "10+",
+    },
+    {
+      id: 5,
+      title: "Volunteer Web Developer",
+      jobTypes: ["Volunteer", "Freelance"],
+      salary: "Unpaid",
+      company: "NGO TechHelp",
+      location: "Remote",
+      applicants: "25+",
+    },
+    {
+      id: 6,
+      title: "Hybrid Software Tester",
+      jobTypes: ["Hybrid", "Part-Time"],
+      salary: "30,000 INR - 40,000 INR",
+      company: "HCL",
+      location: "Pune, India",
+      applicants: "8+",
+    },
+    {
+      id: 7,
+      title: "DevOps Engineer",
+      jobTypes: ["Full-Time", "Remote Full-Time"],
+      salary: "70,000 INR - 90,000 INR",
+      company: "DigitalOcean",
       location: "Chennai, India",
+      applicants: "12+",
+    },
+    {
+      id: 8,
+      title: "Content Strategist",
+      jobTypes: ["Freelance", "Part-Time"],
+      salary: "20,000 INR - 30,000 INR",
+      company: "Medium",
+      location: "Remote",
       applicants: "18+",
     },
     {
       id: 9,
-      title: "Machine Learning Engineer",
-      jobType: "Full-Time",
-      salary: "1,20,000 INR - 1,50,000 INR",
-      company: "OpenAI",
-      location: "Bangalore, India",
-      applicants: "30+",
-    },
-    {
-      id: 10,
-      title: "System Analyst",
-      jobType: "Part-Time",
-      salary: "40,000 INR - 50,000 INR",
-      company: "Accenture",
-      location: "Pune, India",
-      applicants: "5+",
-    },
-    {
-      id: 11,
-      title: "SEO Specialist",
-      jobType: "Freelance",
-      salary: "25,000 INR - 35,000 INR",
-      company: "Fiverr",
-      location: "Remote",
-      applicants: "22+",
-    },
-    {
-      id: 12,
       title: "Game Developer",
-      jobType: "Full-Time",
+      jobTypes: ["Full-Time", "Contract"],
       salary: "70,000 INR - 1,00,000 INR",
       company: "Ubisoft",
       location: "Mumbai, India",
       applicants: "12+",
     },
+    {
+      id: 10,
+      title: "Data Scientist",
+      jobTypes: ["Full-Time", "Hybrid"],
+      salary: "80,000 INR - 1,20,000 INR",
+      company: "Google",
+      location: "Hyderabad, India",
+      applicants: "25+",
+    },
   ];
-
+  
   const [searchTerm, setSearchTerm] = useState("");
   const [locationInput, setLocationInput] = useState("");
   const [filteredJobs, setFilteredJobs] = useState(jobs);
 
   const [filterDropdownVisibility, setFilterDropdownVisibility] =
     useState(false);
-  const jobTypes = ["Full-Time", "Part-Time", "Contract", "Freelance"];
-  let [selectedJobTypes, setSelectedJobTypes] = useState([]);
+  const jobTypess = ["Full-Time", "Part-Time", "Contract", "Freelance", "Internships", "On-site", "Remote", "Government"];
+  let [selectedJobTypess, setSelectedJobTypess] = useState([]);
 
   const [currentPage, setCurrentpage] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
@@ -142,7 +125,7 @@ const JobList = () => {
         params:{
           search: searchTerm,
           location: locationInput,
-          jobTypes: selectedJobTypes,
+          jobTypess: selectedJobTypess,
           salaryRange: `${minSalary}-${maxSalary}`,
           page: currentPage + 1,
           limit: itemsPerPage,
@@ -170,12 +153,12 @@ const JobList = () => {
   }
 
   function handleTypeClick(type_) {
-    if (selectedJobTypes.includes(type_)) {
-      setSelectedJobTypes(selectedJobTypes.filter((type) => type !== type_));
+    if (selectedJobTypess.includes(type_)) {
+      setSelectedJobTypess(selectedJobTypess.filter((type) => type !== type_));
     } else {
-      setSelectedJobTypes([...selectedJobTypes, type_]);
+      setSelectedJobTypess([...selectedJobTypess, type_]);
     }
-    console.log(selectedJobTypes);
+    console.log(selectedJobTypess);
   }
 
   
@@ -238,12 +221,12 @@ const JobList = () => {
               onClick={toggleFilterDropdownVisibility}
             >
               Filter
-              {selectedJobTypes.length +
+              {selectedJobTypess.length +
                 (minSalary !== "" || maxSalary !== "") !== 0
                 && (
                 <span>
                   (
-                  {selectedJobTypes.length +
+                  {selectedJobTypess.length +
                     (minSalary !== "" || maxSalary !== "")}
                   )
                 </span>
@@ -268,12 +251,12 @@ const JobList = () => {
           {/* all types */}
           <div className="mb-2">
             Job Type:
-            {jobTypes.map((type) => {
+            {jobTypess.map((type) => {
               return (
                 <button
                   className={`btn btn-sm rounded-pill m-1`}
                   style={{
-                    backgroundColor: selectedJobTypes.includes(type)
+                    backgroundColor: selectedJobTypess.includes(type)
                       ? "#07d100"
                       : "rgb(233, 236, 239)",
                   }}
@@ -356,7 +339,7 @@ const JobList = () => {
         {filteredJobs.length > 0 ? (
           filteredJobs.map((job) => (
             <div key={job.id} className="col-lg-4 col-md-6">
-              <JobCard {...job} />
+              <JobCard {...job} key={job.id}/>
             </div>
           ))
         ) : (
@@ -382,8 +365,12 @@ const JobList = () => {
           activeClassName={"active"}
         />
       </div>
+
+      {/* Modal Component */}
+      <JobApplicationModal />
     </div>
   );
 };
 
 export default JobList;
+

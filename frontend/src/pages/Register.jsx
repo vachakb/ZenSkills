@@ -6,9 +6,12 @@ import { Formik } from "formik";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { register } from "../apis/user";
+import PhoneInput from 'react-phone-input-2'
+import 'react-phone-input-2/lib/style.css'
 
 function Register() {
   const [isMentor, setIsMentor] = useState(false);
+  const [value, setValue] = useState()
 
   const navigate = useNavigate();
 
@@ -21,6 +24,15 @@ function Register() {
       .string()
       .required("This is a required field")
       .min(8, "Password should be at least 8 characters"),
+      phoneNum: yup
+    .string()
+    .required("This is a required field")
+    .test(
+      'is-valid-phone',
+      'Phone number is invalid',
+      (value) => value && value.length >= 10 // Or use a regex for more accuracy
+    ),
+    
     confirmPassword: yup
       .string()
       .oneOf([yup.ref("password"), null], "The passwords don't match")
@@ -38,10 +50,11 @@ function Register() {
               email: "",
               password: "",
               confirmPassword: "",
+              phoneNum: ""
             }}
             onSubmit={(data) =>
               register({ ...data, role: isMentor ? "mentor" : "mentee" })
-                .then(() => navigate("/register/1"))
+                .then(() => navigate("/verify", { state: data }))
                 .catch((err) => {
                   console.error(err);
                   // TODO error modal
@@ -137,13 +150,33 @@ function Register() {
                   error={formikProps.errors.confirmPassword}
                   required
                 />
+               
+               
+                  
+               <PhoneInput
+                
+               name="phoneNum"
+  country={'in'}
+  value={formikProps.values.phoneNum}
+
+  onChange={(value) => formikProps.setFieldValue('phoneNum', value)}
+  onBlur={() => formikProps.setFieldTouched('phoneNum', true)}
+  
+  inputClass="form-control" 
+  
+/>
+
+{formikProps.touched.phoneNum && formikProps.errors.phoneNum && (
+  <div className="text-danger">{formikProps.errors.phoneNum}</div>
+)}
                 <Button
                   type="submit"
-                  disabled={
+                 /* disabled={
                     formikProps.isValidating ||
                     formikProps.isSubmitting ||
                     !(formikProps.isValid && formikProps.dirty)
-                  }
+                  }*/
+                  onClick={()=>console.log(formikProps.values.phoneNum)}
                 >
                   Create Account
                 </Button>

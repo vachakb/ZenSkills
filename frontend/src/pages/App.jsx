@@ -1,19 +1,22 @@
-import { Outlet, useLocation } from "react-router-dom";
+import { matchRoutes, Outlet, useLocation } from "react-router-dom";
 import Header from "../components/Header";
 import SideBar from "../components/SideBar";
 import { useState } from "react";
 import classNames from "classnames";
 
 const excludedRoutes = [
-  "/login",
-  "/register",
-  "/register/1",
-  "/register/2",
-  "/register/3",
+  { path: "/login" },
+  { path: "/register" },
+  { path: "/register/1" },
+  { path: "/register/2" },
+  { path: "/register/3" },
+  { path: "/meeting" },
+  { path: "/meeting/" },
+  { path: "/meeting/:meetingId" },
 ];
 
 function App() {
-  const path = useLocation().pathname;
+  const location = useLocation();
 
   const [showSideBar, setShowSideBar] = useState(false);
 
@@ -21,14 +24,14 @@ function App() {
 
   return (
     <>
-      {excludedRoutes.includes(path) ? null : <Header onToggleSideBar={toggleSideBar} />}
+      {matchRoutes(excludedRoutes, location) ? null : <Header onToggleSideBar={toggleSideBar} />}
       <div className="d-flex flex-grow-1">
-        {excludedRoutes.includes(path) ? null : <SideBar show={showSideBar} />}
+        {matchRoutes(excludedRoutes, location) ? null : <SideBar show={showSideBar} />}
         <div
           style={{ overflowY: "auto", overflowX: "hidden" }}
           className={classNames({
             "flex-grow-1 position-relative": true,
-            "p-3": !excludedRoutes.includes(path)
+            "p-3": !matchRoutes(excludedRoutes, location),
           })}
         >
           <div className="position-absolute w-100">

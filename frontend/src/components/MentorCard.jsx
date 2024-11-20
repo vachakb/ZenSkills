@@ -1,67 +1,89 @@
-import { FaBriefcase } from "react-icons/fa";
-import { FaRegComment } from "react-icons/fa";
-import { FaStar } from "react-icons/fa";
-import demoMentorImage from "../assets/mentorImage.png";
+import demoMentorImage from "../assets/mentorImage.png"
+import { FaStar,FaBriefcase, FaRegComment } from "react-icons/fa";
+
 
 // passed mentor object should be like this
-const mentor = {
-  name: "mentor",
-  rating: 4.5,
-  currentPost: "Test Architecture manager at Align",
-  noOfSessions: 19,
-  noOfReviews: 4,
-  Experience: 23,
-  creditScore: 95,
-};
+// const mentor = {
+//   name: "mentor",
+//   rating: 4.5,
+//   currentPost: "Test Architecture manager at Align",
+//   noOfSessions: 19,
+//   noOfReviews: 4,
+//   Experience: 23,
+//   creditScore: 95,
+// };
 
-export default function mentorCard({ mentor }) {
+export default function MentorCard({ mentor }) {
   return (
-    <div className="card">
-      <div className="card-body">
-        <img
-          src={demoMentorImage}
-          alt="Mentor Image"
-          style={{ width: "100%", borderRadius: "10px" }}
-        />
+    <div className="card h-100 shadow-sm p-3 d-flex flex-column">
+      {/* Mentor Image */}
+      <img
+        src={demoMentorImage}
+        alt="Mentor"
+        className="img-fluid rounded mb-3"
+        style={{ maxHeight: "200px", objectFit: "cover" }}
+      />
 
-        <div className="d-flex justify-content-between align-items-center">
-          <div className="fs-4 fw-bold card-title">{mentor.name}</div>
-          <div
-            className="d-flex align-items-center"
-            style={{ color: "yellow" }}
-          >
-            <FaStar size={15} color="yellow" />
-            <span className="ms-2">{mentor.rating}</span>
-          </div>
-        </div>
-
-        <div className="d-flex align-content-center">
-          <FaBriefcase size={30} />
-          <span className="ps-2">
-            {mentor.mentor_job_title} at {mentor.company}
-          </span>
-        </div>
-
+      {/* Card Body */}
+      <div className="card-body flex-grow-1 d-flex flex-column justify-content-between">
+        {/* Top Section */}
         <div>
-          <FaRegComment size={24} />
-          <span className="ps-2">
-            {mentor.number_of_sessions} Sessions ({mentor.noOfReviews} Reviews)
-          </span>
+          {/* Name and Rating */}
+          <div className="d-flex justify-content-between align-items-center mb-3">
+            <h5 className="card-title fw-bold text-truncate" title={mentor.name}>
+              {mentor.name}
+            </h5>
+            <div className="d-flex align-items-center text-warning">
+              <FaStar size={15} />
+              <span className="ms-2">{mentor.rating}</span>
+            </div>
+          </div>
+
+          {/* Current Post (2 Lines Max) */}
+          <div className="d-flex mb-3 align-items-start">
+            <FaBriefcase size={20} className="me-2" />
+            <div
+              style={{
+                display: "-webkit-box",
+                WebkitLineClamp: 2,
+                WebkitBoxOrient: "vertical",
+                overflow: "hidden",
+                lineHeight: "1.2em",
+                maxHeight: "2.4em", // Ensures two lines
+              }}
+              title={mentor.currentPost}
+            >
+              {mentor.currentPost}
+            </div>
+          </div>
+
+          {/* Sessions and Reviews */}
+          <div className="d-flex align-items-center mb-3">
+            <FaRegComment size={20} />
+            <span className="ms-2">
+              {mentor.noOfSessions} Sessions ({mentor.noOfReviews} Reviews)
+            </span>
+          </div>
         </div>
 
-        <hr />
+        {/* Divider */}
+        <hr className="mt-auto" />
 
-        <div className="d-flex justify-content-around">
-          <div className="flex-fill text-center flex-column">
-            <div>Experience</div>
-            <div>{mentor.experience_years} Years</div>
+        {/* Bottom Section */}
+        <div className="row text-center">
+          <div className="col-6">
+            <div className="fw-bold">Experience</div>
+            <div>{mentor.Experience} Years</div>
           </div>
-          <div className="flex-fill text-center flex-column">
-            <div>Credit Score</div>
-            <div>{mentor.credit_score}</div>
+          <div className="col-6">
+            <div className="fw-bold">Credit Score</div>
+            <div>{mentor.creditScore}</div>
+
           </div>
         </div>
       </div>
     </div>
   );
 }
+
+
