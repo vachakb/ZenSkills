@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import ReactPaginate from "react-paginate";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 const WorkshopsPage = ({demoTags}) => {
   const workshops_ = [
@@ -123,14 +124,16 @@ const WorkshopsPage = ({demoTags}) => {
   const [filterDropdownVisibility, setFilterDropdownVisibility] =
     useState(false);
 
-  // Fetch workshops from the server
-  const fetchWorkshops = async (page, query, status) => {
+    const navigate = useNavigate();
+
+    // Fetch workshops from the server
+  const fetchWorkshops = async (page, search, status) => {
     // try {
     //   const response = await axios.get("/api/workshops", {
     //     params: {
     //       page: page + 1, // API pages typically start from 1
     //       limit: itemsPerPage,
-          // search: query,
+          // search: search,
     //       selectedTags: selectedTags,
     //       status: status || undefined, // Avoid sending empty strings as parameters
     //     },
@@ -172,6 +175,10 @@ const WorkshopsPage = ({demoTags}) => {
       setSelectedTags([...selectedTags, tag]);
     }
     console.log(selectedTags);
+  }
+
+  function handleWorkshopClick(id){
+    navigate(`${id}`)
   }
 
   return (
@@ -289,7 +296,7 @@ const WorkshopsPage = ({demoTags}) => {
       {/* Workshop Cards */}
       <div className="row">
         {workshops.map((workshop) => (
-          <div className="col-md-4 mb-4" key={workshop.id}>
+          <div className="col-md-4 mb-4" key={workshop.id} onClick={()=>handleWorkshopClick(workshop.id)}>
             <div className="card shadow-sm">
               <img
                 src={workshop.image}
