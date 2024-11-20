@@ -17,7 +17,6 @@ import { GoogleOAuthProvider } from "@react-oauth/google";
 import MenteeWelcome from "./MenteeWelcome.jsx";
 import MentorWelcome from "./MentorWelcome.jsx";
 import ExploreMentor from "./ExloreMentors.jsx";
-import VerifyEmail from "./VerifyEmail.jsx";
 import VerifyEmailCallback from "./VerifyEmailCallback.jsx";
 
 import UserInfo from "../components/UserInfo.jsx";
@@ -114,10 +113,6 @@ const router = createBrowserRouter([
         // element: <ExploreMentor/>
         element: <ExploreMentor mentors_={mentors} demoTags={demoTags} />,
         // this array is just passed for test/preview
-      },
-      {
-        path: "verify",
-        element: <VerifyEmail />,
       },
       {
         path: "verify/callback",
