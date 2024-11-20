@@ -446,6 +446,7 @@ function Room({ meetingId }) {
           className="mt-4 mx-auto"
           onToggleChat={() => setOpenChat(!openChat)}
         />
+        <h6 className="text-white text-center m-0 mt-2">Meeting ID: {meetingId}</h6>
       </div>
       <Chat
         open={openChat}
