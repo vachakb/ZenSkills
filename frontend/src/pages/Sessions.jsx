@@ -4,7 +4,7 @@ import ReactPaginate from "react-paginate";
 import SessionCard from "../components/SessionCard";
 
 // Example fetch function
-const fetchSessions = (tab, page) => {
+const fetchSessions = async (tab, page) => {
   const pageSize = 3; // Number of items per page
   const allUpcoming = [
     {
@@ -107,7 +107,15 @@ const Sessions = () => {
   useEffect(() => {
     const fetchData = async () => {
       setIsLoading(true);
-      const { sessions, total } = await fetchSessions(activeTab, currentPage);
+        const { sessions, total } = await fetchSessions(activeTab, currentPage);
+    //   const responce = await axios.get("/api/sessions", {
+    //     params: {
+    //       currentPage,
+    //       completionStatus: activeTab,
+    //     },
+    //   });
+    //   setSessions(responce.sessions);
+    //   setTotalSessions(responce.totalPages);
       setSessions(sessions);
       setTotalSessions(total);
       setIsLoading(false);
@@ -156,7 +164,9 @@ const Sessions = () => {
           </li>
           <li className="nav-item">
             <button
-              className={`nav-link ${activeTab === "Completed" ? "active" : ""}`}
+              className={`nav-link ${
+                activeTab === "Completed" ? "active" : ""
+              }`}
               onClick={() => setActiveTab("Completed")}
             >
               Completed
