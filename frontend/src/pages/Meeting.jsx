@@ -233,7 +233,11 @@ function Meeting() {
       </MeetingProvider>
     );
   } else {
-    return <Button onClick={createMeeting}>Create meeting</Button>;
+    return (
+      <div className="d-flex justify-content-center align-items-center vw-100 vh-100">
+        <Button onClick={createMeeting}>Create meeting</Button>
+      </div>
+    );
   }
 }
 
