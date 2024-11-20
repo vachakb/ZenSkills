@@ -22,7 +22,8 @@ model User {
   is_verified   Boolean      @default(false)
   mentee        mentee[]
   mentor        mentor[]
-  statistics    statistics? 
+
+  JobApplication JobApplication[] @relation(map: "job_application_user_fk")
 }
 
 model mentee {
@@ -32,7 +33,7 @@ model mentee {
   id              String
   mentee_title     String             @db.VarChar(50) 
   company          String?            @db.VarChar(255)
-  User             User?              @relation(fields: [uid], references: [uid], onDelete: Cascade, map: "mentee_user_fk")
+  User             User?              @relation(fields: [id], references: [id], onDelete: Cascade, map: "mentee_user_fk")
   mentee_interests mentee_interests[]
 }
 
@@ -44,8 +45,6 @@ model mentee_interests {
   tags                tags   @relation(fields: [tag_id], references: [tag_id], onDelete: Cascade, map: "mentee_interests_tags_fk")
 }
 
-/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
-/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model mentor {
   id                         String
   name                       String             @db.VarChar(50)
@@ -60,9 +59,10 @@ model mentor {
   mentor_expertise           mentor_expertise[]
   number_of_sessions         Int                @default(0)
   credit_score               Float              @default(75)           
+
+  Job Job[] @relation(map: "job_posted_by_fk")
 }
 
-/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model mentor_expertise {
   mentor_id           String
   tag_id              String
@@ -114,4 +114,55 @@ model Session {
   sid         String   @unique
   data        String
   expiresAt   DateTime
+}
+
+model Job {
+  id               String     @id @default(uuid())
+  title            String     @db.VarChar(255)
+  description      String
+  company_name     String     @db.VarChar(255)
+  company_details  String     @db.VarChar(255)
+  location         String     @db.VarChar(255)
+  job_type         JobType    // Full-time, Part-time, Internship, etc.
+  qualifications   String     // Required qualifications
+  benefits         String     // Perks and benefits
+  app_details      String     // Required Application details 
+  posted_by        String     
+  mentor           mentor?    @relation(fields: [posted_by], references: [mentor_id], onDelete: Cascade, map: "job_posted_by_fk")
+  created_at       DateTime   @default(now())
+  updated_at       DateTime   @updatedAt
+  deadline         DateTime
+  status           JobStatus  @default(active) // Active, Closed
+  job_applications JobApplication[]
+}
+
+model JobApplication {
+  id               String     @id @default(uuid())
+  job_id           String
+  uid              String
+  name             String     @db.VarChar(50)
+  phone_number     String     @db.VarChar(13)
+  email            String     @db.VarChar(100)
+  cover_letter     String?
+  resume_url       String     @db.VarChar(255)
+  application_date DateTime   @default(now())
+  job              Job        @relation(fields: [job_id], references: [id], onDelete: Cascade, map: "job_application_job_fk")
+  user             User       @relation(fields: [uid], references: [id], onDelete: Cascade, map: "job_application_user_fk")
+}
+
+enum JobType {
+  FullTime
+  PartTime
+  Internship
+  Freelance
+  Onsite
+  Government
+  Remote
+  Contract
+}
+
+
+enum JobStatus {
+  active
+  closed
 }
