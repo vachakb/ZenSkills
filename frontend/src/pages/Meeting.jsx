@@ -15,7 +15,7 @@ import classNames from "classnames";
 function Chat({ open, meetingId, localParticipantId }) {
   const { publish, messages } = usePubSub(meetingId);
 
-  const { uploadBase64File } = useFile();
+  const { uploadBase64File, fetchBase64File } = useFile();
 
   const getBase64 = (file) =>
     new Promise((resolve, reject) => {
@@ -63,6 +63,93 @@ function Chat({ open, meetingId, localParticipantId }) {
     });
   };
 
+  // https://stackoverflow.com/a/26601101
+  const decodeBase64 = (base64Data) => {
+    const s = base64Data;
+    const e = {};
+    let i,
+      b = 0,
+      c,
+      x,
+      l = 0,
+      a,
+      r = "",
+      w = String.fromCharCode,
+      L = s.length;
+    const A =
+      "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+
+    for (i = 0; i < 64; i++) {
+      e[A.charAt(i)] = i;
+    }
+
+    for (x = 0; x < L; x++) {
+      c = e[s.charAt(x)];
+      b = (b << 6) + c;
+      l += 6;
+
+      while (l >= 8) {
+        ((a = (b >>> (l -= 8)) & 0xff) || x < L - 2) && (r += w(a));
+      }
+    }
+
+    return r;
+  };
+
+  // https://stackoverflow.com/a/16245768
+  const base64ToBlob = async (base64Data, contentType) => {
+    const byteCharacters = decodeBase64(base64Data);
+    const byteArrays = [];
+    const sliceSize = 512;
+
+    for (let offset = 0; offset < byteCharacters.length; offset += sliceSize) {
+      const slice = byteCharacters.slice(offset, offset + sliceSize);
+
+      const byteNumbers = new Array(slice.length);
+      for (let i = 0; i < slice.length; i++) {
+        byteNumbers[i] = slice.charCodeAt(i);
+      }
+
+      const byteArray = new Uint8Array(byteNumbers);
+      byteArrays.push(byteArray);
+    }
+
+    const blob = new Blob(byteArrays, { type: contentType });
+    return blob;
+  };
+
+  const downloadFile = async (url, fileName) => {
+    const base64Data = await fetchBase64File({
+      url,
+      token: import.meta.env.VITE_VIDEOSDK_TOKEN,
+    });
+
+    const mimeTypeIndex = base64Data.indexOf("base64");
+
+    const cleanBase64Data = base64Data.substring(mimeTypeIndex + 6);
+
+    const mimeType = base64Data
+      .substring(0, mimeTypeIndex + 6)
+      .replace("data", "")
+      .replace("base64", "")
+      .replace(/\s/g, "");
+
+    const blob = await base64ToBlob(cleanBase64Data, mimeType);
+
+    console.log(blob);
+
+    const blobUrl = URL.createObjectURL(blob);
+
+    const a = document.createElement("a");
+    a.style.display = "none";
+    a.href = blobUrl;
+    a.download = fileName;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    window.URL.revokeObjectURL(url);
+  };
+
   const [message, setMessage] = useState("");
 
   const filePicker = useRef(null);
@@ -89,6 +176,7 @@ function Chat({ open, meetingId, localParticipantId }) {
               "ms-auto me-2": value.senderId === localParticipantId,
               "me-auto ms-2": value.senderId !== localParticipantId,
             })}
+            key={value.id}
           >
             <h6
               style={{
@@ -112,8 +200,14 @@ function Chat({ open, meetingId, localParticipantId }) {
                   borderRadius: "20px",
                   cursor:
                     value.payload && value.payload.isFile ? "pointer" : "unset",
+                  wordBreak: "break-word"
                 }}
                 className="px-3 py-2 fs-6"
+                onClick={
+                  value.payload && value.payload.isFile
+                    ? () => downloadFile(value.message, value.payload.fileName)
+                    : undefined
+                }
               >
                 {value.payload && value.payload.isFile ? (
                   <div className="d-flex gap-2">
@@ -293,12 +387,14 @@ function Participant({ style, participantId }) {
   );
 }
 
-function JoinMeeting({ meetingId, onJoined, onNameChange }) {
+function JoinMeeting({ meetingId, onJoined, name, onNameChange }) {
   const { join, _ } = useMeeting();
 
   const onSubmit = () => {
-    join();
-    onJoined();
+    if (name.length > 0) {
+      join();
+      onJoined();
+    }
   };
 
   return (
@@ -394,6 +490,7 @@ function Meeting() {
           <JoinMeeting
             meetingId={meetingIdToUse}
             onJoined={() => setJoined(true)}
+            name={name}
             onNameChange={setName}
           />
         )}
