@@ -2,6 +2,7 @@ import {
   MeetingProvider,
   useMeeting,
   useParticipant,
+  usePubSub,
 } from "@videosdk.live/react-sdk";
 import axios from "axios";
 import { useEffect, useMemo, useRef, useState } from "react";
@@ -10,13 +11,91 @@ import ReactPlayer from "react-player";
 import { useParams } from "react-router-dom";
 import classNames from "classnames";
 
-function Chat({ open }) {
+function Chat({ open, meetingId, localParticipantId }) {
+  const { publish, messages } = usePubSub(meetingId);
+
+  const [message, setMessage] = useState("");
+
+  const handleSubmitMessage = () => {
+    publish(message);
+    setMessage("");
+  };
+
   return (
     <div
-      style={{ display: open ? "block" : "none", width: "20vw" }}
-      className="bg-white vh-100 p-2"
+      style={{ display: open ? "flex" : "none", width: "20vw" }}
+      className="flex-column bg-white vh-100"
     >
-      <h3>Coming soon!</h3>
+      <div className="d-flex justify-content-center align-items-center position-relative p-2">
+        <h5 className="m-0">Chat</h5>
+        <img className="position-absolute end-0 me-2" src="/close.svg" />
+      </div>
+      <div className="d-flex flex-column flex-grow-1 border-top border-bottom p-2 gap-2 overflow-auto">
+        {messages.map((value) => (
+          <div
+            className={classNames({
+              "d-flex flex-column gap-2": true,
+              "ms-auto me-2": value.senderId === localParticipantId,
+              "me-auto ms-2": value.senderId !== localParticipantId,
+            })}
+          >
+            <h6
+              style={{
+                textAlign:
+                  value.senderId === localParticipantId ? "right" : "left",
+              }}
+              className="m-0"
+            >
+              {value.senderName}
+            </h6>
+            <div className="d-flex gap-2">
+              {value.senderId !== localParticipantId ? (
+                <img src="/profile.svg" width="32px" />
+              ) : null}
+              <div
+                style={{
+                  backgroundColor:
+                    value.senderId === localParticipantId
+                      ? "#E1D9F3"
+                      : "#F1F2F3",
+                  borderRadius: "20px",
+                  textAlign:
+                    value.senderId === localParticipantId ? "right" : "left",
+                }}
+                className="px-3 py-2 fs-6"
+              >
+                {value.message}
+              </div>
+              {value.senderId === localParticipantId ? (
+                <img src="/profile.svg" width="32px" />
+              ) : null}
+            </div>
+          </div>
+        ))}
+      </div>
+      <div className="d-flex justify-content-center p-2 gap-2">
+        <div className="d-flex border flex-grow-1 px-2">
+          <Form.Control
+            style={{ boxShadow: "none" }}
+            className="border-0 me-2 focus-ring p-0"
+            type="text"
+            placeholder="Type here..."
+            value={message}
+            onChange={(ev) => setMessage(ev.currentTarget.value)}
+            onKeyDown={(ev) => {
+              if (ev.key === "Enter") {
+                handleSubmitMessage();
+              }
+            }}
+          />
+          <img
+            style={{ width: "1rem" }}
+            className="ms-auto"
+            src="/attachment.svg"
+          />
+        </div>
+        <Button onClick={handleSubmitMessage}>Send</Button>
+      </div>
     </div>
   );
 }
@@ -161,7 +240,7 @@ function JoinMeeting({ meetingId, onJoined, onNameChange }) {
 }
 
 function Room({ meetingId }) {
-  const { _, participants } = useMeeting();
+  const { _, participants, localParticipant } = useMeeting();
 
   const [openChat, setOpenChat] = useState(false);
 
@@ -187,7 +266,11 @@ function Room({ meetingId }) {
           onToggleChat={() => setOpenChat(!openChat)}
         />
       </div>
-      <Chat open={openChat} />
+      <Chat
+        open={openChat}
+        meetingId={meetingId}
+        localParticipantId={localParticipant.id}
+      />
     </div>
   );
 }
