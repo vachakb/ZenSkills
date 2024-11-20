@@ -31,6 +31,7 @@ import JobDetails from "./JobDetails.jsx";
 import SessionForm from "./CreateSession_1.jsx";
 import SessionForm1 from "./CreateSession2.jsx";
 
+import Meeting from "./Meeting.jsx";
 
 const mentor = {
   id: "id",
@@ -161,6 +162,14 @@ const router = createBrowserRouter([
       {
         path: "createsession_2",
         element: <SessionForm1/>
+      },
+      {
+        path: "meeting",
+        element: <Meeting />
+      },
+      {
+        path: "meeting/:meetingId",
+        element: <Meeting />
       }
     ],
   },
