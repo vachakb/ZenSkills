@@ -170,12 +170,11 @@ function Room({ meetingId }) {
       style={{ backgroundColor: "#303438", overflow: "hidden" }}
       className="d-flex justify-content-center align-items-center vw-100 vh-100"
     >
-      <div className="d-flex flex-column h-100 p-4">
+      <div className="d-flex flex-column h-100 p-4 flex-grow-1">
         <div
           style={{
             display: "grid",
             gridTemplateColumns: "repeat(4, minmax(250px, 1fr))",
-            width: !openChat ? "100vw" : "80vw",
           }}
           className="flex-grow-1 gap-2"
         >
