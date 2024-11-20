@@ -10,7 +10,7 @@ const MagicLinkStrategy = require("passport-magic-link").Strategy;
 
 passport.serializeUser((user, done) => {
   process.nextTick(() => {
-    done(null, { id: user.id, email: user.email, role: user.role });
+    done(null, { userId: user.id, email: user.email, role: user.role });
   });
 });
 
