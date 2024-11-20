@@ -127,13 +127,13 @@ const WorkshopsPage = ({demoTags}) => {
     const navigate = useNavigate();
 
     // Fetch workshops from the server
-  const fetchWorkshops = async (page, query, status) => {
+  const fetchWorkshops = async (page, search, status) => {
     // try {
     //   const response = await axios.get("/api/workshops", {
     //     params: {
     //       page: page + 1, // API pages typically start from 1
     //       limit: itemsPerPage,
-          // search: query,
+          // search: search,
     //       selectedTags: selectedTags,
     //       status: status || undefined, // Avoid sending empty strings as parameters
     //     },
