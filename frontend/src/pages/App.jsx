@@ -10,6 +10,7 @@ const excludedRoutes = [
   { path: "/register/1" },
   { path: "/register/2" },
   { path: "/register/3" },
+  { path: "/verify/callback" },
   { path: "/meeting" },
   { path: "/meeting/" },
   { path: "/meeting/:meetingId" },

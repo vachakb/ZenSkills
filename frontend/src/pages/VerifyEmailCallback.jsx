@@ -13,7 +13,11 @@ function VerifyEmailCallback() {
     );
   }, [searchParams]);
 
-  return <h1>Verifying...</h1>;
+  return (
+    <div className="d-flex justify-content-center align-items-center vw-100 vh-100">
+      <h1>Verifying email, please wait...</h1>
+    </div>
+  );
 }
 
 export default VerifyEmailCallback;
