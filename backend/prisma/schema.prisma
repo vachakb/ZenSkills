@@ -38,6 +38,7 @@ model mentee {
   User             User?              @relation(fields: [id], references: [id], onDelete: Cascade, map: "mentee_user_fk")
   mentee_interests mentee_interests[]
   education MenteeEducation[]
+  Review Review[] @relation(map: "review_mentee_fk")
 }
 
 model mentee_interests {
@@ -70,9 +71,10 @@ model mentor {
 
   meeting_sessions           meeting_sessions[]   
   workshops                  workshops[]    
+  Review Review[] @relation(map: "review_mentor_fk")
 }
 
-/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+
 model mentor_expertise {
   mentor_id           String
   tag_id              String
@@ -134,17 +136,17 @@ model Job {
   company_name     String     @db.VarChar(255)
   company_details  String     @db.VarChar(255)
   location         String     @db.VarChar(255)
-  job_type         JobType    // Full-time, Part-time, Internship, etc.
-  qualifications   String     // Required qualifications
-  benefits         String     // Perks and benefits
-  app_details      String     // Required Application details 
+  job_type         JobType    
+  qualifications   String     
+  benefits         String     
+  app_details      String     
   posted_by        String?     
   mentor           mentor?    @relation(fields: [posted_by], references: [mentor_id], onDelete: Cascade, map: "job_posted_by_fk")
   created_at       DateTime   @default(now())
   updated_at       DateTime   @updatedAt
   deadline         DateTime
   salary           String?    @default("10,000 INR - 15,000 INR")
-  status           JobStatus  @default(active) // Active, Closed
+  status           JobStatus  @default(active) 
   job_applications JobApplication[]
 }
 
@@ -208,7 +210,7 @@ model MentorEducation {
 
   mentor              mentor    @relation(fields: [mentorId], references: [mentor_id], onDelete: Cascade)
 
-  // Indexes
+  
   @@index([mentorId])
 }
 
@@ -223,7 +225,7 @@ model MenteeEducation {
   @@index([menteeId])
 }
 
-///meeting session creation
+
 model meeting_sessions {
   id                 Int       @id @default(autoincrement())
   session_name       String
@@ -259,4 +261,19 @@ enum WorkshopStatus {
   upcoming
   completed
   cancelled
+}
+
+model Review {
+  id           String   @id @default(uuid())             
+  menteeID     String                                   
+  mentorID     String                                   
+  rating       Float                                    
+  description  String?  @db.Text                        
+  created_at   DateTime @default(now())                 
+  updated_at   DateTime @updatedAt                      
+
+  mentee       mentee   @relation(fields: [menteeID], references: [mentee_id], onDelete: Cascade, map: "review_mentee_fk")
+  mentor       mentor   @relation(fields: [mentorID], references: [mentor_id], onDelete: Cascade, map: "review_mentor_fk")
+
+  @@index([menteeID, mentorID])                         
 }
