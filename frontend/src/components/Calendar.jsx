@@ -123,7 +123,7 @@ function Calendar() {
           <img style={{ width: "1.5em" }} src="/calendar.svg" />
           <div>
             <p className="m-0">You have no upcoming sessions</p>
-            <Link style={{ color: "#037F7D" }} href="#">
+            <Link style={{ color: "#037F7D" }} to="/createsession_1">
               Book a session
             </Link>
           </div>
