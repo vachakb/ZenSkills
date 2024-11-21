@@ -6,26 +6,26 @@ import { Link } from "react-router-dom";
 
 const sessions = [
   {
-        date: new DateTime.local(),
-        time: "3:30PM",
-        status: "Confirmed",
-        name: "Vacha Buch",
-        title: "React Workshop",
-    },
-    {
-        date: new DateTime.local(),
-        time: "11:00AM",
-        status: "Pending",
-        name: "Varad Chaudhari",
-        title: "JavaScript Basics",
-    },
-    {
-        date: new DateTime.local(),
-        time: "2:00PM",
-        status: "Confirmed",
-        name: "Ravi Patel",
-        title: "Node.js Deep Dive",
-    },
+    date: DateTime.local(),
+    time: "3:30PM",
+    status: "Confirmed",
+    name: "Vacha Buch",
+    title: "React Workshop",
+  },
+  {
+    date: DateTime.local(),
+    time: "11:00AM",
+    status: "Pending",
+    name: "Varad Chaudhari",
+    title: "JavaScript Basics",
+  },
+  {
+    date: DateTime.local(),
+    time: "2:00PM",
+    status: "Confirmed",
+    name: "Ravi Patel",
+    title: "Node.js Deep Dive",
+  },
 ];
 
 // TODO select day to show all the sessions for that day
@@ -80,7 +80,7 @@ function Calendar() {
               type="date"
               onChange={(ev) => {
                 setSelectedDate(
-                  DateTime.fromFormat(ev.currentTarget.value, "yyyy-MM-dd"),
+                  DateTime.fromFormat(ev.currentTarget.value, "yyyy-MM-dd")
                 );
                 setShowDatePicker(false);
               }}
