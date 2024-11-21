@@ -17,12 +17,12 @@ model User {
   password      String
   phone_number  String?      @db.VarChar(13)
   status        UserStatus   @default(active)
-  role          UserRole     // Role of the user
+  role          UserRole
   googleId      String?      @unique(map: "user_unique") @db.VarChar
   is_verified   Boolean      @default(false)
   mentee        mentee[]
   mentor        mentor[]
-  userBadges    UserBadge[]  // Relation to track user badges
+  userBadges    UserBadge[]  
 
   JobApplication JobApplication[] @relation(map: "job_application_user_fk")
 }
@@ -32,7 +32,7 @@ model mentee {
   name             String       @db.VarChar(50)
   bio              String?
   mentee_id        String             @id(map: "mentee_pk") @default(uuid())
-  id              String
+  id               String
   mentee_title     String             @db.VarChar(50) 
   company          String?            @db.VarChar(255)
   User             User?              @relation(fields: [id], references: [id], onDelete: Cascade, map: "mentee_user_fk")
@@ -61,12 +61,18 @@ model mentor {
   User                       User               @relation(fields: [id], references: [id], onDelete: Cascade, map: "mentor_user_fk")
   mentor_expertise           mentor_expertise[]
   number_of_sessions         Int                @default(0)
-  credit_score               Float              @default(75)           
+  credit_score               Float              @default(75)    
   education MentorEducation[]
   
   Job Job[] @relation(map: "job_posted_by_fk")
+
+
+
+  meeting_sessions           meeting_sessions[]   
+  workshops                  workshops[]    
 }
 
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model mentor_expertise {
   mentor_id           String
   tag_id              String
@@ -183,8 +189,8 @@ model Badge {
 
 model UserBadge {
   id         String   @id @default(uuid()) 
-  userId     String      // Assuming this should also be UUID
-  badgeId    String      // Change to UUID type
+  userId     String      
+  badgeId    String      
   userRole   UserRole   
   assignedAt DateTime   @default(now())
 
@@ -194,15 +200,12 @@ model UserBadge {
   @@index([userId, badgeId])
 }
 
-
-
 model MentorEducation {
   id                  String    @id @default(uuid()) 
   mentorId            String
   educationQualification String @db.VarChar(255)
-  companyName         String?   @db.VarChar(255) // Optional if the company is not relevant or available
+  companyName         String?   @db.VarChar(255) 
 
-  // Relations
   mentor              mentor    @relation(fields: [mentorId], references: [mentor_id], onDelete: Cascade)
 
   // Indexes
@@ -213,11 +216,47 @@ model MenteeEducation {
   id                  String    @id @default(uuid()) 
   menteeId            String
   educationQualification String @db.VarChar(255)
-  companyName         String?   @db.VarChar(255) // Optional if the company is not relevant or available
+  companyName         String?   @db.VarChar(255) 
 
-  // Relations
   mentee              mentee    @relation(fields: [menteeId], references: [mentee_id], onDelete: Cascade)
 
-  // Indexes
   @@index([menteeId])
+}
+
+///meeting session creation
+model meeting_sessions {
+  id                 Int       @id @default(autoincrement())
+  session_name       String
+  event_description  String
+  session_duration   Int
+  selected_topics    String[]
+  availability       Json
+  session_start_time DateTime?
+  session_end_time   DateTime?
+  created_at         DateTime  @default(now())
+  created_by         String
+  mentor             mentor    @relation(fields: [created_by], references: [mentor_id], onDelete: Cascade,map: "fk_mentor") 
+}
+
+model workshops {
+  id             Int       @id @default(autoincrement())
+  title          String
+  description    String
+  date           DateTime
+  time           String
+  duration       Int
+  organizer_name String
+  organizer_position String
+  organizer_profile_pic String
+  workshop_image String?
+  created_at     DateTime  @default(now())
+  created_by     String
+  status         WorkshopStatus? @default(upcoming)
+  mentor         mentor    @relation(fields: [created_by], references: [mentor_id], onDelete: Cascade, map: "workshop")
+}
+
+enum WorkshopStatus {
+  upcoming
+  completed
+  cancelled
 }
