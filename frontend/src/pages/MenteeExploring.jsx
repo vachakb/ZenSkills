@@ -17,7 +17,7 @@ import ResourcesTab from "../components/Resources";
 const profile = {
   isMentor: true,
   name: "Mentor 1",
-  bio: "As a Senior Software Engineer with over 8 years of experience, I’m passionate about guiding aspiring developers in full-stack web development, cloud computing, and career...",
+  bio: "As a Senior Software Engineer with over 8 years of experience, I'm passionate about guiding aspiring developers in full-stack web development, cloud computing, and career...",
   rating: 4.9,
   occupation: "Senior Software Engineer at XYZ Corp",
   expertise: ["Web Dev", "React", "Bootstrap"],
@@ -158,7 +158,7 @@ function MenteeExploring() {
           <div className="mt-3">
             {radioValue === "1" && <UserInfo profile={profile} />}
             {radioValue === "2" && <Milestones data={timelineData} />}
-            {radioValue === "3" && <ReviewsTab />}
+            {radioValue === "3" && <ReviewsTab mentorId={mentorId}/>}
             {radioValue === "4" && <ResourcesTab />}
           </div>
         </div>
