@@ -243,20 +243,16 @@ model meeting_sessions {
 }
 
 model workshops {
-  id             Int       @id @default(autoincrement())
+  id             String   @id @default(uuid()) 
   title          String
   description    String
   date           DateTime
-  time           String
   duration       Int
-  organizer_name String
-  organizer_position String
-  organizer_profile_pic String
   workshop_image String?
   created_at     DateTime  @default(now())
   created_by     String
   status         WorkshopStatus? @default(upcoming)
-  mentor         mentor    @relation(fields: [created_by], references: [mentor_id], onDelete: Cascade, map: "workshop")
+  mentor         mentor    @relation(fields: [created_by], references: [mentor_id], onDelete: Cascade, map: "workshop")
 }
 
 enum WorkshopStatus {
