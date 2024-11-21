@@ -206,25 +206,25 @@ model UserBadge {
 
 model MentorEducation {
   id                  String    @id @default(uuid()) 
-  mentorId            String
+  mentor_id           String
   educationQualification String @db.VarChar(255)
   companyName         String?   @db.VarChar(255) 
 
-  mentor              mentor    @relation(fields: [mentorId], references: [mentor_id], onDelete: Cascade)
+  mentor              mentor    @relation(fields: [mentor_id], references: [mentor_id], onDelete: Cascade)
 
   
-  @@index([mentorId])
+  @@index([mentor_id])
 }
 
 model MenteeEducation {
   id                  String    @id @default(uuid()) 
-  menteeId            String
+  mentee_id            String
   educationQualification String @db.VarChar(255)
   companyName         String?   @db.VarChar(255) 
 
-  mentee              mentee    @relation(fields: [menteeId], references: [mentee_id], onDelete: Cascade)
+  mentee              mentee    @relation(fields: [mentee_id], references: [mentee_id], onDelete: Cascade)
 
-  @@index([menteeId])
+  @@index([mentee_id])
 }
 
 
@@ -252,7 +252,7 @@ model workshops {
   created_at     DateTime  @default(now())
   created_by     String
   status         WorkshopStatus? @default(upcoming)
-  mentor         mentor    @relation(fields: [created_by], references: [mentor_id], onDelete: Cascade, map: "workshop")
+  mentor         mentor    @relation(fields: [created_by], references: [mentor_id], onDelete: Cascade, map:"fk_workshop_mentor")
 }
 
 enum WorkshopStatus {
@@ -263,15 +263,15 @@ enum WorkshopStatus {
 
 model Review {
   id           String   @id @default(uuid())             
-  menteeID     String                                   
-  mentorID     String                                   
+  mentee_id     String                                   
+  mentor_id     String                                   
   rating       Float                                    
   description  String?  @db.Text                        
   created_at   DateTime @default(now())                 
   updated_at   DateTime @updatedAt                      
 
-  mentee       mentee   @relation(fields: [menteeID], references: [mentee_id], onDelete: Cascade, map: "review_mentee_fk")
-  mentor       mentor   @relation(fields: [mentorID], references: [mentor_id], onDelete: Cascade, map: "review_mentor_fk")
+  mentee       mentee   @relation(fields: [mentee_id], references: [mentee_id], onDelete: Cascade, map: "review_mentee_fk")
+  mentor       mentor   @relation(fields: [mentor_id], references: [mentor_id], onDelete: Cascade, map: "review_mentor_fk")
 
-  @@index([menteeID, mentorID])                         
+  @@index([mentee_id, mentor_id])                         
 }
