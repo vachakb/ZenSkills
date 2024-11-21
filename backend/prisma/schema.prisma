@@ -23,8 +23,9 @@ model User {
   mentee        mentee[]
   mentor        mentor[]
   userBadges    UserBadge[]  
-
+  
   JobApplication JobApplication[] @relation(map: "job_application_user_fk")
+  language      String?     @db.VarChar(100)
 }
 
 
@@ -38,7 +39,7 @@ model mentee {
   User             User?              @relation(fields: [id], references: [id], onDelete: Cascade, map: "mentee_user_fk")
   mentee_interests mentee_interests[]
   education MenteeEducation[]
-  Review Review[] @relation(map: "review_mentee_fk")
+  Review          Review[]            @relation(map: "review_mentee_fk")
 }
 
 model mentee_interests {
@@ -63,15 +64,15 @@ model mentor {
   mentor_expertise           mentor_expertise[]
   number_of_sessions         Int                @default(0)
   credit_score               Float              @default(75)    
-  education MentorEducation[]
+  education                  MentorEducation[]
   
-  Job Job[] @relation(map: "job_posted_by_fk")
+  Job                       Job[]               @relation(map: "job_posted_by_fk")
 
 
 
   meeting_sessions           meeting_sessions[]   
   workshops                  workshops[]    
-  Review Review[] @relation(map: "review_mentor_fk")
+  Review                     Review[]           @relation(map: "review_mentor_fk")
 }
 
 
@@ -100,6 +101,7 @@ model tempuser {
   password      String
   role          UserRole
   expires_at    DateTime
+  phone_number  String?      @db.VarChar(13)
 }
 
 enum gender_enum {
