@@ -1,39 +1,66 @@
 import { DateTime, Interval } from "luxon";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Card } from "react-bootstrap";
 import classNames from "classnames";
 import { Link } from "react-router-dom";
 
 const sessions = [
   {
-        date: DateTime.local(),
-        time: "3:30PM",
-        status: "Confirmed",
-        name: "Vacha Buch",
-        title: "React Workshop",
-    },
-    {
-        date: DateTime.local(),
-        time: "11:00AM",
-        status: "Pending",
-        name: "Varad Chaudhari",
-        title: "JavaScript Basics",
-    },
-    {
-        date: DateTime.local(),
-        time: "2:00PM",
-        status: "Confirmed",
-        name: "Ravi Patel",
-        title: "Node.js Deep Dive",
-    },
+    id: 1,
+    date: DateTime.local().plus({ day: 1 }),
+    time: "3:30PM",
+    status: "Confirmed",
+    name: "Vacha Buch",
+    title: "React Workshop",
+  },
+  {
+    id: 2,
+    date: DateTime.local(),
+    time: "11:00AM",
+    status: "Pending",
+    name: "Varad Chaudhari",
+    title: "JavaScript Basics",
+  },
+  {
+    id: 3,
+    date: DateTime.local(),
+    time: "2:00PM",
+    status: "Confirmed",
+    name: "Ravi Patel",
+    title: "Node.js Deep Dive",
+  },
+  {
+    id: 4,
+    date: DateTime.local(),
+    time: "2:00PM",
+    status: "Confirmed",
+    name: "Ravi Patel",
+    title: "Node.js Deep Dive",
+  },
+  {
+    id: 5,
+    date: DateTime.local(),
+    time: "11:00AM",
+    status: "Pending",
+    name: "Varad Chaudhari",
+    title: "JavaScript Basics",
+  },
 ];
 
 function Calendar() {
   const [selectedDate, setSelectedDate] = useState(DateTime.local());
 
+  const selectedDateSessions = useMemo(() => {
+    return sessions.filter((session) =>
+      selectedDate.hasSame(session.date, "day"),
+    );
+  }, [selectedDate]);
+
   const [weekOffset, setWeekOffset] = useState(0);
 
   const [showDatePicker, setShowDatePicker] = useState(false);
+
+  const datePicker = useRef(null);
 
   const week = useMemo(() => {
     const weekDateTime = selectedDate.plus({ week: weekOffset });
@@ -57,6 +84,12 @@ function Calendar() {
     return days;
   }, [selectedDate, weekOffset]);
 
+  useEffect(() => {
+    if (showDatePicker) {
+      datePicker.current.focus();
+    }
+  }, [showDatePicker]);
+
   return (
     <Card
       text="primary"
@@ -76,13 +109,18 @@ function Calendar() {
           />
           {showDatePicker ? (
             <input
+              style={{ boxShadow: "none" }}
+              className="border-0 focus-ring"
               type="date"
               onChange={(ev) => {
                 setSelectedDate(
                   DateTime.fromFormat(ev.currentTarget.value, "yyyy-MM-dd"),
                 );
+                setWeekOffset(0);
                 setShowDatePicker(false);
               }}
+              onBlur={() => setShowDatePicker(false)}
+              ref={datePicker}
             />
           ) : (
             <h6
@@ -107,10 +145,18 @@ function Calendar() {
         <div className="d-flex justify-content-between">
           {week.map((day) => (
             <div
+              style={{
+                cursor: "pointer",
+              }}
               className={classNames({
                 "d-flex flex-column align-items-center": true,
-                "border fw-bold": day.hasSame(DateTime.local(), "day"),
+                "fw-bold": day.hasSame(selectedDate, "day"),
               })}
+              onClick={() => {
+                setSelectedDate(day);
+                setWeekOffset(0);
+              }}
+              key={day.weekdayShort}
             >
               <div
                 style={{
@@ -120,8 +166,8 @@ function Calendar() {
                 }}
                 className={classNames({
                   "rounded-circle": true,
-                  visible: day.hasSame(DateTime.local(), "day"),
-                  invisible: !day.hasSame(DateTime.local(), "day"),
+                  visible: day.hasSame(selectedDate, "day"),
+                  invisible: !day.hasSame(selectedDate, "day"),
                 })}
               ></div>
               <span
@@ -146,23 +192,23 @@ function Calendar() {
         <div
           className={classNames({
             "d-flex gap-2": true,
-            "flex-column": sessions.length > 0,
+            "flex-column": selectedDateSessions.length > 0,
           })}
         >
           <img
             style={{
               width: "1.5em",
-              display: sessions.length > 0 ? "none" : "block",
+              display: selectedDateSessions.length > 0 ? "none" : "block",
             }}
             src="/calendar.svg"
           />
           <div
-            style={{ maxHeight: "150px" }}
+            style={{ height: selectedDateSessions.length > 0 ? "150px" : "unset" }}
             className="d-flex flex-column gap-4 overflow-auto"
           >
-            {sessions.length > 0
-              ? sessions.map((session) => (
-                  <div className="d-flex flex-column gap-2">
+            {selectedDateSessions.length > 0
+              ? selectedDateSessions.map((session) => (
+                  <div className="d-flex flex-column gap-2" key={session.id}>
                     <div className="d-flex gap-2 align-items-center">
                       <h6 className="m-0">At {session.time}</h6>
                       <div
@@ -186,12 +232,14 @@ function Calendar() {
                 ))
               : null}
           </div>
-          <div className={"d-flex flex-column"}>
+          <div className="d-flex flex-column align-items-start">
             <p
-              style={{ display: sessions.length > 0 ? "none" : "block" }}
+              style={{
+                display: selectedDateSessions.length > 0 ? "none" : "block",
+              }}
               className="m-0"
             >
-              You have no upcoming sessions
+              You have no upcoming sessions for {selectedDate.toLocaleString()}
             </p>
             <Link
               style={{
