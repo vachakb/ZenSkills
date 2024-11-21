@@ -3,7 +3,7 @@ import { createRoot } from "react-dom/client";
 import App from "./App.jsx";
 import "../../node_modules/bootstrap/dist/css/bootstrap.min.css";
 // import 'bootstrap/dist/css/bootstrap.min.css';
-import 'bootstrap/dist/js/bootstrap.bundle.min.js';
+import "bootstrap/dist/js/bootstrap.bundle.min.js";
 import "../styles/style.css";
 import "../styles/custom.scss";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
@@ -64,8 +64,6 @@ const demoTags = [
 const mentors = Array(12).fill(mentor);
 const events = Array(6).fill(eventdetails);
 
-
-
 const router = createBrowserRouter([
   {
     path: "/",
@@ -119,7 +117,7 @@ const router = createBrowserRouter([
       },
       {
         path: "mentee_profile/:menteeId",
-        element: <MenteeProfile/>
+        element: <MenteeProfile />,
       },
       {
         path: "profilecard",
@@ -131,15 +129,15 @@ const router = createBrowserRouter([
       },
       {
         path: "milestone",
-        element: <Milestone />
+        element: <Milestone />,
       },
       {
         path: "jobs",
         element: <JobList />,
       },
       {
-        path: "jobs/:id",
-        element: <JobDetails/>
+        path: "jobs/:jobId",
+        element: <JobDetails />,
       },
       // {
       //   path: "jobdetails",
@@ -147,28 +145,28 @@ const router = createBrowserRouter([
       // },
       {
         path: "workshops",
-        element: <Workshops demoTags={demoTags}/>,
+        element: <Workshops demoTags={demoTags} />,
       },
       {
         path: "workshops/:workshopId",
-        element: <WorkshopDetails/>
+        element: <WorkshopDetails />,
       },
       {
         path: "createsession_1",
-        element: <SessionForm/>
+        element: <SessionForm />,
       },
       {
         path: "createsession_2",
-        element: <SessionForm1/>
+        element: <SessionForm1 />,
       },
       {
         path: "meeting",
-        element: <Meeting />
+        element: <Meeting />,
       },
       {
         path: "meeting/:meetingId",
-        element: <Meeting />
-      }
+        element: <Meeting />,
+      },
     ],
   },
 ]);

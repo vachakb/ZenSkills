@@ -117,6 +117,7 @@ function MenteeExploring() {
       try {
         // const mentorId = "mentor-1-id";
         const response = await axios.get(
+          // TODO replace with API URL
           `http://localhost:5000/api/mentors/${mentorId}`
         );
         setProfile(response.data);
