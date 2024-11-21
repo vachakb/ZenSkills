@@ -6,21 +6,21 @@ import { Link } from "react-router-dom";
 
 const sessions = [
   {
-        date: new DateTime.local(),
+        date: DateTime.local(),
         time: "3:30PM",
         status: "Confirmed",
         name: "Vacha Buch",
         title: "React Workshop",
     },
     {
-        date: new DateTime.local(),
+        date: DateTime.local(),
         time: "11:00AM",
         status: "Pending",
         name: "Varad Chaudhari",
         title: "JavaScript Basics",
     },
     {
-        date: new DateTime.local(),
+        date: DateTime.local(),
         time: "2:00PM",
         status: "Confirmed",
         name: "Ravi Patel",
@@ -28,7 +28,6 @@ const sessions = [
     },
 ];
 
-// TODO select day to show all the sessions for that day
 function Calendar() {
   const [selectedDate, setSelectedDate] = useState(DateTime.local());
 
@@ -110,7 +109,7 @@ function Calendar() {
             <div
               className={classNames({
                 "d-flex flex-column align-items-center": true,
-                "fw-bold": day.hasSame(DateTime.local(), "day"),
+                "border fw-bold": day.hasSame(DateTime.local(), "day"),
               })}
             >
               <div
