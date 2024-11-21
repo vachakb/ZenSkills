@@ -1,4 +1,4 @@
-const validation = (schema) => async (req, res, next) => {
+exports.validation = (schema) => async (req, res, next) => {
   try {
     // setting abortEarly to false is needed because otherwise the validate
     // method will stop as soon as it finds the first error, while we want
@@ -19,5 +19,3 @@ const validation = (schema) => async (req, res, next) => {
     return;
   }
 };
-
-export default validation;

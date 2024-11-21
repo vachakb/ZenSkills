@@ -6,7 +6,7 @@ const {
 } = require("../controllers/registerUserController");
 const passport = require("passport");
 const { verify } = require("crypto");
-const validation = require("../middlewares/validation");
+const { validation } = require("../middlewares/validation");
 const MagicLinkStrategy = require("passport-magic-link").Strategy;
 const yup = require("yup");
 
