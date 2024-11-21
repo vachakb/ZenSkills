@@ -49,20 +49,33 @@ const getMentors = async (req, res) => {
       skip: offset,
       take: parseInt(limit),
       include: {
-        User: true, 
+        User: true,
         mentor_expertise: {
           include: {
-            tags: true, 
+            tags: true,
           },
         },
       },
     });
+
+    const formattedMentors = mentors.map((mentor) => ({
+      Experience: mentor.experience_years,
+      creditScore: mentor.credit_score,
+      currentPost: mentor.mentor_job_title,
+      id: mentor.id,
+      name: mentor.name,
+      noOfReviews: mentor.noOfReviews || 0, // TODO Add reviews logic
+      noOfSessions: mentor.number_of_sessions,
+      rating: mentor.rating,
+      company: mentor.company,
+    }));
+
     const totalMentorsCount = await prisma.mentor.count({
       where: whereClause,
     });
 
     res.status(200).json({
-      mentors,
+      mentors: formattedMentors,
       totalMentorsCount,
     });
   } catch (error) {

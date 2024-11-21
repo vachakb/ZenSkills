@@ -1,6 +1,5 @@
-import demoMentorImage from "../assets/mentorImage.png"
-import { FaStar,FaBriefcase, FaRegComment } from "react-icons/fa";
-
+import demoMentorImage from "../assets/mentorImage.png";
+import { FaStar, FaBriefcase, FaRegComment } from "react-icons/fa";
 
 // passed mentor object should be like this
 // const mentor = {
@@ -30,7 +29,10 @@ export default function MentorCard({ mentor }) {
         <div>
           {/* Name and Rating */}
           <div className="d-flex justify-content-between align-items-center mb-3">
-            <h5 className="card-title fw-bold text-truncate" title={mentor.name}>
+            <h5
+              className="card-title fw-bold text-truncate"
+              title={mentor.name}
+            >
               {mentor.name}
             </h5>
             <div className="d-flex align-items-center text-warning">
@@ -53,7 +55,7 @@ export default function MentorCard({ mentor }) {
               }}
               title={mentor.currentPost}
             >
-              {mentor.currentPost}
+              {mentor.currentPost} at {mentor.company}
             </div>
           </div>
 
@@ -78,12 +80,9 @@ export default function MentorCard({ mentor }) {
           <div className="col-6">
             <div className="fw-bold">Credit Score</div>
             <div>{mentor.creditScore}</div>
-
           </div>
         </div>
       </div>
     </div>
   );
 }
-
-
