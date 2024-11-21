@@ -12,7 +12,7 @@ const yup = require("yup");
 
 passport.serializeUser((user, done) => {
   process.nextTick(() => {
-    done(null, { userId: user.id, email: user.email, role: user.role });
+    done(null, { id: user.id, email: user.email, role: user.role });
   });
 });
 
