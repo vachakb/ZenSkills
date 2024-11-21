@@ -17,14 +17,16 @@ model User {
   password      String
   phone_number  String?      @db.VarChar(13)
   status        UserStatus   @default(active)
-  role          UserRole
+  role          UserRole     // Role of the user
   googleId      String?      @unique(map: "user_unique") @db.VarChar
   is_verified   Boolean      @default(false)
   mentee        mentee[]
   mentor        mentor[]
+  userBadges    UserBadge[]  // Relation to track user badges
 
   JobApplication JobApplication[] @relation(map: "job_application_user_fk")
 }
+
 
 model mentee {
   name             String       @db.VarChar(50)
@@ -35,6 +37,7 @@ model mentee {
   company          String?            @db.VarChar(255)
   User             User?              @relation(fields: [id], references: [id], onDelete: Cascade, map: "mentee_user_fk")
   mentee_interests mentee_interests[]
+  education MenteeEducation[]
 }
 
 model mentee_interests {
@@ -59,7 +62,8 @@ model mentor {
   mentor_expertise           mentor_expertise[]
   number_of_sessions         Int                @default(0)
   credit_score               Float              @default(75)           
-
+  education MentorEducation[]
+  
   Job Job[] @relation(map: "job_posted_by_fk")
 }
 
@@ -116,6 +120,7 @@ model Session {
   expiresAt   DateTime
 }
 
+
 model Job {
   id               String     @id @default(uuid())
   title            String     @db.VarChar(255)
@@ -127,11 +132,12 @@ model Job {
   qualifications   String     // Required qualifications
   benefits         String     // Perks and benefits
   app_details      String     // Required Application details 
-  posted_by        String     
+  posted_by        String?     
   mentor           mentor?    @relation(fields: [posted_by], references: [mentor_id], onDelete: Cascade, map: "job_posted_by_fk")
   created_at       DateTime   @default(now())
   updated_at       DateTime   @updatedAt
   deadline         DateTime
+  salary           String?    @default("10,000 INR - 15,000 INR")
   status           JobStatus  @default(active) // Active, Closed
   job_applications JobApplication[]
 }
@@ -165,4 +171,53 @@ enum JobType {
 enum JobStatus {
   active
   closed
+}
+
+model Badge {
+  id          String   @id @default(uuid()) 
+  badge_name  String   @db.VarChar(255)
+  description String   @db.Text
+
+  userBadges  UserBadge[]
+}
+
+model UserBadge {
+  id         String   @id @default(uuid()) 
+  userId     String      // Assuming this should also be UUID
+  badgeId    String      // Change to UUID type
+  userRole   UserRole   
+  assignedAt DateTime   @default(now())
+
+  badge      Badge      @relation(fields: [badgeId], references: [id])
+  user       User       @relation(fields: [userId], references: [id])
+
+  @@index([userId, badgeId])
+}
+
+
+
+model MentorEducation {
+  id                  String    @id @default(uuid()) 
+  mentorId            String
+  educationQualification String @db.VarChar(255)
+  companyName         String?   @db.VarChar(255) // Optional if the company is not relevant or available
+
+  // Relations
+  mentor              mentor    @relation(fields: [mentorId], references: [mentor_id], onDelete: Cascade)
+
+  // Indexes
+  @@index([mentorId])
+}
+
+model MenteeEducation {
+  id                  String    @id @default(uuid()) 
+  menteeId            String
+  educationQualification String @db.VarChar(255)
+  companyName         String?   @db.VarChar(255) // Optional if the company is not relevant or available
+
+  // Relations
+  mentee              mentee    @relation(fields: [menteeId], references: [mentee_id], onDelete: Cascade)
+
+  // Indexes
+  @@index([menteeId])
 }
