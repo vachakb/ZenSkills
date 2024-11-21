@@ -6,7 +6,9 @@ const {
 } = require("../controllers/registerUserController");
 const passport = require("passport");
 const { verify } = require("crypto");
+const { validation } = require("../middlewares/validation");
 const MagicLinkStrategy = require("passport-magic-link").Strategy;
+const yup = require("yup");
 
 passport.serializeUser((user, done) => {
   process.nextTick(() => {
@@ -26,9 +28,25 @@ passport.use("local", authController.login);
 // TODO error handling
 router.post(
   "/login",
+  validation(
+    yup.object({
+      email: yup
+        .string()
+        .email("Must be a valid email")
+        .required("This is a required field"),
+      password: yup
+        .string()
+        .required("This is a required field")
+        .min(8, "Password should be at least 8 characters"),
+      role: yup.string().oneOf(["mentor", "mentee"], null).required(),
+    }),
+  ),
   passport.authenticate("local", { failWithError: true }),
-  (_, res) => {
-    res.sendStatus(200);
+  (req, res) => {
+    res.status(200).json({
+      email: req.body.email,
+      role: req.body.role,
+    });
   },
   (_, res) => {
     res.sendStatus(500);
@@ -55,7 +73,6 @@ router.post(
     failWithError: true,
   }),
   (_, res) => {
-    console.log(res);
     res.sendStatus(200);
   },
   (_, res) => {
@@ -69,8 +86,8 @@ router.get(
     action: "acceptToken",
     failWithError: true,
   }),
-  (_, res) => {
-    res.sendStatus(200);
+  (req, res) => {
+    res.status(200).json({ email: req.user.email, role: req.user.role });
   },
   (_, res) => {
     res.sendStatus(500);
@@ -81,7 +98,30 @@ router.get(
 router.post("/google/callback", authController.googleCallback);
 
 // Registration route
-router.post("/register", authController.register);
+router.post(
+  "/register",
+  validation(
+    yup.object({
+      email: yup
+        .string()
+        .email("Must be a valid email")
+        .required("This is a required field"),
+      password: yup
+        .string()
+        .required("This is a required field")
+        .min(8, "Password should be at least 8 characters"),
+      phoneNum: yup
+        .string()
+        .required("This is a required field")
+        .test(
+          "is-valid-phone",
+          "Phone number is invalid",
+          (value) => value && value.length >= 10, // Or use a regex for more accuracy
+        ),
+    }),
+  ),
+  authController.register,
+);
 
 // To register other fields of user like name, email, password
 router.post("/register-user", registerUserProfile);

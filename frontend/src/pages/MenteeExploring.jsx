@@ -10,7 +10,6 @@ import axios from "axios";
 import { useParams } from "react-router-dom";
 
 import Milestones from "../components/Milestones";
-import ReviewCard from "../components/ReviewCard";
 import ReviewsTab from "../components/ReviewsTab";
 import ResourcesTab from "../components/Resources";
 
@@ -67,12 +66,6 @@ const timelineData = [
       "Adipiscing enim eu neque aliquam vestibulum morbi blandit cursus risus.",
   },
 ];
-const reviewData = {
-  username: "John Doe",
-  date: "2023-04-18",
-  rating: 4,
-  reviewText: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi molestie."
-};
 
 function MenteeExploring() {
   const { mentorId } = useParams();
@@ -91,8 +84,7 @@ function MenteeExploring() {
     { name: "Overview", value: "1" },
     { name: "Milestones", value: "2" },
     { name: "Reviews", value: "3" },
-    {name:"Resources",value:"4"}
-
+    { name: "Resources", value: "4" },
   ];
 
   const getButtonStyle = (value) => {
@@ -131,9 +123,15 @@ function MenteeExploring() {
 
   return (
     <div className="container-fluid">
-      <div className="row">
+      <div className="row" style={{ display: "flex" }}>
         {/* Main Content */}
-        <div className="col-lg-8 col-md-12 mb-4">
+        <div
+          className="col-lg"
+          style={{
+            flex: "1",
+            marginRight: "10px", // Spacing between main content and sidebar
+          }}
+        >
           <ProfileCard profile={profile} />
           <div
             className="pt-0 mt-0"
@@ -159,23 +157,29 @@ function MenteeExploring() {
           </div>
           <div className="mt-3">
             {radioValue === "1" && <UserInfo profile={profile} />}
-
-            {radioValue === "2" && <Milestones data={timelineData}/>}
-            {radioValue === "3" && <ReviewsTab/>}
-            {radioValue === "4" && <ResourcesTab/>}
+            {radioValue === "2" && <Milestones data={timelineData} />}
+            {radioValue === "3" && <ReviewsTab />}
+            {radioValue === "4" && <ResourcesTab />}
           </div>
         </div>
 
         {/* Sidebar */}
-        <div className="col-lg-4 col-md-12">
+        <div
+          className="col-lg-auto"
+          style={{
+            flex: "0 0 50%", // Sidebar width is 22% of the parent container
+            maxWidth: "500px", 
+            marginRight:"30px"// Optional max width for sidebar
+          }}
+        >
           <div
             className="d-flex flex-column"
             style={{
               gap: "30px",
               marginTop: "30px",
+             
             }}
           >
-            {/* TODO mentor statistics */}
             <Statistics />
             <AvailableSessions />
           </div>

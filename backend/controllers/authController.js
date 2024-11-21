@@ -59,15 +59,14 @@ exports.login = new LocalStrategy(
 exports.register = async (req, res) => {
   const { email, password, role } = req.body;
 
-  const hashedPassword = await argon2.hash(password);
-
   if (
     (await prisma.user.exists({ email: email })) ||
     (await prisma.tempuser.exists({ email: email }))
   ) {
-    res.sendStatus(422);
-    return;
+    return res.sendStatus(409);
   }
+
+  const hashedPassword = await argon2.hash(password);
 
   try {
     await prisma.tempuser.create({

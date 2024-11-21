@@ -17,7 +17,6 @@ import { GoogleOAuthProvider } from "@react-oauth/google";
 import MenteeWelcome from "./MenteeWelcome.jsx";
 import MentorWelcome from "./MentorWelcome.jsx";
 import ExploreMentor from "./ExloreMentors.jsx";
-import VerifyEmail from "./VerifyEmail.jsx";
 import VerifyEmailCallback from "./VerifyEmailCallback.jsx";
 
 import UserInfo from "../components/UserInfo.jsx";
@@ -32,6 +31,7 @@ import SessionForm from "./CreateSession_1.jsx";
 import SessionForm1 from "./CreateSession2.jsx";
 import Meeting from "./Meeting.jsx";
 import WorkshopDetails from "./WorkshopDetails.jsx";
+import Sessions from "./Sessions.jsx";
 
 const mentor = {
   id: "id",
@@ -108,10 +108,6 @@ const router = createBrowserRouter([
         // this array is just passed for test/preview
       },
       {
-        path: "verify",
-        element: <VerifyEmail />,
-      },
-      {
         path: "verify/callback",
         element: <VerifyEmailCallback />,
       },
@@ -165,8 +161,12 @@ const router = createBrowserRouter([
       },
       {
         path: "meeting/:meetingId",
-        element: <Meeting />,
+        element: <Meeting />
       },
+      {
+        path: "sessions",
+        element: <Sessions/>
+      }
     ],
   },
 ]);

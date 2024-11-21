@@ -1,5 +1,8 @@
 import EventCard from "../components/Events";
+
 function Upcoming(){
-    return <EventCard></EventCard>
+    return(
+        <h1>upcoming</h1>
+    )
 }
 export default Upcoming;

@@ -9,6 +9,7 @@ import axios from "axios";
 import { useParams } from "react-router-dom";
 
 import Milestones from "../components/Milestones";
+import MenteeSessions from "../components/MenteeSessions";
 
 
 const profile = {
@@ -16,8 +17,8 @@ const profile = {
   name: "Mentee 1",
   bio: "As a final-year Computer Science student at ABC University, I'm eager to expand my skills and transition into the tech industry. I have a solid foundation in Java, Python, and web...",
   occupation: "Student at XYZ University",
-  interests: ["Web Dev", "React", "Bootstrap"]
-}
+  interests: ["Web Dev", "React", "Bootstrap"],
+};
 const timelineData = [
   {
     date: "May 2001",
@@ -101,9 +102,16 @@ function MenteeProfile() {
 
   return (
     <div className="container-fluid">
-      <div className="row">
+      <div className="row" style={{ display: "flex" }}>
         {/* Main Content */}
-        <div className="col-lg-8 col-md-12 mb-4">
+        <div
+          className="col-lg"
+          style={{
+            flex: "1",
+            marginRight: "10px", 
+      
+          }}
+        >
           <ProfileCard profile={profile} />
           <div
             className="pt-0 mt-0"
@@ -130,11 +138,19 @@ function MenteeProfile() {
           <div className="mt-3">
             {radioValue === "1" && <UserInfo profile={profile} />}
             {radioValue === "2" && <Milestones data={timelineData}/> }
+            {radioValue === "2" && <Milestones data={timelineData} />}
           </div>
         </div>
 
         {/* Sidebar */}
-        <div className="col-lg-4 col-md-12">
+        <div
+          className="col-lg-auto"
+          style={{
+            flex: "0 0 50%", // Sidebar width is 22% of the parent container
+            maxWidth: "500px",
+            marginRight:'30px' // Optional max width for sidebar
+          }}
+        >
           <div
             className="d-flex flex-column"
             style={{
@@ -143,6 +159,7 @@ function MenteeProfile() {
             }}
           >
             <Statistics />
+            <MenteeSessions />
             <Achievements />
           </div>
         </div>
