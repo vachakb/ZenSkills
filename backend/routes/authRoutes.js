@@ -42,8 +42,11 @@ router.post(
     }),
   ),
   passport.authenticate("local", { failWithError: true }),
-  (_, res) => {
-    res.sendStatus(200);
+  (req, res) => {
+    res.status(200).json({
+      email: req.body.email,
+      role: req.body.role,
+    });
   },
   (_, res) => {
     res.sendStatus(500);
@@ -70,7 +73,6 @@ router.post(
     failWithError: true,
   }),
   (_, res) => {
-    console.log(res);
     res.sendStatus(200);
   },
   (_, res) => {
@@ -84,8 +86,8 @@ router.get(
     action: "acceptToken",
     failWithError: true,
   }),
-  (_, res) => {
-    res.sendStatus(200);
+  (req, res) => {
+    res.status(200).json({ email: req.user.email, role: req.user.role });
   },
   (_, res) => {
     res.sendStatus(500);
