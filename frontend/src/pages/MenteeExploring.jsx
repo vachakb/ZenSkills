@@ -1,13 +1,18 @@
 import { ButtonGroup, ToggleButton } from "react-bootstrap";
 import ProfileCard from "../components/ProfileCard";
 import UserInfo from "../components/UserInfo";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Statistics from "../components/Statistics";
 import AvailableSessions from "../components/AvailableSessions";
 import { DateTime } from "luxon";
+
+import axios from "axios";
+import { useParams } from "react-router-dom";
+
 import Milestones from "../components/Milestones";
 import ReviewsTab from "../components/ReviewsTab";
 import ResourcesTab from "../components/Resources";
+
 
 const profile = {
   isMentor: true,
@@ -63,8 +68,18 @@ const timelineData = [
 ];
 
 function MenteeExploring() {
+  const { mentorId } = useParams();
   const [radioValue, setRadioValue] = useState("1");
-
+  const [profile, setProfile] = useState({
+    bio: "",
+    name: "",
+    occupation: "",
+    title: "",
+    expertise: [],
+    isMentor: true,
+    rating: 0,
+    workExperiences: [],
+  });
   const radios = [
     { name: "Overview", value: "1" },
     { name: "Milestones", value: "2" },
@@ -88,6 +103,23 @@ function MenteeExploring() {
       backgroundColor: "white",
     };
   };
+
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        // const mentorId = "mentor-1-id";
+        const response = await axios.get(
+          // TODO replace with API URL
+          `http://localhost:5000/api/mentors/${mentorId}`
+        );
+        setProfile(response.data);
+      } catch (err) {
+        console.error(err);
+      }
+    };
+
+    fetchProfile();
+  }, []);
 
   return (
     <div className="container-fluid">

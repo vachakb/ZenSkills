@@ -1,6 +1,18 @@
 import demoMentorImage from "../assets/mentorImage.png"
 import { FaStar,FaBriefcase, FaRegComment } from "react-icons/fa";
 
+
+// passed mentor object should be like this
+// const mentor = {
+//   name: "mentor",
+//   rating: 4.5,
+//   currentPost: "Test Architecture manager at Align",
+//   noOfSessions: 19,
+//   noOfReviews: 4,
+//   Experience: 23,
+//   creditScore: 95,
+// };
+
 export default function MentorCard({ mentor }) {
   return (
     <div className="card h-100 shadow-sm p-3 d-flex flex-column">
@@ -66,6 +78,7 @@ export default function MentorCard({ mentor }) {
           <div className="col-6">
             <div className="fw-bold">Credit Score</div>
             <div>{mentor.creditScore}</div>
+
           </div>
         </div>
       </div>

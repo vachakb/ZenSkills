@@ -7,6 +7,7 @@ const cors = require("cors");
 const authRoutes = require("./routes/authRoutes");
 const userRoutes = require("./routes/userRoutes");
 const mentorRoutes = require("./routes/mentorRoutes");
+const menteeRoutes = require("./routes/menteeRoutes");
 
 const session = require("express-session");
 const { PrismaSessionStore } = require("@quixo3/prisma-session-store");
@@ -46,6 +47,7 @@ app.use(passport.authenticate("session"));
 app.use("/auth", authRoutes);
 app.use("/api/", userRoutes);
 app.use("/api/mentors", mentorRoutes);
+app.use("/api/mentee", menteeRoutes);
 
 // Start server
 const PORT = process.env.PORT || 5000;
