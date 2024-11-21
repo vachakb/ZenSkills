@@ -4,6 +4,31 @@ import { Card } from "react-bootstrap";
 import classNames from "classnames";
 import { Link } from "react-router-dom";
 
+const sessions = [
+  {
+        date: new DateTime.local(),
+        time: "3:30PM",
+        status: "Confirmed",
+        name: "Vacha Buch",
+        title: "React Workshop",
+    },
+    {
+        date: new DateTime.local(),
+        time: "11:00AM",
+        status: "Pending",
+        name: "Varad Chaudhari",
+        title: "JavaScript Basics",
+    },
+    {
+        date: new DateTime.local(),
+        time: "2:00PM",
+        status: "Confirmed",
+        name: "Ravi Patel",
+        title: "Node.js Deep Dive",
+    },
+];
+
+// TODO select day to show all the sessions for that day
 function Calendar() {
   const [selectedDate, setSelectedDate] = useState(DateTime.local());
 
@@ -119,10 +144,64 @@ function Calendar() {
           ))}
         </div>
         <hr />
-        <div className="d-flex gap-2">
-          <img style={{ width: "1.5em" }} src="/calendar.svg" />
-          <div>
-            <p className="m-0">You have no upcoming sessions</p>
+        <div
+          className={classNames({
+            "d-flex gap-2": true,
+            "flex-column": sessions.length > 0,
+          })}
+        >
+          <img
+            style={{
+              width: "1.5em",
+              display: sessions.length > 0 ? "none" : "block",
+            }}
+            src="/calendar.svg"
+          />
+          <div
+            style={{ maxHeight: "150px" }}
+            className="d-flex flex-column gap-4 overflow-auto"
+          >
+            {sessions.length > 0
+              ? sessions.map((session) => (
+                  <div className="d-flex flex-column gap-2">
+                    <div className="d-flex gap-2 align-items-center">
+                      <h6 className="m-0">At {session.time}</h6>
+                      <div
+                        style={{ borderRadius: "24px" }}
+                        className={classNames({
+                          "px-2 py-1 text-white": true,
+                          "bg-success": session.status === "Confirmed",
+                          "bg-danger": session.status === "Pending",
+                        })}
+                      >
+                        <span>{session.status}</span>
+                      </div>
+                    </div>
+
+                    <div className="d-flex">
+                      <h6 className="m-0">
+                        <b>{session.title}</b> - {session.name}
+                      </h6>
+                    </div>
+                  </div>
+                ))
+              : null}
+          </div>
+          <div className={"d-flex flex-column"}>
+            <p
+              style={{ display: sessions.length > 0 ? "none" : "block" }}
+              className="m-0"
+            >
+              You have no upcoming sessions
+            </p>
+            <Link
+              style={{
+                color: "#037F7D",
+              }}
+              to="/sessions"
+            >
+              Go to all session
+            </Link>
             <Link style={{ color: "#037F7D" }} to="/createsession_1">
               Book a session
             </Link>
