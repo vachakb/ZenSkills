@@ -243,16 +243,29 @@ model meeting_sessions {
 }
 
 model workshops {
-  id             String   @id @default(uuid()) 
-  title          String
-  description    String
-  date           DateTime
-  duration       Int
-  workshop_image String?
-  created_at     DateTime  @default(now())
-  created_by     String
-  status         WorkshopStatus? @default(upcoming)
-  mentor         mentor    @relation(fields: [created_by], references: [mentor_id], onDelete: Cascade, map:"fk_workshop_mentor")
+  id             String   @id @default(uuid())  
+  title          String     
+  description    String     
+  date           DateTime   
+  duration       Int        
+  workshop_image String?    
+  created_at     DateTime  @default(now())       
+  created_by     String     
+  status         WorkshopStatus? @default(upcoming) 
+  mentor         mentor    @relation(fields: [created_by], references: [mentor_id], onDelete: Cascade)
+  updated_at      DateTime   @updatedAt            
+  max_participants Int       
+  deadline        DateTime   
+  visibility      visibility @default(Public)       
+
+  @@index([created_by])      
+}
+
+
+enum visibility {
+  Public       
+  Private      
+  MentorsOnly  
 }
 
 enum WorkshopStatus {
