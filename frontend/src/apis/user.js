@@ -24,6 +24,10 @@ function registerUser(userProfile) {
 function googleCallback(token) {
   return axios.post(`${API_URL}/auth/google/callback`, { token: token });
 }
+function getUserInfo(params) {
+  return axios.get(`${API_URL}/user`);
+  
+}
 
 export {
   login,
