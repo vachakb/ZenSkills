@@ -86,7 +86,7 @@ model mentor_expertise {
 
 model tags {
   tag_id          String    @id @default(uuid())
-  tag_name        String?    
+  tag_name        String?    @unique
   parent_tag_id   String?
   parent          tags?     @relation("TagHierarchy", fields: [parent_tag_id], references: [tag_id])
   children        tags[]    @relation("TagHierarchy")
