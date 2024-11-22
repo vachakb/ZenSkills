@@ -1,11 +1,16 @@
 import { ButtonGroup, ToggleButton } from "react-bootstrap";
 import ProfileCard from "../components/ProfileCard";
 import UserInfo from "../components/UserInfo";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Statistics from "../components/Statistics";
 import Achievements from "../components/Achievements";
+
+import axios from "axios";
+import { useParams } from "react-router-dom";
+
 import Milestones from "../components/Milestones";
 import MenteeSessions from "../components/MenteeSessions";
+
 
 const profile = {
   isMentor: false,
@@ -46,12 +51,37 @@ const timelineData = [
 ];
 
 function MenteeProfile() {
+  const { menteeId } = useParams();
   const [radioValue, setRadioValue] = useState("1");
-
+  const [profile, setProfile] = useState({
+    bio: "",
+    name: "",
+    occupation: "",
+    title: "",
+    interests: [],
+    isMentor: false,
+  });
   const radios = [
     { name: "Overview", value: "1" },
     { name: "Milestones", value: "2" },
   ];
+
+  // Fetch profile data from backend
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        // const menteeId = "mentee-1-id";
+        const response = await axios.get(
+          `http://localhost:5000/api/mentee/${menteeId}`
+        );
+        setProfile(response.data);
+      } catch (err) {
+        console.error(err);
+      }
+    };
+
+    fetchProfile();
+  }, []);
 
   const getButtonStyle = (value) => {
     if (radioValue === value) {
@@ -107,6 +137,7 @@ function MenteeProfile() {
           </div>
           <div className="mt-3">
             {radioValue === "1" && <UserInfo profile={profile} />}
+            {radioValue === "2" && <Milestones data={timelineData}/> }
             {radioValue === "2" && <Milestones data={timelineData} />}
           </div>
         </div>

@@ -3,7 +3,7 @@ import { createRoot } from "react-dom/client";
 import App from "./App.jsx";
 import "../../node_modules/bootstrap/dist/css/bootstrap.min.css";
 // import 'bootstrap/dist/css/bootstrap.min.css';
-import 'bootstrap/dist/js/bootstrap.bundle.min.js';
+import "bootstrap/dist/js/bootstrap.bundle.min.js";
 import "../styles/style.css";
 import "../styles/custom.scss";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
@@ -29,7 +29,6 @@ import Workshops from "./Workshop.jsx";
 import JobDetails from "./JobDetails.jsx";
 import SessionForm from "./CreateSession_1.jsx";
 import SessionForm1 from "./CreateSession2.jsx";
-
 import Meeting from "./Meeting.jsx";
 import WorkshopDetails from "./WorkshopDetails.jsx";
 import Sessions from "./Sessions.jsx";
@@ -42,17 +41,14 @@ const mentor = {
   noOfSessions: 19,
   noOfReviews: 4,
   Experience: 23,
-  creditScore: 95
-}
-const eventdetails={
-  name:"Bergen International Film Festival",
-  desc:" Films from all over the world gather all film enthusiasts for unique moments at the Bergen International Film Festival.",
-  date: "28/11",
-  time: "17:00"
-
-
+  creditScore: 95,
 };
-
+const eventdetails = {
+  name: "Bergen International Film Festival",
+  desc: " Films from all over the world gather all film enthusiasts for unique moments at the Bergen International Film Festival.",
+  date: "28/11",
+  time: "17:00",
+};
 
 const demoTags = [
   "Technology",
@@ -67,9 +63,6 @@ const demoTags = [
 
 const mentors = Array(12).fill(mentor);
 const events = Array(6).fill(eventdetails);
-
-
-
 
 const router = createBrowserRouter([
   {
@@ -119,28 +112,28 @@ const router = createBrowserRouter([
         element: <VerifyEmailCallback />,
       },
       {
-        path: "mentee_profile",
-        element: <MenteeProfile/>
+        path: "mentee_profile/:menteeId",
+        element: <MenteeProfile />,
       },
       {
         path: "profilecard",
-        element: <ProfileCard/>
+        element: <ProfileCard />,
       },
       {
-        path: "mentee_exploring",
-        element: <MenteeExploring />
+        path: "mentee_exploring/:mentorId",
+        element: <MenteeExploring />,
       },
       {
         path: "milestone",
-        element: <Milestone />
+        element: <Milestone />,
       },
       {
         path: "jobs",
         element: <JobList />,
       },
       {
-        path: "jobs/:id",
-        element: <JobDetails/>
+        path: "jobs/:jobId",
+        element: <JobDetails />,
       },
       // {
       //   path: "jobdetails",
@@ -148,23 +141,23 @@ const router = createBrowserRouter([
       // },
       {
         path: "workshops",
-        element: <Workshops demoTags={demoTags}/>,
+        element: <Workshops demoTags={demoTags} />,
       },
       {
         path: "workshops/:workshopId",
-        element: <WorkshopDetails/>
+        element: <WorkshopDetails />,
       },
       {
         path: "createsession_1",
-        element: <SessionForm/>
+        element: <SessionForm />,
       },
       {
         path: "createsession_2",
-        element: <SessionForm1/>
+        element: <SessionForm1 />,
       },
       {
         path: "meeting",
-        element: <Meeting />
+        element: <Meeting />,
       },
       {
         path: "meeting/:meetingId",
