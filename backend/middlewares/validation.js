@@ -1,8 +1,9 @@
-exports.validation = (schema) => async (req, res, next) => {
+exports.validation = (schemaCallback) => async (req, res, next) => {
   try {
     // setting abortEarly to false is needed because otherwise the validate
     // method will stop as soon as it finds the first error, while we want
     // to find all of them immediately
+    const schema = schemaCallback(req);
     await schema.validate(req.body, { abortEarly: false });
     next();
   } catch (e) {

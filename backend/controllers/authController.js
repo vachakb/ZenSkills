@@ -57,7 +57,7 @@ exports.login = new LocalStrategy(
 
 // TODO validation, error handling
 exports.register = async (req, res) => {
-  const { email, password, role } = req.body;
+  const { email, password, phoneNum, role } = req.body;
 
   if (
     (await prisma.user.exists({ email: email })) ||
@@ -73,6 +73,7 @@ exports.register = async (req, res) => {
       data: {
         email: email,
         password: hashedPassword,
+        phone_number: phoneNum,
         role: role,
         expires_at: new Date(Date.now() + 1000 * 60 * 60 * 24),
       },
@@ -98,6 +99,7 @@ exports.verifyEmail = async (user) => {
     data: {
       email: tempuser.email,
       password: tempuser.password,
+      phone_number: tempuser.phone_number,
       role: tempuser.role,
       is_deleted: false,
       status: "active",

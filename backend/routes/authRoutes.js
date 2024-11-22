@@ -7,8 +7,11 @@ const {
 const passport = require("passport");
 const { verify } = require("crypto");
 const { validation } = require("../middlewares/validation");
+const { protected } = require("../middlewares/protected");
 const MagicLinkStrategy = require("passport-magic-link").Strategy;
 const yup = require("yup");
+const { languages } = require("../misc/languages");
+const { states } = require("../misc/states");
 
 passport.serializeUser((user, done) => {
   process.nextTick(() => {
@@ -28,8 +31,8 @@ passport.use("local", authController.login);
 // TODO error handling
 router.post(
   "/login",
-  validation(
-    yup.object({
+  validation(() => {
+    return yup.object({
       email: yup
         .string()
         .email("Must be a valid email")
@@ -39,8 +42,8 @@ router.post(
         .required("This is a required field")
         .min(8, "Password should be at least 8 characters"),
       role: yup.string().oneOf(["mentor", "mentee"], null).required(),
-    }),
-  ),
+    });
+  }),
   passport.authenticate("local", { failWithError: true }),
   (req, res) => {
     res.status(200).json({
@@ -100,8 +103,8 @@ router.post("/google/callback", authController.googleCallback);
 // Registration route
 router.post(
   "/register",
-  validation(
-    yup.object({
+  validation(() => {
+    return yup.object({
       email: yup
         .string()
         .email("Must be a valid email")
@@ -118,12 +121,48 @@ router.post(
           "Phone number is invalid",
           (value) => value && value.length >= 10, // Or use a regex for more accuracy
         ),
-    }),
-  ),
+      role: yup.string().oneOf(["mentor", "mentee"], null).required(),
+    });
+  }),
   authController.register,
 );
 
 // To register other fields of user like name, email, password
-router.post("/register-user", registerUserProfile);
+router.post(
+  "/register-user",
+  protected,
+  validation((req) => {
+    return yup.object({
+      name: yup.string().required(),
+      gender: yup.string().oneOf(["Male", "Female", "Other"]).required(),
+      language: yup.string().oneOf(languages),
+      location: yup.string().oneOf(states),
+      company: yup.string().when([], {
+        is: () => req.user.role === "mentor",
+        then: (schema) => schema.required(),
+      }),
+      title: yup.string().required(),
+      years: yup.number().when([], {
+        is: () => req.user.role === "mentor",
+        then: (schema) => schema.integer().min(0).required(),
+      }),
+      months: yup.number().when([], {
+        is: () => req.user.role === "mentor",
+        then: (schema) => schema.integer().min(0).required(),
+      }),
+      companyOrSchool: yup.string(),
+      expertise: yup.string().when([], {
+        is: () => req.user.role == "mentor",
+        then: (schema) => schema.required(),
+      }),
+      interests: yup.string().when([], {
+        is: () => req.user.role == "mentee",
+        then: (schema) => schema.required(),
+      }),
+      bio: yup.string(),
+    });
+  }),
+  registerUserProfile,
+);
 
 module.exports = router;
