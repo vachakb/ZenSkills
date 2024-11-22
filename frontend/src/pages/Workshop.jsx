@@ -4,6 +4,9 @@ import ReactPaginate from "react-paginate";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { getAllWorkshops } from "../apis/workshops";
+import { formatDateTime } from "../misc/formatDateTime";
+// TODO Fix date
+// TODO Make calls using axios
 
 const WorkshopsPage = ({ demoTags }) => {
   // const workshops_ = [
@@ -125,7 +128,7 @@ const WorkshopsPage = ({ demoTags }) => {
   const [filterDropdownVisibility, setFilterDropdownVisibility] =
     useState(false);
 
-    const navigate = useNavigate();
+  const navigate = useNavigate();
 
   // Fetch workshops from the server
   const fetchWorkshops = async (page, query, status) => {

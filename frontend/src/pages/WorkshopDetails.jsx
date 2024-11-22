@@ -2,15 +2,16 @@ import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { getWorkshopById } from "../apis/workshops";
+import { formatDateTime } from "../misc/formatDateTime";
+// TODO Make calls using axios
 
 const WorkshopDetails = () => {
-  const { workshopId } = useParams(); // Assuming you're passing workshop ID in the route
+  const { workshopId } = useParams(); 
   const [workshopData, setWorkshopData] = useState({
     title: "",
     description: "",
     date: "",
     time: "",
-    venue: "",
     bookStatus: false,
     completionStatus: false,
   });
@@ -18,19 +19,21 @@ const WorkshopDetails = () => {
   const [loading, setLoading] = useState(false);
 
   // Mock data for the workshop (Replace with actual data fetch logic)
-//   const workshopData_ = {
-//     title: "React and Bootstrap Workshop",
-//     host: "Donald Trump",
-//     description:
-//       "Learn the basics of React and how to style your applications using Bootstrap. This workshop is perfect for beginners who want to dive into modern web development.",
-//     date: "25th November 2024",
-//     time: "10:00 AM - 4:00 PM",
-//     venue: "Tech Hall, Main Campus",
-//     bookStatus: false,
-//     completionStatus: false,
-//   };
+  //   const workshopData_ = {
+  //     title: "React and Bootstrap Workshop",
+  //     host: "Donald Trump",
+  //     description:
+  //       "Learn the basics of React and how to style your applications using Bootstrap. This workshop is perfect for beginners who want to dive into modern web development.",
+  //     date: "25th November 2024",
+  //     time: "10:00 AM - 4:00 PM",
+  //     venue: "Tech Hall, Main Campus",
+  //     bookStatus: false,
+  //     completionStatus: false,
+  //   };
 
-async function fetchWorkshopData() {
+  const { date, time } = formatDateTime(workshopData.date);
+
+  async function fetchWorkshopData() {
     try {
       const response = await getWorkshopById(workshopId);
       setWorkshopData(response.data);
@@ -102,13 +105,10 @@ async function fetchWorkshopData() {
             <strong>Description:</strong> {workshopData.description}
           </p>
           <p>
-            <strong>Date:</strong> {workshopData.date}
+            <strong>Date:</strong> {date}
           </p>
           <p>
-            <strong>Time:</strong> {workshopData.time}
-          </p>
-          <p>
-            <strong>Venue:</strong> {workshopData.venue}
+            <strong>Time:</strong> {time}
           </p>
         </div>
         <div className="card-footer text-center">
