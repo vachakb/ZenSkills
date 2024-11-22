@@ -19,8 +19,11 @@ export default function ExploreMentor({ mentors_, demoTags }) {
   // Fetch tags and mentors
   useEffect(() => {
     (async () => {
-      const response = await fetchTags();
-      setAllTags(response?.data?.tags || demoTags);
+      const tagsResponse = await fetchTags();
+      setAllTags(tagsResponse?.data?.tags || demoTags);
+      const mentorsResponse = await fetchMentors(currentPage, itemsPerPage, searchTerm, selectedTags);
+      setMentors(mentorsResponse?.data?.mentors || []);
+      setTotalPages(Math.ceil((mentorsResponse?.data?.totalMentorsCount || 0) / itemsPerPage));
     })(); // IIFE: Immediately invoked function expression
   }, []);
 

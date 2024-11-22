@@ -1,9 +1,11 @@
+import axios from "axios";
+
 // tags
 export async function fetchTags() {
   try {
-    return await axios.get("/api/tags");
+    return await axios.get(`/api/tags`);
   } catch (error) {
-    console.log("Error fetching tags: ", error);
+    console.log("Error fetching mentors: ", error);
   }
 }
 
@@ -15,9 +17,9 @@ export async function fetchMentors(
   selectedTags
 ) {
   try {
-    return await axios.get("/api/mentors", {
+    return await axios.get(`/api/mentors`, {
       params: {
-        page: currentPage + 1,
+        page: currentPage,
         limit: itemsPerPage,
         search: searchTerm,
         selectedTags: selectedTags,
@@ -50,7 +52,7 @@ export async function fetchJobs(
   itemsPerPage
 ) {
   try {
-    return await xios.get("/api/jobs", {
+    return await axios.get("/api/jobs", {
       params: {
         search: searchTerm,
         location: locationInput,
