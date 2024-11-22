@@ -46,7 +46,7 @@ app.use(
 app.use(passport.authenticate("session"));
 
 // Use routes
-app.use("/auth", authRoutes);
+app.use("/api/auth", authRoutes);
 app.use("/api/", userRoutes);
 app.use("/api/mentors", mentorRoutes);
 app.use("/api/mentee", menteeRoutes);
