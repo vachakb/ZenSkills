@@ -10,6 +10,7 @@ datasource db {
 model User {
   id            String       @id @default(uuid())
   email         String       @unique(map: "user_unique_1") @db.VarChar(100)
+  name String?
   created_at    DateTime     @db.Timestamptz(6) @default(now())
   gender        gender_enum?
   is_deleted    Boolean
@@ -20,48 +21,47 @@ model User {
   role          UserRole
   googleId      String?      @unique(map: "user_unique") @db.VarChar
   is_verified   Boolean      @default(false)
-  mentee        mentee[]
-  mentor        mentor[]
+  mentee        mentee?
+  mentor        mentor?
   userBadges    UserBadge[]  
-  
+
   JobApplication JobApplication[] @relation(map: "job_application_user_fk")
   language      String?     @db.VarChar(100)
 }
 
 
 model mentee {
-  name             String       @db.VarChar(50)
+  id               String @id @default(uuid())
   bio              String?
-  mentee_id        String             @id(map: "mentee_pk") @default(uuid())
-  id               String
   mentee_title     String             @db.VarChar(50) 
   company          String?            @db.VarChar(255)
-  User             User?              @relation(fields: [id], references: [id], onDelete: Cascade, map: "mentee_user_fk")
-  mentee_interests mentee_interests[]
+  user_id String @unique
+  User             User?              @relation(fields: [user_id], references: [id])
+  mentee_interests String?
   education MenteeEducation[]
   Review          Review[]            @relation(map: "review_mentee_fk")
 }
 
 model mentee_interests {
-  mentee_id           String
+  id           String @id @default(uuid())
   tag_id              String
-  mentee_interests_id String @id(map: "mentee_interests_pk") @default(uuid())
-  mentee              mentee @relation(fields: [mentee_id], references: [mentee_id], onDelete: Cascade, map: "mentee_interests_mentee_fk")
+  // mentee_interests_id String @id(map: "mentee_interests_pk") @default(uuid())
+  // mentee              mentee @relation(fields: [mentee_id], references: [id], onDelete: Cascade, map: "mentee_interests_mentee_fk")
   tags                tags   @relation(fields: [tag_id], references: [tag_id], onDelete: Cascade, map: "mentee_interests_tags_fk")
 }
 
 model mentor {
-  id                         String
-  name                       String             @db.VarChar(50)
-  bio                        String?
+  id                         String @id @default(uuid())
+  bio              String?
   experience_years           Int                @default(0)
-  mentor_id                  String             @id(map: "mentor_pk") @default(uuid())
+  experience_months           Int                @default(0)
   rating                     Float?             @db.Real
   number_of_mentees_mentored Int                @default(0)
   company                    String?            @db.VarChar(255)
   mentor_job_title           String             @db.VarChar(50)
-  User                       User               @relation(fields: [id], references: [id], onDelete: Cascade, map: "mentor_user_fk")
-  mentor_expertise           mentor_expertise[]
+  user_id String @unique
+  User             User?              @relation(fields: [user_id], references: [id])
+  mentor_expertise           String?
   number_of_sessions         Int                @default(0)
   credit_score               Float              @default(75)    
   education                  MentorEducation[]
@@ -77,10 +77,10 @@ model mentor {
 
 
 model mentor_expertise {
-  mentor_id           String
+  id           String @id @default(uuid())
   tag_id              String
-  mentor_expertise_id String @id(map: "mentor_expertise_pk") @default(uuid())
-  mentor              mentor @relation(fields: [mentor_id], references: [mentor_id], onDelete: Cascade, map: "mentor_expertise_mentor_fk")
+  // mentor_expertise_id String @id(map: "mentor_expertise_pk") @default(uuid())
+  // mentor              mentor @relation(fields: [mentor_id], references: [id], onDelete: Cascade)
   tags                tags   @relation(fields: [tag_id], references: [tag_id], onDelete: Cascade, map: "mentor_expertise_tags_fk")
 }
 
@@ -101,7 +101,6 @@ model tempuser {
   created_at    DateTime @db.Timestamptz(6) @default(now())
   password      String
   role          UserRole
-  expires_at    DateTime
 }
 
 enum gender_enum {
@@ -143,7 +142,7 @@ model Job {
   benefits         String     
   app_details      String     
   posted_by        String?     
-  mentor           mentor?    @relation(fields: [posted_by], references: [mentor_id], onDelete: Cascade, map: "job_posted_by_fk")
+  mentor           mentor?    @relation(fields: [posted_by], references: [id], onDelete: Cascade)
   created_at       DateTime   @default(now())
   updated_at       DateTime   @updatedAt
   deadline         DateTime
@@ -162,8 +161,8 @@ model JobApplication {
   cover_letter     String?
   resume_url       String     @db.VarChar(255)
   application_date DateTime   @default(now())
-  job              Job        @relation(fields: [job_id], references: [id], onDelete: Cascade, map: "job_application_job_fk")
-  user             User       @relation(fields: [uid], references: [id], onDelete: Cascade, map: "job_application_user_fk")
+  job              Job        @relation(fields: [job_id], references: [id], onDelete: Cascade)
+  user             User       @relation(fields: [uid], references: [id], onDelete: Cascade)
 }
 
 enum JobType {
@@ -210,7 +209,7 @@ model MentorEducation {
   educationQualification String @db.VarChar(255)
   companyName         String?   @db.VarChar(255) 
 
-  mentor              mentor    @relation(fields: [mentor_id], references: [mentor_id], onDelete: Cascade)
+  mentor              mentor    @relation(fields: [mentor_id], references: [id], onDelete: Cascade)
 
   
   @@index([mentor_id])
@@ -222,7 +221,7 @@ model MenteeEducation {
   educationQualification String @db.VarChar(255)
   companyName         String?   @db.VarChar(255) 
 
-  mentee              mentee    @relation(fields: [mentee_id], references: [mentee_id], onDelete: Cascade)
+  mentee              mentee    @relation(fields: [mentee_id], references: [id], onDelete: Cascade)
 
   @@index([mentee_id])
 }
@@ -239,7 +238,7 @@ model meeting_sessions {
   session_end_time   DateTime?
   created_at         DateTime  @default(now())
   created_by         String
-  mentor             mentor    @relation(fields: [created_by], references: [mentor_id], onDelete: Cascade,map: "fk_mentor") 
+  mentor             mentor    @relation(fields: [created_by], references: [id], onDelete: Cascade)
 }
 
 model workshops {
@@ -252,7 +251,7 @@ model workshops {
   created_at     DateTime  @default(now())       
   created_by     String     
   status         WorkshopStatus? @default(upcoming) 
-  mentor         mentor    @relation(fields: [created_by], references: [mentor_id], onDelete: Cascade)
+  mentor         mentor    @relation(fields: [created_by], references: [id], onDelete: Cascade)
   updated_at      DateTime   @updatedAt            
   max_participants Int       
   deadline        DateTime   
@@ -283,8 +282,8 @@ model Review {
   created_at   DateTime @default(now())                 
   updated_at   DateTime @updatedAt                      
 
-  mentee       mentee   @relation(fields: [mentee_id], references: [mentee_id], onDelete: Cascade, map: "review_mentee_fk")
-  mentor       mentor   @relation(fields: [mentor_id], references: [mentor_id], onDelete: Cascade, map: "review_mentor_fk")
+  mentee       mentee   @relation(fields: [mentee_id], references: [id], onDelete: Cascade, map: "review_mentee_fk")
+  mentor       mentor   @relation(fields: [mentor_id], references: [id], onDelete: Cascade, map: "review_mentor_fk")
 
   @@index([mentee_id, mentor_id])                         
 }

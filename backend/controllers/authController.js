@@ -36,7 +36,7 @@ const generateToken = (user) => {
   return jwt.sign(
     { id: user.uid, email: user.email, role: user.role },
     process.env.JWT_SECRET,
-    { expiresIn: "1h" }
+    { expiresIn: "1h" },
   );
 };
 
@@ -52,10 +52,9 @@ exports.login = new LocalStrategy(
     } else {
       throw Error("Unauthorized");
     }
-  }
+  },
 );
 
-// TODO validation, error handling
 exports.register = async (req, res) => {
   const { email, password, phoneNum, role } = req.body;
 
@@ -75,7 +74,6 @@ exports.register = async (req, res) => {
         password: hashedPassword,
         phone_number: phoneNum,
         role: role,
-        expires_at: new Date(Date.now() + 1000 * 60 * 60 * 24),
       },
     });
 

@@ -7,13 +7,19 @@ import { useLocation } from "react-router-dom";
 import { useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { registerUser } from "../apis/user";
+import useSession from "../hooks/useSession";
 
 function RegisterBio() {
   const prevForm = useLocation().state;
+
+  const { session } = useSession();
+
+  const isMentor = session.role === "mentor";
+
   const navigate = useNavigate();
 
   const schema = useMemo(() => {
-    if (prevForm.isMentor) {
+    if (isMentor) {
       return yup.object({
         expertise: yup.string().required("This is a required field"),
         bio: yup.string(),
@@ -40,7 +46,7 @@ function RegisterBio() {
             onSubmit={async (data) =>
               registerUser({ ...prevForm, ...data })
                 .then(() => {
-                  if (!prevForm.isMentor) {
+                  if (!isMentor) {
                     navigate("/mentee_welcome", {
                       state: { ...prevForm, ...data },
                     });
@@ -70,11 +76,11 @@ function RegisterBio() {
                   <h1 className="my-4 fw-bold">Almost There!</h1>
                 </div>
                 <TextField
-                  name={prevForm.isMentor ? "expertise" : "interests"}
-                  label={prevForm.isMentor ? "Expertise" : "Interests"}
+                  name={isMentor ? "expertise" : "interests"}
+                  label={isMentor ? "Expertise" : "Interests"}
                   type="text"
                   value={
-                    prevForm.isMentor
+                    isMentor
                       ? formikProps.values.expertise
                       : formikProps.values.interests
                   }
@@ -82,21 +88,21 @@ function RegisterBio() {
                   onChange={formikProps.handleChange}
                   onBlur={formikProps.handleBlur}
                   isValid={
-                    prevForm.isMentor
+                    isMentor
                       ? formikProps.touched.expertise &&
                         !formikProps.errors.expertise
                       : formikProps.touched.interests &&
                         !formikProps.errors.interests
                   }
                   isInvalid={
-                    prevForm.isMentor
+                    isMentor
                       ? formikProps.touched.expertise &&
                         !!formikProps.errors.expertise
                       : formikProps.touched.interests &&
                         !!formikProps.errors.interests
                   }
                   error={
-                    prevForm.isMentor
+                    isMentor
                       ? formikProps.errors.expertise
                       : formikProps.errors.interests
                   }
