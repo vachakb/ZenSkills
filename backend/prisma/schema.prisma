@@ -102,7 +102,6 @@ model tempuser {
   password      String
   role          UserRole
   expires_at    DateTime
-  phone_number  String?      @db.VarChar(13)
 }
 
 enum gender_enum {
