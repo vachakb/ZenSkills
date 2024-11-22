@@ -5,6 +5,7 @@ import getAddress from "./getCurrentLocation";
 import axios from "axios";
 import ReactPaginate from "react-paginate";
 import JobApplicationModal from "../components/JobApplicationModal";
+import { fetchJobs } from "../apis/explore";
 
 const JobList = () => {
   const jobs = [
@@ -107,7 +108,7 @@ const JobList = () => {
   const [filterDropdownVisibility, setFilterDropdownVisibility] =
     useState(false);
   const jobTypess = ["Full-Time", "Part-Time", "Contract", "Freelance", "Internships", "On-site", "Remote", "Government"];
-  let [selectedJobTypess, setSelectedJobTypess] = useState([]);
+  let [selectedJobTypes, setSelectedJobTypess] = useState([]);
 
   const [currentPage, setCurrentpage] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
@@ -121,18 +122,9 @@ const JobList = () => {
 
   const handleSearch = () => {
     try{
-      const responce = axios.get("/api/jobs", {
-        params:{
-          search: searchTerm,
-          location: locationInput,
-          jobTypess: selectedJobTypess,
-          salaryRange: `${minSalary}-${maxSalary}`,
-          page: currentPage + 1,
-          limit: itemsPerPage,
-        }
-      })
-      setFilteredJobs(responce.data.jobs)
-      setTotalPages(Math.ceil(responce.data.totalMentorsCount / itemsPerPage));
+      const responce = fetchJobs(searchTerm, locationInput, selectedJobTypes, minSalary, maxSalary, currentPage, itemsPerPage)
+      setFilteredJobs(responce?.data?.jobs)
+      setTotalPages(Math.ceil((responce?.data?.totalMentorsCount || 0)/ itemsPerPage));
 
     }catch(error){
       console.error(error)
@@ -153,12 +145,12 @@ const JobList = () => {
   }
 
   function handleTypeClick(type_) {
-    if (selectedJobTypess.includes(type_)) {
-      setSelectedJobTypess(selectedJobTypess.filter((type) => type !== type_));
+    if (selectedJobTypes.includes(type_)) {
+      setSelectedJobTypess(selectedJobTypes.filter((type) => type !== type_));
     } else {
-      setSelectedJobTypess([...selectedJobTypess, type_]);
+      setSelectedJobTypess([...selectedJobTypes, type_]);
     }
-    console.log(selectedJobTypess);
+    console.log(selectedJobTypes);
   }
 
   
@@ -221,12 +213,12 @@ const JobList = () => {
               onClick={toggleFilterDropdownVisibility}
             >
               Filter
-              {selectedJobTypess.length +
+              {selectedJobTypes.length +
                 (minSalary !== "" || maxSalary !== "") !== 0
                 && (
                 <span>
                   (
-                  {selectedJobTypess.length +
+                  {selectedJobTypes.length +
                     (minSalary !== "" || maxSalary !== "")}
                   )
                 </span>
@@ -256,7 +248,7 @@ const JobList = () => {
                 <button
                   className={`btn btn-sm rounded-pill m-1`}
                   style={{
-                    backgroundColor: selectedJobTypess.includes(type)
+                    backgroundColor: selectedJobTypes.includes(type)
                       ? "#07d100"
                       : "rgb(233, 236, 239)",
                   }}
