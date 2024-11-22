@@ -2,98 +2,45 @@ import { useEffect, useState } from "react";
 import MentorCard from "../components/MentorCard";
 import ReactPaginate from "react-paginate";
 import axios from "axios";
-
-// remove mentors_ and allTags aguments when api is live
-// TODO Remove API_URL
-// const API_URL = "http://localhost:5000";
+import { fetchTags, fetchMentors, fetchMentorsbyAI } from "../apis/explore";
 
 export default function ExploreMentor({ mentors_, demoTags }) {
   const [mentors, setMentors] = useState(mentors_);
   const [searchTerm, setSearchTerm] = useState("");
   const [allTags, setAllTags] = useState([]);
   const [selectedTags, setSelectedTags] = useState([]);
-  const [aiFilter, setAiFilter] = useState(""); // For AI input
+  const [aiFilterQuery, setAiFilterQuery] = useState(""); // For AI input
   const [currentPage, setCurrentpage] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
   const [filterDropdownVisibility, setFilterDropdownVisibility] =
     useState(false);
   const itemsPerPage = 10;
 
-// <<<<<<< hv6
-//   useEffect(() => {
-//     // fetch cards from backend by api
-//     async function fetchMentors() {
-//       const responce = await axios.get(`${API_URL}/api/mentors`, {
-//         params: {
-//           page: currentPage,
-//           limit: itemsPerPage,
-//           search: searchTerm,
-//           selectedTags: selectedTags,
-//           noOfMenteesMentored: noOfMenteesMentored,
-//         },
-//       });
-//       setMentors(responce.data.mentors);
-//       setTotalPages(Math.ceil(responce.data.totalMentorsCount / itemsPerPage));
-//     }
-//     fetchMentors();
-//   }, [currentPage, noOfMenteesMentored]);
-// =======
   // Fetch tags and mentors
   useEffect(() => {
-    async function fetchTags() {
-      try {
-        const response = await axios.get("/api/mentors");
-        setAllTags(response.data.tags || demoTags);
-      } catch (error) {
-        console.error("Error fetching data: ", error);
-      }
-    }
-    fetchTags();
+    (async () => {
+      const response = await fetchTags();
+      setAllTags(response?.data?.tags || demoTags);
+    })(); // IIFE: Immediately invoked function expression
   }, []);
-// >>>>>>> main
 
   async function handleSearchButtonClick() {
-    try {
-//       const response = await axios.get(`${API_URL}/api/mentors`, {
-      const response = await axios.get("/api/mentors", {
-        params: {
-          page: currentPage,
-          limit: itemsPerPage,
-          search: searchTerm,
-          selectedTags: selectedTags,
-        },
-      });
-      setMentors(response.data.mentors || []);
-      setTotalPages(Math.ceil(response.data.totalMentorsCount / itemsPerPage));
-    } catch (error) {
-      console.error("Error fetching data: ", error);
-    }
+    const response = await fetchMentors(
+      currentPage,
+      itemsPerPage,
+      searchTerm,
+      selectedTags
+    );
+    setMentors(response?.data?.mentors || []);
+    setTotalPages(
+      Math.ceil((response?.data?.totalMentorsCount || 0) / itemsPerPage)
+    );
   }
 
-// <<<<<<< hv6
-//   function handlePageChange(selectedItem) {
-//     setCurrentpage(selectedItem.selected);
-//   }
-
-//   useEffect(() => {
-//     async function fetchTags() {
-//       try {
-//         const responce = await axios.get(`${API_URL}/api/tags`);
-//         setAllTags(responce.data.tags || demoTags);
-//       } catch (error) {
-//         console.error("error fetching data: ", error);
-//       }
-// =======
-  async function handleAiFilterSubmit() {
-    try {
-      const response = await axios.post("/api/mentors/filter-ai", {
-        aiFilter,
-      });
-      setMentors(response.data.mentors || []);
-      document.getElementById("aiFilterModal").click(); // Close modal
-    } catch (error) {
-      console.error("Error filtering mentors with AI: ", error);
-    }
+  async function handleAiFilterQuerySubmit() {
+    const response = await fetchMentorsbyAI(aiFilterQuery);
+    setMentors(response?.data?.mentors || []);
+    document.getElementById("aiFilterQueryModal").click(); // Close modal
   }
 
   function handlePageChange(selectedItem) {
@@ -146,78 +93,6 @@ export default function ExploreMentor({ mentors_, demoTags }) {
           {/* Tag filters */}
           {allTags.map((tag) => (
             <button
-// <<<<<<< hv6
-//               className="btn-close"
-//               aria-label="Close"
-//               onClick={toggleFilterDropdownVisibility}
-//             ></button>
-//           </div>
-//           {allTags.map((tag) => {
-//             return (
-//               <button
-//                 className="btn btn-sm rounded-pill m-1"
-//                 style={{
-//                   backgroundColor: selectedTags.includes(tag)
-//                     ? "#07d100"
-//                     : "rgb(233, 236, 239)",
-//                 }}
-//                 onClick={() => handleTagClick(tag)}
-//               >
-//                 {tag}
-//               </button>
-//             );
-//           })}
-//         </div>
-//       )}
-
-// {selectedTags?.length !== 0 && (
-//         <div className="">
-//           Filters applied:
-//           {/* {selectedTags.map((tag)=>{
-//                 return <button className="btn btn-sm bg-body-secondary rounded-pill m-1" onClick={()=>handleTagClick(tag)}>{tag}</button>;
-//             })} */}
-//           {selectedTags.map((tag) => {
-//             return (
-//               <div
-//                 className="rounded-pill ps-2 m-1 d-inline-block"
-//                 style={{ backgroundColor: "rgb(233, 236, 239)" }}
-//               >
-//                 <span>{tag}</span>
-//                 <button
-//                   type="button"
-//                   className="btn"
-//                   style={{
-//                     background: '',
-//                     border: 'none',
-//                     fontSize: '1rem',
-//                     cursor: 'pointer',
-//                     transition: 'background-color 0.3s ease',
-//                     borderRadius: '50%'
-//                   }}
-//                   // onMouseEnter={(e) => {
-//                   //   e.target.style.backgroundColor = 'rgba(0, 0, 0, 0.1)'; // Hover background color
-//                   // }}
-//                   // onMouseLeave={(e) => {
-//                   //   e.target.style.backgroundColor = ''; // Reset background on mouse leave
-//                   // }}
-//                   onClick={() => handleTagClick(tag)}
-//                 >
-//                   &times;
-//                 </button>
-//                 {/* <i
-//                   className="fas fa-times custom-close"
-//                   onClick={() => handleTagClick(tag)}
-//                   aria-label="Close"
-//                 ></i> */}
-//                 {/* font-size: 1.5rem; */}
-//               </div>
-//             );
-//           })}
-//         </div>
-//       )}
-
-//       {/* Cards Section */}
-// =======
               key={tag}
               className={`btn btn-sm rounded-pill m-1 ${
                 selectedTags.includes(tag) ? "btn-success" : "btn-secondary"
@@ -274,7 +149,7 @@ export default function ExploreMentor({ mentors_, demoTags }) {
           alignItems: "center",
         }}
         data-bs-toggle="modal"
-        data-bs-target="#aiFilterModal"
+        data-bs-target="#aiFilterQueryModal"
       >
         💬
       </button>
@@ -282,9 +157,9 @@ export default function ExploreMentor({ mentors_, demoTags }) {
       {/* AI Chat Modal */}
       <div
         className="modal fade"
-        id="aiFilterModal"
+        id="aiFilterQueryModal"
         tabIndex="-1"
-        aria-labelledby="aiFilterModalLabel"
+        aria-labelledby="aiFilterQueryModalLabel"
         aria-hidden="true"
       >
         <div
@@ -296,7 +171,7 @@ export default function ExploreMentor({ mentors_, demoTags }) {
               className="modal-header border-0"
               style={{ backgroundColor: "#f8f9fa" }}
             >
-              <h5 className="modal-title" id="aiFilterModalLabel">
+              <h5 className="modal-title" id="aiFilterQueryModalLabel">
                 Chat with AI
               </h5>
               <button
@@ -322,13 +197,13 @@ export default function ExploreMentor({ mentors_, demoTags }) {
               <textarea
                 className="form-control mb-2"
                 rows="3"
-                value={aiFilter}
-                onChange={(e) => setAiFilter(e.target.value)}
+                value={aiFilterQuery}
+                onChange={(e) => setAiFilterQuery(e.target.value)}
                 placeholder="Type your query..."
               />
               <button
                 className="btn btn-primary w-100"
-                onClick={handleAiFilterSubmit}
+                onClick={handleAiFilterQuerySubmit}
               >
                 Send
               </button>

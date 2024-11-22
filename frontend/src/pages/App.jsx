@@ -4,6 +4,8 @@ import SideBar from "../components/SideBar";
 import { useState } from "react";
 import classNames from "classnames";
 
+import userContext from "../components/userContext";
+
 const excludedRoutes = [
   { path: "/login" },
   { path: "/register" },
@@ -21,25 +23,32 @@ function App() {
 
   const [showSideBar, setShowSideBar] = useState(false);
 
-  const toggleSideBar = () => setShowSideBar(prevShowSideBar => !prevShowSideBar);
+  const toggleSideBar = () =>
+    setShowSideBar((prevShowSideBar) => !prevShowSideBar);
 
   return (
     <>
-      {matchRoutes(excludedRoutes, location) ? null : <Header onToggleSideBar={toggleSideBar} />}
-      <div className="d-flex flex-grow-1">
-        {matchRoutes(excludedRoutes, location) ? null : <SideBar show={showSideBar} />}
-        <div
-          style={{ overflowY: "auto", overflowX: "hidden" }}
-          className={classNames({
-            "flex-grow-1 position-relative": true,
-            "p-3": !matchRoutes(excludedRoutes, location),
-          })}
-        >
-          <div className="position-absolute w-100">
-          <Outlet />
+      <userContext.Provider>  
+        {matchRoutes(excludedRoutes, location) ? null : (
+          <Header onToggleSideBar={toggleSideBar} />
+        )}
+        <div className="d-flex flex-grow-1">
+          {matchRoutes(excludedRoutes, location) ? null : (
+            <SideBar show={showSideBar} />
+          )}
+          <div
+            style={{ overflowY: "auto", overflowX: "hidden" }}
+            className={classNames({
+              "flex-grow-1 position-relative": true,
+              "p-3": !matchRoutes(excludedRoutes, location),
+            })}
+          >
+            <div className="position-absolute w-100">
+              <Outlet />
+            </div>
           </div>
         </div>
-      </div>
+      </userContext.Provider>
     </>
   );
 }

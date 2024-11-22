@@ -5,121 +5,110 @@ import getAddress from "./getCurrentLocation";
 import axios from "axios";
 import ReactPaginate from "react-paginate";
 import JobApplicationModal from "../components/JobApplicationModal";
-import { useEffect } from "react";
-
-// TODO Fix salary filter issues
+import { fetchJobs } from "../apis/explore";
 
 const JobList = () => {
-  // const jobs = [
-  //   {
-  //     id: 1,
-  //     title: "Cloud Engineer Intern",
-  //     jobTypes: ["Internship", "Remote Full-Time"],
-  //     salary: "10,000 INR - 15,000 INR",
-  //     company: "AWS",
-  //     location: "Bangalore, India",
-  //     applicants: "40+",
-  //   },
-  //   {
-  //     id: 2,
-  //     title: "Temporary Technical Support",
-  //     jobTypes: ["Temporary", "Contract"],
-  //     salary: "20,000 INR - 30,000 INR",
-  //     company: "Microsoft",
-  //     location: "Mumbai, India",
-  //     applicants: "5+",
-  //   },
-  //   {
-  //     id: 3,
-  //     title: "Backend Developer",
-  //     jobTypes: ["Remote Full-Time", "Contract-to-Hire"],
-  //     salary: "50,000 INR - 70,000 INR",
-  //     company: "Netflix",
-  //     location: "Remote",
-  //     applicants: "20+",
-  //   },
-  //   {
-  //     id: 4,
-  //     title: "Contract-to-Hire Project Manager",
-  //     jobTypes: ["Contract-to-Hire", "Hybrid"],
-  //     salary: "60,000 INR - 80,000 INR",
-  //     company: "TCS",
-  //     location: "Delhi, India",
-  //     applicants: "10+",
-  //   },
-  //   {
-  //     id: 5,
-  //     title: "Volunteer Web Developer",
-  //     jobTypes: ["Volunteer", "Freelance"],
-  //     salary: "Unpaid",
-  //     company: "NGO TechHelp",
-  //     location: "Remote",
-  //     applicants: "25+",
-  //   },
-  //   {
-  //     id: 6,
-  //     title: "Hybrid Software Tester",
-  //     jobTypes: ["Hybrid", "Part-Time"],
-  //     salary: "30,000 INR - 40,000 INR",
-  //     company: "HCL",
-  //     location: "Pune, India",
-  //     applicants: "8+",
-  //   },
-  //   {
-  //     id: 7,
-  //     title: "DevOps Engineer",
-  //     jobTypes: ["Full-Time", "Remote Full-Time"],
-  //     salary: "70,000 INR - 90,000 INR",
-  //     company: "DigitalOcean",
-  //     location: "Chennai, India",
-  //     applicants: "12+",
-  //   },
-  //   {
-  //     id: 8,
-  //     title: "Content Strategist",
-  //     jobTypes: ["Freelance", "Part-Time"],
-  //     salary: "20,000 INR - 30,000 INR",
-  //     company: "Medium",
-  //     location: "Remote",
-  //     applicants: "18+",
-  //   },
-  //   {
-  //     id: 9,
-  //     title: "Game Developer",
-  //     jobTypes: ["Full-Time", "Contract"],
-  //     salary: "70,000 INR - 1,00,000 INR",
-  //     company: "Ubisoft",
-  //     location: "Mumbai, India",
-  //     applicants: "12+",
-  //   },
-  //   {
-  //     id: 10,
-  //     title: "Data Scientist",
-  //     jobTypes: ["Full-Time", "Hybrid"],
-  //     salary: "80,000 INR - 1,20,000 INR",
-  //     company: "Google",
-  //     location: "Hyderabad, India",
-  //     applicants: "25+",
-  //   },
-  // ];
-
+  const jobs = [
+    {
+      id: 1,
+      title: "Cloud Engineer Intern",
+      jobTypes: ["Internship", "Remote Full-Time"],
+      salary: "10,000 INR - 15,000 INR",
+      company: "AWS",
+      location: "Bangalore, India",
+      applicants: "40+",
+    },
+    {
+      id: 2,
+      title: "Temporary Technical Support",
+      jobTypes: ["Temporary", "Contract"],
+      salary: "20,000 INR - 30,000 INR",
+      company: "Microsoft",
+      location: "Mumbai, India",
+      applicants: "5+",
+    },
+    {
+      id: 3,
+      title: "Backend Developer",
+      jobTypes: ["Remote Full-Time", "Contract-to-Hire"],
+      salary: "50,000 INR - 70,000 INR",
+      company: "Netflix",
+      location: "Remote",
+      applicants: "20+",
+    },
+    {
+      id: 4,
+      title: "Contract-to-Hire Project Manager",
+      jobTypes: ["Contract-to-Hire", "Hybrid"],
+      salary: "60,000 INR - 80,000 INR",
+      company: "TCS",
+      location: "Delhi, India",
+      applicants: "10+",
+    },
+    {
+      id: 5,
+      title: "Volunteer Web Developer",
+      jobTypes: ["Volunteer", "Freelance"],
+      salary: "Unpaid",
+      company: "NGO TechHelp",
+      location: "Remote",
+      applicants: "25+",
+    },
+    {
+      id: 6,
+      title: "Hybrid Software Tester",
+      jobTypes: ["Hybrid", "Part-Time"],
+      salary: "30,000 INR - 40,000 INR",
+      company: "HCL",
+      location: "Pune, India",
+      applicants: "8+",
+    },
+    {
+      id: 7,
+      title: "DevOps Engineer",
+      jobTypes: ["Full-Time", "Remote Full-Time"],
+      salary: "70,000 INR - 90,000 INR",
+      company: "DigitalOcean",
+      location: "Chennai, India",
+      applicants: "12+",
+    },
+    {
+      id: 8,
+      title: "Content Strategist",
+      jobTypes: ["Freelance", "Part-Time"],
+      salary: "20,000 INR - 30,000 INR",
+      company: "Medium",
+      location: "Remote",
+      applicants: "18+",
+    },
+    {
+      id: 9,
+      title: "Game Developer",
+      jobTypes: ["Full-Time", "Contract"],
+      salary: "70,000 INR - 1,00,000 INR",
+      company: "Ubisoft",
+      location: "Mumbai, India",
+      applicants: "12+",
+    },
+    {
+      id: 10,
+      title: "Data Scientist",
+      jobTypes: ["Full-Time", "Hybrid"],
+      salary: "80,000 INR - 1,20,000 INR",
+      company: "Google",
+      location: "Hyderabad, India",
+      applicants: "25+",
+    },
+  ];
+  
   const [searchTerm, setSearchTerm] = useState("");
   const [locationInput, setLocationInput] = useState("");
-  const [filteredJobs, setFilteredJobs] = useState([]);
+  const [filteredJobs, setFilteredJobs] = useState(jobs);
 
   const [filterDropdownVisibility, setFilterDropdownVisibility] =
     useState(false);
-  const jobTypess = [
-    "FullTime",
-    "PartTime",
-    "Contract",
-    "Freelance",
-    "Internship",
-    "Onsite",
-    "Remote",
-    "Government",
-  ];
-  let [selectedJobTypess, setSelectedJobTypess] = useState([]);
+  const jobTypess = ["Full-Time", "Part-Time", "Contract", "Freelance", "Internships", "On-site", "Remote", "Government"];
+  let [selectedJobTypes, setSelectedJobTypess] = useState([]);
 
   const [currentPage, setCurrentpage] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
@@ -131,40 +120,15 @@ const JobList = () => {
   const handleMinSalaryChange = (e) => setMinSalary(e.target.value);
   const handleMaxSalaryChange = (e) => setMaxSalary(e.target.value);
 
-  const fetchJobs = async () => {
-    try {
-      const response = await axios.get("http://localhost:5000/api/jobs", {
-        params: {
-          search: searchTerm,
-          location: locationInput,
-          jobTypes: selectedJobTypess,
-          minSalary,
-          maxSalary,
-          page: currentPage + 1,
-          limit: itemsPerPage,
-        },
-      });
-      setFilteredJobs(response.data.jobs);
-      setTotalPages(Math.ceil(response.data.totalJobs / itemsPerPage));
-    } catch (err) {
-      console.error("Error fetching jobs:", err);
-    }
-  };
-
-  useEffect(() => {
-    fetchJobs();
-  }, [
-    searchTerm,
-    locationInput,
-    selectedJobTypess,
-    minSalary,
-    maxSalary,
-    currentPage,
-  ]);
-
   const handleSearch = () => {
-    setCurrentpage(0);
-    fetchJobs();
+    try{
+      const responce = fetchJobs(searchTerm, locationInput, selectedJobTypes, minSalary, maxSalary, currentPage, itemsPerPage)
+      setFilteredJobs(responce?.data?.jobs)
+      setTotalPages(Math.ceil((responce?.data?.totalMentorsCount || 0)/ itemsPerPage));
+
+    }catch(error){
+      console.error(error)
+    }
   };
 
   function handlePageChange(selectedItem) {
@@ -181,13 +145,16 @@ const JobList = () => {
   }
 
   function handleTypeClick(type_) {
-    if (selectedJobTypess.includes(type_)) {
-      setSelectedJobTypess(selectedJobTypess.filter((type) => type !== type_));
+    if (selectedJobTypes.includes(type_)) {
+      setSelectedJobTypess(selectedJobTypes.filter((type) => type !== type_));
     } else {
-      setSelectedJobTypess([...selectedJobTypess, type_]);
+      setSelectedJobTypess([...selectedJobTypes, type_]);
     }
-    console.log(selectedJobTypess);
+    console.log(selectedJobTypes);
   }
+
+  
+  
 
   return (
     <div className="container my-3">
@@ -246,12 +213,12 @@ const JobList = () => {
               onClick={toggleFilterDropdownVisibility}
             >
               Filter
-              {selectedJobTypess.length +
-                (minSalary !== "" || maxSalary !== "") !==
-                0 && (
+              {selectedJobTypes.length +
+                (minSalary !== "" || maxSalary !== "") !== 0
+                && (
                 <span>
                   (
-                  {selectedJobTypess.length +
+                  {selectedJobTypes.length +
                     (minSalary !== "" || maxSalary !== "")}
                   )
                 </span>
@@ -281,7 +248,7 @@ const JobList = () => {
                 <button
                   className={`btn btn-sm rounded-pill m-1`}
                   style={{
-                    backgroundColor: selectedJobTypess.includes(type)
+                    backgroundColor: selectedJobTypes.includes(type)
                       ? "#07d100"
                       : "rgb(233, 236, 239)",
                   }}
@@ -334,9 +301,7 @@ const JobList = () => {
             {/* wrong salary input */}
             {(isNaN(Number(minSalary)) ||
               isNaN(Number(maxSalary)) ||
-              (minSalary !== "" &&
-                maxSalary !== "" &&
-                Number(minSalary) > Number(maxSalary))) && (
+              (minSalary!=="" && maxSalary!=="" && Number(minSalary) > Number(maxSalary))) && (
               <div className="col-auto text-danger">
                 <span>Wrong Salary input</span>
               </div>
@@ -366,7 +331,7 @@ const JobList = () => {
         {filteredJobs.length > 0 ? (
           filteredJobs.map((job) => (
             <div key={job.id} className="col-lg-4 col-md-6">
-              <JobCard {...job} key={job.id} />
+              <JobCard {...job} key={job.id}/>
             </div>
           ))
         ) : (
@@ -400,3 +365,4 @@ const JobList = () => {
 };
 
 export default JobList;
+
