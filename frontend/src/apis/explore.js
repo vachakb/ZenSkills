@@ -1,9 +1,9 @@
-import axios from "axios";
+import { axiosInstance } from "./commons";
 
 // tags
 export async function fetchTags() {
   try {
-    return await axios.get(`/api/tags`);
+    return await axiosInstance.get(`/tags`);
   } catch (error) {
     console.log("Error fetching mentors: ", error);
   }
@@ -14,10 +14,10 @@ export async function fetchMentors(
   currentPage,
   itemsPerPage,
   searchTerm,
-  selectedTags
+  selectedTags,
 ) {
   try {
-    return await axios.get(`/api/mentors`, {
+    return await axiosInstance.get(`/mentors`, {
       params: {
         page: currentPage,
         limit: itemsPerPage,
@@ -33,7 +33,7 @@ export async function fetchMentors(
 // mentors by AI
 export async function fetchMentorsbyAI(query) {
   try {
-    return await axios.post("/api/mentors/filter-ai", {
+    return await axiosInstance.post("/mentors/filter-ai", {
       query,
     });
   } catch (error) {
@@ -49,10 +49,10 @@ export async function fetchJobs(
   minSalary,
   maxSalary,
   currentPage,
-  itemsPerPage
+  itemsPerPage,
 ) {
   try {
-    return await axios.get("/api/jobs", {
+    return await axiosInstance.get("/jobs", {
       params: {
         search: searchTerm,
         location: locationInput,
@@ -71,7 +71,7 @@ export async function fetchJobs(
 // particular job
 export async function fetchJobDetails(jobId) {
   try {
-    return await axios.get(`/api/jobs/${jobId}`);
+    return await axiosInstance.get(`/jobs/${jobId}`);
   } catch (error) {
     console.error("Error fetching job details", error);
     return null;

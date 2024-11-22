@@ -1,12 +1,11 @@
-import axios from "axios";
-import { API_URL } from "./commons";
+import { axiosInstance } from "./commons";
 
 function getAllWorkshops() {
-  return axios.get(`${API_URL}/api/workshops`);
+  return axiosInstance.get(`/workshops`);
 }
 
 function getWorkshopById(id) {
-  return axios.get(`${API_URL}/api/workshops/${id}`);
+  return axiosInstance.get(`/workshops/${id}`);
 }
 
 export { getAllWorkshops, getWorkshopById };

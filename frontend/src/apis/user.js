@@ -1,27 +1,27 @@
-import { API_URL, axiosInstance } from "./commons";
+import { axiosInstance } from "./commons";
 
 function login(user) {
-  return axiosInstance.post(`${API_URL}/auth/login`, user);
+  return axiosInstance.post(`/auth/login`, user);
 }
 
 function register(user) {
-  return axiosInstance.post(`${API_URL}/auth/register`, user);
+  return axiosInstance.post(`/auth/register`, user);
 }
 
 function sendVerificationEmail(email) {
-  return axiosInstance.post(`${API_URL}/auth/verify`, { email });
+  return axiosInstance.post(`/auth/verify`, { email });
 }
 
 function verificationEmailCallback(token) {
-  return axiosInstance.get(`${API_URL}/auth/verify/callback?token=${token}`);
+  return axiosInstance.get(`/auth/verify/callback?token=${token}`);
 }
 
 function registerUser(userProfile) {
-  return axiosInstance.post(`${API_URL}/auth/register-user`, userProfile);
+  return axiosInstance.post(`/auth/register-user`, userProfile);
 }
 
 function googleCallback(token) {
-  return axiosInstance.post(`${API_URL}/auth/google/callback`, {
+  return axiosInstance.post(`/auth/google/callback`, {
     token: token,
   });
 }
