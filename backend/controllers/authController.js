@@ -55,7 +55,6 @@ exports.login = new LocalStrategy(
   },
 );
 
-// TODO validation, error handling
 exports.register = async (req, res) => {
   const { email, password, phoneNum, role } = req.body;
 
@@ -140,8 +139,8 @@ exports.googleCallback = async (req, res) => {
           gender: "prefer_not_to_say",
           phone_number: "0000000000",
           location: "Unknown",
-          password_hash: "",
-          created_date: new Date(),
+          password: "",
+          created_at: new Date(),
         },
       });
     }

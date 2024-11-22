@@ -1,6 +1,8 @@
 const express = require("express");
 const { getUserProfile } = require("../controllers/userController");
 const { getTags } = require("../controllers/mentorController");
+const { getJobDetails } = require("../controllers/jobController");
+const { getJobs } = require("../controllers/jobController");
 
 const router = express.Router();
 
@@ -8,4 +10,11 @@ const router = express.Router();
 
 // Endpoint to fetch tags
 router.get("/tags", getTags);
+
+// Endpoint to fetch all jobs
+router.get("/jobs/", getJobs);
+
+// Endpoint to fetch a particular job
+router.get("/jobs/:jobId", getJobDetails);
+
 module.exports = router;

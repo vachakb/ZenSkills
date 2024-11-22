@@ -114,7 +114,7 @@ function Calendar() {
               type="date"
               onChange={(ev) => {
                 setSelectedDate(
-                  DateTime.fromFormat(ev.currentTarget.value, "yyyy-MM-dd"),
+                  DateTime.fromFormat(ev.currentTarget.value, "yyyy-MM-dd")
                 );
                 setWeekOffset(0);
                 setShowDatePicker(false);

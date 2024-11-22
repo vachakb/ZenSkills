@@ -4,8 +4,10 @@ import { DateTime } from "luxon";
 import ReviewInput from "./ReviewInput";
 import { FaStar } from "react-icons/fa";
 import ReactPaginate from "react-paginate";
+import { useEffect } from "react";
+import axios from "axios";
 
-function ReviewsTab() {
+function ReviewsTab({ mentorId }) {
   // Initial review data
   const reviewData = {
     username: "John Doe",
@@ -24,17 +26,44 @@ function ReviewsTab() {
   };
 
   // State to manage reviews and pagination
-  const [reviews, setReviews] = useState(Array(6).fill(reviewData)); // Sample 6 reviews
+  // const [reviews, setReviews] = useState(Array(6).fill(reviewData)); // Sample 6 reviews
   const [hasReviewed, setHasReviewed] = useState(false);
   const [selectedStar, setSelectedStar] = useState(null);
   const [currentPage, setCurrentPage] = useState(0);
 
+  const [reviews, setReviews] = useState([]);
+
   const itemsPerPage = 5;
 
+  useEffect(() => {
+    // Fetch reviews from the server
+    const fetchReviews = async () => {
+      try {
+        // TODO replace with API URL
+        const response = await axios.get(
+          `http://localhost:5000/api/mentors/reviews/${mentorId}`
+        );
+        setReviews(response.data);
+      } catch (error) {
+        console.error("Failed to fetch reviews", error);
+      }
+    };
+
+    fetchReviews();
+  }, [mentorId]);
+
   // Add new review to the list
-  const handleAddReview = (newReview) => {
-    setReviews([newReview, ...reviews]); // Add the new review at the top
-    setHasReviewed(true);
+  const handleAddReview = async (newReview) => {
+    try {
+      const response = await axios.post(
+        `http://localhost:5000/api/mentors/reviews/${mentorId}`,
+        newReview
+      );
+      setReviews([response.data, ...reviews]);
+      setHasReviewed(true);
+    } catch (error) {
+      console.error("Failed to add review", error);
+    }
   };
 
   // Handle tag click
@@ -69,24 +98,26 @@ function ReviewsTab() {
       : "0.00";
 
   return (
-    <div className="m-0 p-0" >
+    <div className="m-0 p-0">
       {/* Average Rating Display */}
-      <div className="d-flex flex-column align-items-center mb-4 py-3" style={{border:'1px solid black'}}>
+      <div
+        className="d-flex flex-column align-items-center mb-4 py-3"
+        style={{ border: "1px solid black" }}
+      >
         <h2>{averageRating}</h2>
         <div className="d-flex align-items-center gap-1">
           {[1, 2, 3, 4, 5].map((star, index) => (
             <FaStar
               key={index}
-              color={index + 1 <= Math.round(averageRating) ? "#ffc107" : "#e4e5e9"}
+              color={
+                index + 1 <= Math.round(averageRating) ? "#ffc107" : "#e4e5e9"
+              }
               size={20}
             />
-            
           ))}
-         
         </div>
         <small>({reviews.length} Reviews)</small>
       </div>
-     
 
       {/* Tags for star ratings */}
       <div className="d-flex mb-3 flex-wrap gap-2">
@@ -106,18 +137,16 @@ function ReviewsTab() {
               border: "1px solid black",
             }}
           >
-            {star}{" "}
-            <FaStar
-              color="#ffc107"
-              size={14}
-            />
+            {star} <FaStar color="#ffc107" size={14} />
           </button>
         ))}
       </div>
 
       <div className="d-flex flex-column align-items-start justify-content-start m-0 p-0 w-100">
         {/* Review Input */}
-        {!hasReviewed && <ReviewInput data={userInfo} onSubmit={handleAddReview} />}
+        {!hasReviewed && (
+          <ReviewInput data={userInfo} onSubmit={handleAddReview} />
+        )}
 
         {/* List of Review Cards */}
         {currentReviews.length > 0 ? (

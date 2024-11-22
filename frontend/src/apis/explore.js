@@ -1,0 +1,79 @@
+import { axiosInstance } from "./commons";
+
+// tags
+export async function fetchTags() {
+  try {
+    return await axiosInstance.get(`/tags`);
+  } catch (error) {
+    console.log("Error fetching mentors: ", error);
+  }
+}
+
+// mentors
+export async function fetchMentors(
+  currentPage,
+  itemsPerPage,
+  searchTerm,
+  selectedTags,
+) {
+  try {
+    return await axiosInstance.get(`/mentors`, {
+      params: {
+        page: currentPage,
+        limit: itemsPerPage,
+        search: searchTerm,
+        selectedTags: selectedTags,
+      },
+    });
+  } catch (error) {
+    console.log("Error fetching tags: ", error);
+  }
+}
+
+// mentors by AI
+export async function fetchMentorsbyAI(query) {
+  try {
+    return await axiosInstance.post("/mentors/filter-ai", {
+      query,
+    });
+  } catch (error) {
+    console.log("Error fetching tags: ", error);
+  }
+}
+
+// Jobs
+export async function fetchJobs(
+  searchTerm,
+  locationInput,
+  selectedJobTypess,
+  minSalary,
+  maxSalary,
+  currentPage,
+  itemsPerPage,
+) {
+  try {
+    return await axiosInstance.get("/jobs", {
+      params: {
+        search: searchTerm,
+        location: locationInput,
+        jobTypess: selectedJobTypess,
+        salaryRange: `${minSalary}-${maxSalary}`,
+        page: currentPage + 1,
+        limit: itemsPerPage,
+      },
+    });
+  } catch (error) {
+    console.error("Error fetching Jobs: ", error);
+    return null;
+  }
+}
+
+// particular job
+export async function fetchJobDetails(jobId) {
+  try {
+    return await axiosInstance.get(`/jobs/${jobId}`);
+  } catch (error) {
+    console.error("Error fetching job details", error);
+    return null;
+  }
+}

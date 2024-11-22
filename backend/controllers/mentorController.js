@@ -4,7 +4,7 @@ const prisma = require("../models/prismaClient");
 const getMentors = async (req, res) => {
   try {
     const {
-      page = 1,
+      page = 0,
       limit = 10,
       search = "",
       selectedTags = [],
@@ -34,13 +34,13 @@ const getMentors = async (req, res) => {
                 mentor_expertise: {
                   some: {
                     tags: {
-                      tag_name: { in: tagsArray }, 
+                      tag_name: { in: tagsArray },
                     },
                   },
                 },
               },
             ]
-          : []), 
+          : []),
       ],
     };
 
@@ -49,23 +49,33 @@ const getMentors = async (req, res) => {
       skip: offset,
       take: parseInt(limit),
       include: {
-        User: true, 
+        User: true,
         mentor_expertise: {
           include: {
-            tags: true, 
+            tags: true,
           },
         },
       },
     });
 
+    const formattedMentors = mentors.map((mentor) => ({
+      Experience: mentor.experience_years,
+      creditScore: mentor.credit_score,
+      currentPost: mentor.mentor_job_title,
+      id: mentor.id,
+      name: mentor.name,
+      noOfReviews: mentor.noOfReviews || 0, // TODO Add reviews logic
+      noOfSessions: mentor.number_of_sessions,
+      rating: mentor.rating,
+      company: mentor.company,
+    }));
 
     const totalMentorsCount = await prisma.mentor.count({
       where: whereClause,
     });
 
- 
     res.status(200).json({
-      mentors,
+      mentors: formattedMentors,
       totalMentorsCount,
     });
   } catch (error) {
@@ -88,4 +98,45 @@ const getTags = async (req, res) => {
   }
 };
 
-module.exports = { getMentors, getTags };
+const getMentorProfile = async (req, res) => {
+  try {
+    const { mentorId } = req.params;
+    // Validate mentorId
+    if (!mentorId) {
+      return res.status(400).json({ error: "Mentor ID is required" });
+    }
+    console.log("Mentor ID:", mentorId);
+
+    // Fetch mentor profile
+    const mentor = await prisma.mentor.findUnique({
+      where: { mentor_id: mentorId },
+      include: {
+        mentor_expertise: {
+          include: { tags: true }, // Include expertise tags
+        },
+        User: true,
+      },
+    });
+
+    // If mentor not found
+    if (!mentor) {
+      return res.status(404).json({ error: "Mentor not found" });
+    }
+
+    const mentorProfile = {
+      name: mentor.name,
+      bio: mentor.bio,
+      occupation: mentor.mentor_job_title,
+      rating: mentor.rating,
+      workExperiences: [], // Populate this with custom logic if needed
+      expertise: mentor.mentor_expertise.map((i) => i.tags.tag_name),
+      isMentor: true,
+    };
+    res.status(200).json(mentorProfile);
+  } catch (error) {
+    console.error("Error fetching mentor profile:", error);
+    res.status(500).json({ error: "Error fetching mentor profile" });
+  }
+};
+
+module.exports = { getMentors, getTags, getMentorProfile };

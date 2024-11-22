@@ -5,14 +5,19 @@ import * as yup from "yup";
 import { Formik } from "formik";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useMemo } from "react";
+import useSession from "../hooks/useSession";
 
 function RegisterProfession() {
   const prevForm = useLocation().state;
 
+  const { session } = useSession();
+
+  const isMentor = session.role === "mentor";
+
   const navigate = useNavigate();
 
   const schema = useMemo(() => {
-    if (prevForm.isMentor) {
+    if (isMentor) {
       return yup.object({
         company: yup.string().required("This is a required field"),
         title: yup.string().required("This is a required field"),
@@ -66,46 +71,46 @@ function RegisterProfession() {
                   <h1 className="my-4 fw-bold">Customize your Profile</h1>
                 </div>
                 <TextField
-                  name={prevForm.isMentor ? "company" : "companyOrSchool"}
-                  label={prevForm.isMentor ? "Company" : "Company/School"}
+                  name={isMentor ? "company" : "companyOrSchool"}
+                  label={isMentor ? "Company" : "Company/School"}
                   type="text"
                   value={
-                    prevForm.isMentor
+                    isMentor
                       ? formikProps.values.company
                       : formikProps.values.companyOrSchool
                   }
                   placeholder={
-                    prevForm.isMentor ? "XYZ Company" : "XYZ University"
+                    isMentor ? "XYZ Company" : "XYZ University"
                   }
                   onChange={formikProps.handleChange}
                   onBlur={formikProps.handleBlur}
                   isValid={
-                    prevForm.isMentor
+                    isMentor
                       ? formikProps.touched.company &&
                         !formikProps.errors.company
                       : formikProps.touched.companyOrSchool &&
                         !formikProps.errors.companyOrSchool
                   }
                   isInvalid={
-                    prevForm.isMentor
+                    isMentor
                       ? formikProps.touched.company &&
                         !!formikProps.errors.company
                       : formikProps.touched.companyOrSchool &&
                         !!formikProps.errors.companyOrSchool
                   }
                   error={
-                    prevForm.isMentor
+                    isMentor
                       ? formikProps.errors.company
                       : formikProps.errors.companyOrSchool
                   }
-                  required={prevForm.isMentor}
+                  required={isMentor}
                 />
                 <TextField
                   name="title"
                   label="Your Title"
                   type="text"
                   value={formikProps.values.title}
-                  placeholder={prevForm.isMentor ? "UI/UX Designer" : "Student"}
+                  placeholder={isMentor ? "UI/UX Designer" : "Student"}
                   onChange={formikProps.handleChange}
                   onBlur={formikProps.handleBlur}
                   isValid={
@@ -117,7 +122,7 @@ function RegisterProfession() {
                   error={formikProps.errors.title}
                   required
                 />
-                {prevForm.isMentor ? (
+                {isMentor ? (
                   <div>
                     <Form.Label>
                       Professional Experience

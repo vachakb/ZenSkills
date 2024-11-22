@@ -4,7 +4,14 @@
  * @property {number} perPage
  */
 
+import axios from "axios";
+
 // TODO put into env
 const API_URL = "http://localhost:5000";
 
-export { API_URL };
+const axiosInstance = axios.create({
+  withCredentials: true,
+  baseURL: API_URL + "/api",
+});
+
+export { axiosInstance };
