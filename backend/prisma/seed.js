@@ -1,10 +1,9 @@
-const bcrypt = require("bcrypt");
+const argon2 = require("argon2");
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 
 const main = async () => {
   try {
-    
     const tags = ["Frontend", "Backend", "AI", "Marketing", "DevOps"];
     await Promise.all(
       tags.map((tagName) =>
@@ -12,22 +11,18 @@ const main = async () => {
           where: { tag_name: tagName },
           update: {},
           create: { tag_name: tagName },
-        })
-      )
+        }),
+      ),
     );
     console.log("Tags upserted successfully!");
-
-    
-    const passwordHash = await bcrypt.hash("yourPasswordHere", 10); 
 
     const user = await prisma.user.create({
       data: {
         email: "mentor@example.com",
         name: "John Doe",
-        password_hash: passwordHash, 
+        password: await argon2.hash("password"),
         role: "mentor",
         is_verified: true,
-        created_date: new Date(),
         gender: "Male",
         location: "New Delhi",
         is_deleted: false,
@@ -36,7 +31,7 @@ const main = async () => {
 
     const mentor = await prisma.mentor.create({
       data: {
-        uid: user.uid, 
+        user_id: user.id,
         bio: "Experienced software engineer",
         experience_years: 5,
         rating: 4.8,
@@ -48,7 +43,6 @@ const main = async () => {
 
     console.log("Mentor created successfully!");
 
-    
     const expertiseTags = ["Frontend", "Backend"];
     const tagRecords = await prisma.tags.findMany({
       where: {
@@ -56,16 +50,15 @@ const main = async () => {
       },
     });
 
-    
     await Promise.all(
       tagRecords.map((tag) =>
         prisma.mentor_expertise.create({
           data: {
-            mentor_id: mentor.mentor_id, 
-            tag_id: tag.tag_id, 
+            mentor_id: mentor.mentor_id,
+            tag_id: tag.tag_id,
           },
-        })
-      )
+        }),
+      ),
     );
     console.log("Mentor expertise added successfully!");
   } catch (error) {
