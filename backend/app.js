@@ -15,6 +15,8 @@ const prisma = require("./models/prismaClient");
 
 const passport = require("passport");
 
+const workshopRoutes = require("./routes/workshopRoutes");
+
 const app = express();
 
 app.use(
@@ -48,6 +50,7 @@ app.use("/auth", authRoutes);
 app.use("/api/", userRoutes);
 app.use("/api/mentors", mentorRoutes);
 app.use("/api/mentee", menteeRoutes);
+app.use("/api/workshops", workshopRoutes);
 
 // Start server
 const PORT = process.env.PORT || 5000;

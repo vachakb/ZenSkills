@@ -3,116 +3,117 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import ReactPaginate from "react-paginate";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { getAllWorkshops } from "../apis/workshops";
 
-const WorkshopsPage = ({demoTags}) => {
-  const workshops_ = [
-    {
-      id: 1,
-      image: "https://via.placeholder.com/300x150",
-      title: "Introduction to Web Development",
-      date: "December 5, 2024",
-      time: "10:00 AM - 12:00 PM",
-      status: "upcoming",
-      organizer: {
-        name: "Alice Walker",
-        position: "Full-Stack Developer",
-        profilePic: "https://via.placeholder.com/50",
-      },
-    },
-    {
-      id: 2,
-      image: "https://via.placeholder.com/300x150",
-      title: "JavaScript: From Zero to Hero",
-      date: "December 10, 2024",
-      time: "2:00 PM - 5:00 PM",
-      status: "upcoming",
-      organizer: {
-        name: "John Smith",
-        position: "JavaScript Specialist",
-        profilePic: "https://via.placeholder.com/50",
-      },
-    },
-    {
-      id: 3,
-      image: "https://via.placeholder.com/300x150",
-      title: "Advanced Python Programming",
-      date: "November 28, 2024",
-      time: "1:00 PM - 4:00 PM",
-      status: "completed",
-      organizer: {
-        name: "Emily Johnson",
-        position: "Senior Python Developer",
-        profilePic: "https://via.placeholder.com/50",
-      },
-    },
-    {
-      id: 4,
-      image: "https://via.placeholder.com/300x150",
-      title: "Mastering Data Science with Python",
-      date: "December 15, 2024",
-      time: "11:00 AM - 3:00 PM",
-      status: "upcoming",
-      organizer: {
-        name: "David Brown",
-        position: "Data Scientist",
-        profilePic: "https://via.placeholder.com/50",
-      },
-    },
-    {
-      id: 5,
-      image: "https://via.placeholder.com/300x150",
-      title: "UI/UX Design Basics",
-      date: "November 20, 2024",
-      time: "9:00 AM - 12:00 PM",
-      status: "completed",
-      organizer: {
-        name: "Sophia Davis",
-        position: "UI/UX Designer",
-        profilePic: "https://via.placeholder.com/50",
-      },
-    },
-    {
-      id: 6,
-      image: "https://via.placeholder.com/300x150",
-      title: "React and Redux Workshop",
-      date: "December 20, 2024",
-      time: "10:00 AM - 2:00 PM",
-      status: "upcoming",
-      organizer: {
-        name: "Michael Wilson",
-        position: "React Developer",
-        profilePic: "https://via.placeholder.com/50",
-      },
-    },
-    {
-      id: 7,
-      image: "https://via.placeholder.com/300x150",
-      title: "Machine Learning Bootcamp",
-      date: "January 5, 2025",
-      time: "9:00 AM - 6:00 PM",
-      status: "upcoming",
-      organizer: {
-        name: "Sarah Lee",
-        position: "ML Engineer",
-        profilePic: "https://via.placeholder.com/50",
-      },
-    },
-    {
-      id: 8,
-      image: "https://via.placeholder.com/300x150",
-      title: "Cybersecurity Essentials",
-      date: "December 18, 2024",
-      time: "3:00 PM - 6:00 PM",
-      status: "upcoming",
-      organizer: {
-        name: "Robert Taylor",
-        position: "Security Analyst",
-        profilePic: "https://via.placeholder.com/50",
-      },
-    },
-  ];
+const WorkshopsPage = ({ demoTags }) => {
+  // const workshops_ = [
+  //   {
+  //     id: 1,
+  //     image: "https://via.placeholder.com/300x150",
+  //     title: "Introduction to Web Development",
+  //     date: "December 5, 2024",
+  //     time: "10:00 AM - 12:00 PM",
+  //     status: "upcoming",
+  //     organizer: {
+  //       name: "Alice Walker",
+  //       position: "Full-Stack Developer",
+  //       profilePic: "https://via.placeholder.com/50",
+  //     },
+  //   },
+  //   {
+  //     id: 2,
+  //     image: "https://via.placeholder.com/300x150",
+  //     title: "JavaScript: From Zero to Hero",
+  //     date: "December 10, 2024",
+  //     time: "2:00 PM - 5:00 PM",
+  //     status: "upcoming",
+  //     organizer: {
+  //       name: "John Smith",
+  //       position: "JavaScript Specialist",
+  //       profilePic: "https://via.placeholder.com/50",
+  //     },
+  //   },
+  //   {
+  //     id: 3,
+  //     image: "https://via.placeholder.com/300x150",
+  //     title: "Advanced Python Programming",
+  //     date: "November 28, 2024",
+  //     time: "1:00 PM - 4:00 PM",
+  //     status: "completed",
+  //     organizer: {
+  //       name: "Emily Johnson",
+  //       position: "Senior Python Developer",
+  //       profilePic: "https://via.placeholder.com/50",
+  //     },
+  //   },
+  //   {
+  //     id: 4,
+  //     image: "https://via.placeholder.com/300x150",
+  //     title: "Mastering Data Science with Python",
+  //     date: "December 15, 2024",
+  //     time: "11:00 AM - 3:00 PM",
+  //     status: "upcoming",
+  //     organizer: {
+  //       name: "David Brown",
+  //       position: "Data Scientist",
+  //       profilePic: "https://via.placeholder.com/50",
+  //     },
+  //   },
+  //   {
+  //     id: 5,
+  //     image: "https://via.placeholder.com/300x150",
+  //     title: "UI/UX Design Basics",
+  //     date: "November 20, 2024",
+  //     time: "9:00 AM - 12:00 PM",
+  //     status: "completed",
+  //     organizer: {
+  //       name: "Sophia Davis",
+  //       position: "UI/UX Designer",
+  //       profilePic: "https://via.placeholder.com/50",
+  //     },
+  //   },
+  //   {
+  //     id: 6,
+  //     image: "https://via.placeholder.com/300x150",
+  //     title: "React and Redux Workshop",
+  //     date: "December 20, 2024",
+  //     time: "10:00 AM - 2:00 PM",
+  //     status: "upcoming",
+  //     organizer: {
+  //       name: "Michael Wilson",
+  //       position: "React Developer",
+  //       profilePic: "https://via.placeholder.com/50",
+  //     },
+  //   },
+  //   {
+  //     id: 7,
+  //     image: "https://via.placeholder.com/300x150",
+  //     title: "Machine Learning Bootcamp",
+  //     date: "January 5, 2025",
+  //     time: "9:00 AM - 6:00 PM",
+  //     status: "upcoming",
+  //     organizer: {
+  //       name: "Sarah Lee",
+  //       position: "ML Engineer",
+  //       profilePic: "https://via.placeholder.com/50",
+  //     },
+  //   },
+  //   {
+  //     id: 8,
+  //     image: "https://via.placeholder.com/300x150",
+  //     title: "Cybersecurity Essentials",
+  //     date: "December 18, 2024",
+  //     time: "3:00 PM - 6:00 PM",
+  //     status: "upcoming",
+  //     organizer: {
+  //       name: "Robert Taylor",
+  //       position: "Security Analyst",
+  //       profilePic: "https://via.placeholder.com/50",
+  //     },
+  //   },
+  // ];
 
-  const [workshops, setWorkshops] = useState(workshops_);
+  const [workshops, setWorkshops] = useState([]);
   const [search, setSearch] = useState("");
   const [activeTab, setActiveTab] = useState("upcoming");
   const [currentPage, setCurrentPage] = useState(0);
@@ -126,29 +127,27 @@ const WorkshopsPage = ({demoTags}) => {
 
     const navigate = useNavigate();
 
-    // Fetch workshops from the server
-  const fetchWorkshops = async (page, search, status) => {
-    // try {
-    //   const response = await axios.get("/api/workshops", {
-    //     params: {
-    //       page: page + 1, // API pages typically start from 1
-    //       limit: itemsPerPage,
-          // search: search,
-    //       selectedTags: selectedTags,
-    //       status: status || undefined, // Avoid sending empty strings as parameters
-    //     },
-    //   });
-    //   setWorkshops(response.data.workshops);
-    //   setTotalPages(response.data.totalPages);
-    // } catch (error) {
-    //   console.error("Error fetching workshops:", error);
-    // }
+  // Fetch workshops from the server
+  const fetchWorkshops = async (page, query, status) => {
+    try {
+      const response = await getAllWorkshops();
+      console.log("API Response:", response.data);
+      const filteredWorkshops = response.data.filter(
+        (workshop) =>
+          workshop.title.toLowerCase().includes(query.toLowerCase()) &&
+          (status === "" || workshop.status === status)
+      );
+      setWorkshops(filteredWorkshops);
+      setTotalPages(Math.ceil(filteredWorkshops.length / itemsPerPage));
+    } catch (error) {
+      console.error("Error fetching workshops:", error);
+    }
   };
 
-  useEffect(()=>{
-    setSearch("")
-    setCurrentPage(0)
-  }, [activeTab])
+  useEffect(() => {
+    setSearch("");
+    setCurrentPage(0);
+  }, [activeTab]);
 
   useEffect(() => {
     fetchWorkshops(currentPage, search, activeTab === "all" ? "" : activeTab);
@@ -177,8 +176,8 @@ const WorkshopsPage = ({demoTags}) => {
     console.log(selectedTags);
   }
 
-  function handleWorkshopClick(id){
-    navigate(`${id}`)
+  function handleWorkshopClick(id) {
+    navigate(`${id}`);
   }
 
   return (
@@ -238,7 +237,7 @@ const WorkshopsPage = ({demoTags}) => {
         </div>
       )}
 
-{selectedTags?.length !== 0 && (
+      {selectedTags?.length !== 0 && (
         <div className="">
           Filters applied:
           {selectedTags.map((tag) => {
@@ -248,17 +247,21 @@ const WorkshopsPage = ({demoTags}) => {
                 style={{ backgroundColor: "rgb(233, 236, 239)" }}
               >
                 <span>{tag}</span>
-                <button type="button" className="btn"
+                <button
+                  type="button"
+                  className="btn"
                   style={{
-                    background: '',
-                    border: 'none',
-                    fontSize: '1rem',
-                    cursor: 'pointer',
-                    transition: 'background-color 0.3s ease',
-                    borderRadius: '50%'
-                    
+                    background: "",
+                    border: "none",
+                    fontSize: "1rem",
+                    cursor: "pointer",
+                    transition: "background-color 0.3s ease",
+                    borderRadius: "50%",
                   }}
-                  onClick={()=>handleTagClick(tag)}>&times;</button>
+                  onClick={() => handleTagClick(tag)}
+                >
+                  &times;
+                </button>
               </div>
             );
           })}
@@ -296,10 +299,14 @@ const WorkshopsPage = ({demoTags}) => {
       {/* Workshop Cards */}
       <div className="row">
         {workshops.map((workshop) => (
-          <div className="col-md-4 mb-4" key={workshop.id} onClick={()=>handleWorkshopClick(workshop.id)}>
+          <div
+            className="col-md-4 mb-4"
+            key={workshop.id}
+            onClick={() => handleWorkshopClick(workshop.id)}
+          >
             <div className="card shadow-sm">
               <img
-                src={workshop.image}
+                src={workshop.workshop_image}
                 className="card-img-top"
                 alt={workshop.title}
               />
@@ -311,15 +318,16 @@ const WorkshopsPage = ({demoTags}) => {
                 </p>
                 <div className="d-flex align-items-center mt-3">
                   <img
-                    src={workshop.organizer.profilePic}
-                    alt={workshop.organizer.name}
+                    src={workshop.organizer_profile_pic}
+                    alt={workshop.organizer_name}
                     className="rounded-circle me-2"
                     style={{ width: "50px", height: "50px" }}
                   />
+
                   <div>
-                    <p className="mb-0 fw-bold">{workshop.organizer.name}</p>
+                    <p className="mb-0 fw-bold">{workshop?.organizer_name}</p>
                     <small className="text-muted">
-                      {workshop.organizer.position}
+                      {workshop?.organizer_position}
                     </small>
                   </div>
                 </div>

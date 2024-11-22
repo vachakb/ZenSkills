@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
+import { getWorkshopById } from "../apis/workshops";
 
 const WorkshopDetails = () => {
   const { workshopId } = useParams(); // Assuming you're passing workshop ID in the route
@@ -17,38 +18,30 @@ const WorkshopDetails = () => {
   const [loading, setLoading] = useState(false);
 
   // Mock data for the workshop (Replace with actual data fetch logic)
-  const workshopData_ = {
-    title: "React and Bootstrap Workshop",
-    host: "Donald Trump",
-    description:
-      "Learn the basics of React and how to style your applications using Bootstrap. This workshop is perfect for beginners who want to dive into modern web development.",
-    date: "25th November 2024",
-    time: "10:00 AM - 4:00 PM",
-    venue: "Tech Hall, Main Campus",
-    bookStatus: false,
-    completionStatus: false,
-  };
+//   const workshopData_ = {
+//     title: "React and Bootstrap Workshop",
+//     host: "Donald Trump",
+//     description:
+//       "Learn the basics of React and how to style your applications using Bootstrap. This workshop is perfect for beginners who want to dive into modern web development.",
+//     date: "25th November 2024",
+//     time: "10:00 AM - 4:00 PM",
+//     venue: "Tech Hall, Main Campus",
+//     bookStatus: false,
+//     completionStatus: false,
+//   };
 
-  async function fetchWorkshopData() {
-    // try{
-    //     const responce = await axios.get(`/api/workshops/${workshopId}`, {
-    //         params:{
-    //             workshopId,
-    //             userId
-    //         }
-    //     })
-    //     if(responce.ok){
-    //         setWorkshopData(await responce.json());
-    //     }
-    // }catch(error){
-    //     console.error(error)
-    // }
-    setWorkshopData(workshopData_);
+async function fetchWorkshopData() {
+    try {
+      const response = await getWorkshopById(workshopId);
+      setWorkshopData(response.data);
+    } catch (error) {
+      console.error("Error fetching workshop details:", error);
+    }
   }
 
   useEffect(() => {
     fetchWorkshopData();
-  }, []);
+  }, [workshopId]);
 
   const handleBooking = async () => {
     setLoading(true);
@@ -103,7 +96,7 @@ const WorkshopDetails = () => {
         </div>
         <div className="card-body">
           <p>
-            <strong>Host:</strong> {workshopData.host}
+            <strong>Host:</strong> {workshopData.organizer_name}
           </p>
           <p>
             <strong>Description:</strong> {workshopData.description}
@@ -119,7 +112,7 @@ const WorkshopDetails = () => {
           </p>
         </div>
         <div className="card-footer text-center">
-          {!workshopData.completionStatus ? (
+          {workshopData.status === "upcoming" ? (
             !workshopData.bookStatus ? (
               <button
                 className="btn btn-success border w-100"
