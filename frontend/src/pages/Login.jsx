@@ -6,10 +6,8 @@ import { Formik } from "formik";
 import { useState } from "react";
 import { GoogleLogin } from "@react-oauth/google";
 import { useNavigate } from "react-router-dom";
-import {
-  googleCallback,
-  login,
-} from "../apis/user";
+import { googleCallback, login } from "../apis/user";
+import useSession from "../hooks/useSession";
 
 // TODO put into env
 const GOOGLE_CLIENT_ID =
@@ -19,6 +17,8 @@ function Login() {
   const [isMentor, setIsMentor] = useState(false);
 
   const navigate = useNavigate();
+
+  const { saveSession } = useSession();
 
   const schema = yup.object({
     email: yup
@@ -44,7 +44,10 @@ function Login() {
             }}
             onSubmit={async (data) =>
               login({ ...data, role: isMentor ? "mentor" : "mentee" })
-                .then(() => navigate("/mentee_welcome"))
+                .then((res) => {
+                  saveSession(res);
+                  navigate("/mentee_welcome");
+                })
                 .catch((err) => {
                   console.error(err);
                   // TODO error modal
@@ -143,17 +146,19 @@ function Login() {
                   ></div>
                 </div>
 
-              <div className="align-self-center">  <GoogleLogin
-                  clientId={GOOGLE_CLIENT_ID}
-                  onSuccess={async (response) =>
-                    googleCallback(response.credential)
-                      .then((res) => console.log(res))
-                      .catch(console.error(err))
-                  }
-                  onError={() => {
-                    console.log("Login Failed");
-                  }}
-                />
+                <div className="align-self-center">
+                  {" "}
+                  <GoogleLogin
+                    clientId={GOOGLE_CLIENT_ID}
+                    onSuccess={async (response) =>
+                      googleCallback(response.credential)
+                        .then((res) => console.log(res))
+                        .catch(console.error(err))
+                    }
+                    onError={() => {
+                      console.log("Login Failed");
+                    }}
+                  />
                 </div>
 
                 <p className="m-0 mx-auto">
