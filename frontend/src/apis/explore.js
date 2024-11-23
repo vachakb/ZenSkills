@@ -22,7 +22,7 @@ export async function fetchMentors(
         page: currentPage,
         limit: itemsPerPage,
         search: searchTerm,
-        selectedTags: selectedTags,
+        selectedTags: selectedTags.map((tag) => tag.tag_name).join(","),
       },
     });
   } catch (error) {

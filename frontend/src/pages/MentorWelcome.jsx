@@ -20,6 +20,7 @@ import {
   import MentorCard from "../components/MentorCard"
   import "../styles/style.css";
 import Calendar from "../components/Calendar";
+import { getUserProfile } from "../apis/user";
 export default function MentorWelcome({events_}){
   const [events, setEvents] = useState(events_);
     
@@ -31,11 +32,24 @@ export default function MentorWelcome({events_}){
       /*{name:"test1",date:new Date()},
           {name:"test2",date:new Date()},*/
     ];
+
+  const [profile, setProfile] = useState({});
+
+  const onLoad = async () => {
+    try {
+      const res = await getUserProfile();
+      setProfile(res.data.profile);
+    } catch (err) {
+      console.error(err)
+    }
+  }
+
+  useEffect(() => { onLoad() }, []);
   
     const [tasks, setTasks] = useState([
         { label: "Complete your profile", done: true },
         { label: "Setup your calendar", done: false },
-        { label: "Create your first session", done: false },
+        { label: "Create your first session", done: profile?.mentor?.created_first_session },
       
       
       

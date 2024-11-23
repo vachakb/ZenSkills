@@ -3,9 +3,10 @@ import MentorCard from "../components/MentorCard";
 import ReactPaginate from "react-paginate";
 import axios from "axios";
 import { fetchTags, fetchMentors, fetchMentorsbyAI } from "../apis/explore";
+import classNames from "classnames";
 
-export default function ExploreMentor({ mentors_, demoTags }) {
-  const [mentors, setMentors] = useState(mentors_);
+export default function ExploreMentor( ) {
+  const [mentors, setMentors] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [allTags, setAllTags] = useState([]);
   const [selectedTags, setSelectedTags] = useState([]);
@@ -20,7 +21,7 @@ export default function ExploreMentor({ mentors_, demoTags }) {
   useEffect(() => {
     (async () => {
       const tagsResponse = await fetchTags();
-      setAllTags(tagsResponse?.data?.tags || demoTags);
+      setAllTags(tagsResponse?.data?.tags || []);
       const mentorsResponse = await fetchMentors(currentPage, itemsPerPage, searchTerm, selectedTags);
       setMentors(mentorsResponse?.data?.mentors || []);
       setTotalPages(Math.ceil((mentorsResponse?.data?.totalMentorsCount || 0) / itemsPerPage));
@@ -50,12 +51,18 @@ export default function ExploreMentor({ mentors_, demoTags }) {
     setCurrentpage(selectedItem.selected);
   }
 
+  // TODO handle this better
   function handleTagClick(tag) {
-    if (selectedTags.includes(tag)) {
-      setSelectedTags(selectedTags.filter((Tag) => Tag !== tag));
-    } else {
-      setSelectedTags([...selectedTags, tag]);
+    for (let i = 0; i < selectedTags.length; i++) {
+           if (selectedTags[i].tag_id === tag.tag_id) {
+             const copyArr = [...selectedTags];
+             copyArr.splice(i, 1);
+              setSelectedTags(copyArr);
+              return
+          }
     }
+
+      setSelectedTags([...selectedTags, tag]);
   }
 
   return (
@@ -96,13 +103,15 @@ export default function ExploreMentor({ mentors_, demoTags }) {
           {/* Tag filters */}
           {allTags.map((tag) => (
             <button
-              key={tag}
-              className={`btn btn-sm rounded-pill m-1 ${
-                selectedTags.includes(tag) ? "btn-success" : "btn-secondary"
-              }`}
+              key={tag.tag_id}
+              className={classNames({
+                "btn btn-sm rounded-pill m-1": true,
+                  "bg-success": selectedTags.some((selectedTag) => selectedTag.tag_id === tag.tag_id),
+                "bg-secondary": !selectedTags.some((selectedTag) => selectedTag.tag_id === tag.tag_id)
+              })}
               onClick={() => handleTagClick(tag)}
             >
-              {tag}
+              {tag.tag_name}
             </button>
           ))}
         </div>

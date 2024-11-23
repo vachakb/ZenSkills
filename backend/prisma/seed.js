@@ -4,6 +4,21 @@ const prisma = new PrismaClient();
 
 const main = async () => {
   try {
+    const topics = [
+      "Design Thinking",
+      "Web Development",
+      "Data Science",
+      "Leadership",
+    ];
+
+    topics.map(async (topic) => {
+      await prisma.MentorSessionTopic.upsert({
+        where: { name: topic },
+        update: {},
+        create: { name: topic },
+      });
+    });
+
     const tags = ["Frontend", "Backend", "AI", "Marketing", "DevOps"];
 
     tags.map(

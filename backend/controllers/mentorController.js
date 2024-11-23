@@ -7,14 +7,12 @@ const getMentors = async (req, res) => {
       page = 0,
       limit = 10,
       search = "",
-      selectedTags = [],
+      selectedTags = "",
       noOfMenteesMentored = 0,
     } = req.query;
 
     // check selectedTags is array of strings
-    const tagsArray = Array.isArray(selectedTags)
-      ? selectedTags
-      : JSON.parse(selectedTags || "[]");
+    const tagsArray = selectedTags.length === 0 ? [] : selectedTags.split(",");
 
     const offset = page * limit;
 
@@ -33,9 +31,7 @@ const getMentors = async (req, res) => {
               {
                 expertise: {
                   some: {
-                    tags: {
-                      tag_name: { in: tagsArray },
-                    },
+                    tag_name: { in: tagsArray },
                   },
                 },
               },

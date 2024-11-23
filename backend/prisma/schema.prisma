@@ -1,5 +1,6 @@
 generator client {
   provider = "prisma-client-js"
+  previewFeatures = ["omitApi"]
 }
 
 datasource db {
@@ -24,7 +25,6 @@ model User {
   mentee        mentee?
   mentor        mentor?
   userBadges    UserBadge[]
-  bookFirstSession Boolean @default(false)
   JobApplication JobApplication[] @relation(map: "job_application_user_fk")
   language      String?     @db.VarChar(100)
 }
@@ -61,10 +61,13 @@ model mentor {
   Job                       Job[]               @relation(map: "job_posted_by_fk")
 
 
+  sessions MentorSession[]
 
   meeting_sessions           meeting_sessions[]   
   workshops                  workshops[]    
   Review                     Review[]           @relation(map: "review_mentor_fk")
+
+  created_first_session Boolean @default(false)
 }
 
 model tags {
@@ -278,28 +281,31 @@ model MentorSession {
   durationMinutes Int
   topics MentorSessionTopic[]
   timeSlots TimeSlot[]
+  mentors mentor[]
 }
 
 model MentorSessionTopic {
       id String @id @default(uuid())
-      name String
+      name String @unique
       sessions MentorSession[]
 }
 
 model TimeSlot {
       id String @id @default(uuid())
       day Day
-      from DateTime @db.Time()
-      to DateTime @db.Time()
+      // from DateTime @db.Time()
+      // to DateTime @db.Time()
+      from String
+      to String
       sessions MentorSession[]
 }
 
 enum Day {
-  SUN
-  MON
-  TUE
-  WED
-  THU
-  FRI
-  SAT
+  SUNDAYS
+  MONDAYS
+  TUESDAYS
+  WEDNESDAYS
+  THURSDAYS
+  FRIDAYS
+  SATURDAYS
 }

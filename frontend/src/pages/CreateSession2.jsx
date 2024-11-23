@@ -3,6 +3,7 @@ import { Form, Button, Col, Row, Card, InputGroup } from "react-bootstrap";
 import { Formik, FieldArray } from "formik";
 import * as Yup from "yup";
 import { useLocation, useNavigate } from "react-router-dom";
+import { createSession } from "../apis/session";
 
 
 
@@ -51,8 +52,7 @@ const SessionForm1 = () => {
         initialValues={initialValues}
         validationSchema={validationSchema}
         onSubmit={(values) => {
-          console.log("Form Values:", { ...values, ...prevForm });
-        
+          createSession({ ...values, ...prevForm }).then(() => navigate("/mentor_welcome"));
         }}
       >
         {({ values, handleSubmit, handleChange }) => (

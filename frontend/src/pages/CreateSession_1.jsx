@@ -1,31 +1,28 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import { Dropdown, Button, Card } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
+import { getAllTopics } from "../apis/session";
 
 const SessionForm = () => {
   const navigate = useNavigate();
 
   const [selectedTopics, setSelectedTopics] = useState([]);
   const [availableTopics, setAvailableTopics] = useState([
-    "Design Thinking",
-    "Web Development",
-    "Data Science",
-    "Leadership",
   ]);
 
   const handleSelectTopic = (topic, setFieldValue) => {
     if (selectedTopics.length < 3) {
       const newSelectedTopics = [...selectedTopics, topic];
       setSelectedTopics(newSelectedTopics);
-      setAvailableTopics(availableTopics.filter((t) => t !== topic));
+      setAvailableTopics(availableTopics.filter((t) => t.name !== topic.name));
       setFieldValue("selectedTopics", newSelectedTopics);
     }
   };
 
   const handleRemoveTag = (topic, setFieldValue) => {
-    const newSelectedTopics = selectedTopics.filter((t) => t !== topic);
+    const newSelectedTopics = selectedTopics.filter((t) => t.name !== topic.name);
     setSelectedTopics(newSelectedTopics);
     setAvailableTopics([...availableTopics, topic]);
     setFieldValue("selectedTopics", newSelectedTopics);
@@ -42,6 +39,19 @@ const SessionForm = () => {
       .min(1, "Please select at least one topic")
       .max(3, "You can select a maximum of 3 topics"),
   });
+
+  const onLoad = async () => {
+    try {
+      const res = await getAllTopics();
+      setAvailableTopics(res.data.topics);
+    } catch (err) {
+      console.error(err)
+    }
+  }
+
+    useEffect((() => {
+        onLoad()
+    }), [])
 
   return (
       <div style={{ maxWidth: "90%" }} className="border p-3 rounded mx-auto">
@@ -137,12 +147,12 @@ const SessionForm = () => {
                 <div className="d-flex flex-wrap gap-2 mb-2">
                   {selectedTopics.map((topic, index) => (
                     <span
-                      key={index}
+                      key={topic.id}
                       className="badge bg-primary text-white px-3 py-2"
                       style={{ borderRadius: "20px", cursor: "pointer" }}
                       onClick={() => handleRemoveTag(topic, setFieldValue)}
                     >
-                      {topic} <span className="ms-2">✕</span>
+                      {topic.name} <span className="ms-2">✕</span>
                     </span>
                   ))}
                 </div>
@@ -170,10 +180,10 @@ const SessionForm = () => {
                   >
                     {availableTopics.map((topic, index) => (
                       <Dropdown.Item
-                        key={index}
+                        key={topic.id}
                         onClick={() => handleSelectTopic(topic, setFieldValue)}
                       >
-                        {topic}
+                        {topic.name}
                       </Dropdown.Item>
                     ))}
                   </Dropdown.Menu>
