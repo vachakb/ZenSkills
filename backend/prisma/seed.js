@@ -5,15 +5,16 @@ const prisma = new PrismaClient();
 const main = async () => {
   try {
     const tags = ["Frontend", "Backend", "AI", "Marketing", "DevOps"];
-    await Promise.all(
-      tags.map((tagName) =>
-        prisma.tags.upsert({
+
+    tags.map(
+      async (tagName) =>
+        await prisma.tags.upsert({
           where: { tag_name: tagName },
           update: {},
           create: { tag_name: tagName },
         }),
-      ),
     );
+
     console.log("Tags upserted successfully!");
 
     const user = await prisma.user.create({
@@ -28,6 +29,8 @@ const main = async () => {
         is_deleted: false,
       },
     });
+
+    console.log("User created successfully!");
 
     const mentor = await prisma.mentor.create({
       data: {
@@ -50,16 +53,22 @@ const main = async () => {
       },
     });
 
-    await Promise.all(
-      tagRecords.map((tag) =>
-        prisma.mentor_expertise.create({
+    tagRecords.map(
+      async (tag) =>
+        await prisma.mentor.update({
+          where: {
+            id: mentor.id,
+          },
           data: {
-            mentor_id: mentor.mentor_id,
-            tag_id: tag.tag_id,
+            expertise: {
+              connect: {
+                tag_id: tag.tag_id,
+              },
+            },
           },
         }),
-      ),
     );
+
     console.log("Mentor expertise added successfully!");
   } catch (error) {
     console.error("Error seeding database:", error);

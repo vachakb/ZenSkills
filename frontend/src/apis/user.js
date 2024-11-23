@@ -26,6 +26,10 @@ function googleCallback(token) {
   });
 }
 
+function getAllTags() {
+  return axiosInstance.get(`/tags`);
+}
+
 export {
   login,
   register,
@@ -33,4 +37,5 @@ export {
   verificationEmailCallback,
   registerUser,
   googleCallback,
+  getAllTags,
 };

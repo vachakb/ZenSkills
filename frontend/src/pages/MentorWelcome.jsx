@@ -19,6 +19,7 @@ import {
   import EventCard from "../components/Events";
   import MentorCard from "../components/MentorCard"
   import "../styles/style.css";
+import Calendar from "../components/Calendar";
 export default function MentorWelcome({events_}){
   const [events, setEvents] = useState(events_);
     
@@ -171,7 +172,9 @@ export default function MentorWelcome({events_}){
         
       
         <div className="flex-grow-0 ms-auto" style={{position:'fixed', right:'15px'}}>
-        
+          <div className="mb-5">
+            <Calendar />
+          </div>
           <Card
             text="primary"
             bg="white"

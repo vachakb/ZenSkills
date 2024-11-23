@@ -55,7 +55,7 @@ export default function MentorCard({ mentor }) {
               }}
               title={mentor.currentPost}
             >
-              {mentor.currentPost} at {mentor.company}
+              {mentor.currentPost} {mentor.company}
             </div>
           </div>
 
@@ -75,7 +75,7 @@ export default function MentorCard({ mentor }) {
         <div className="row text-center">
           <div className="col-6">
             <div className="fw-bold">Experience</div>
-            <div>{mentor.Experience} Years</div>
+            <div>{mentor.experienceYears} Years, {mentor.experienceMonths} Months</div>
           </div>
           <div className="col-6">
             <div className="fw-bold">Credit Score</div>

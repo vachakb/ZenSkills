@@ -14,6 +14,8 @@ function RegisterProfession() {
 
   const isMentor = session.role === "mentor";
 
+  console.log(isMentor)
+
   const navigate = useNavigate();
 
   const schema = useMemo(() => {

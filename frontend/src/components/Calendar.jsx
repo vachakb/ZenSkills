@@ -3,6 +3,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { Card } from "react-bootstrap";
 import classNames from "classnames";
 import { Link } from "react-router-dom";
+import useSession from "../hooks/useSession";
 
 const sessions = [
   {
@@ -49,6 +50,8 @@ const sessions = [
 
 function Calendar() {
   const [selectedDate, setSelectedDate] = useState(DateTime.local());
+
+  const { session } = useSession();
 
   const selectedDateSessions = useMemo(() => {
     return sessions.filter((session) =>
@@ -114,7 +117,7 @@ function Calendar() {
               type="date"
               onChange={(ev) => {
                 setSelectedDate(
-                  DateTime.fromFormat(ev.currentTarget.value, "yyyy-MM-dd")
+                  DateTime.fromFormat(ev.currentTarget.value, "yyyy-MM-dd"),
                 );
                 setWeekOffset(0);
                 setShowDatePicker(false);
@@ -203,7 +206,9 @@ function Calendar() {
             src="/calendar.svg"
           />
           <div
-            style={{ height: selectedDateSessions.length > 0 ? "150px" : "unset" }}
+            style={{
+              height: selectedDateSessions.length > 0 ? "150px" : "unset",
+            }}
             className="d-flex flex-column gap-4 overflow-auto"
           >
             {selectedDateSessions.length > 0
@@ -249,9 +254,11 @@ function Calendar() {
             >
               Go to all session
             </Link>
-            <Link style={{ color: "#037F7D" }} to="/createsession_1">
-              Book a session
-            </Link>
+            {session.role === "mentor" ? (
+              <Link style={{ color: "#037F7D" }} to="/createsession_1">
+                Book a session
+              </Link>
+            ) : null}
           </div>
         </div>
       </Card.Body>

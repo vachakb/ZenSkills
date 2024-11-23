@@ -19,7 +19,6 @@ import { RiCopperCoinLine } from "react-icons/ri";
 import EventCard from "../components/Events";
 import MentorCard from "../components/MentorCard";
 import axios from "axios";
-import Calendar from "../components/Calendar";
 
 const API_URL = "http://localhost:5000";
 
@@ -218,9 +217,6 @@ function MenteeWelcome({ mentors_, events_ }) {
               <PiPlantFill className="mx-2" style={{ color: "#33a70d" }} />
             </Card.Text>
           </Card>*/}
-          <div className="mb-5">
-            <Calendar />
-          </div>
           <Card
             text="primary"
             bg="white"

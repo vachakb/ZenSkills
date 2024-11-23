@@ -4,7 +4,7 @@ const prisma = require("../models/prismaClient");
 exports.getUserProfile = async (req, res) => {
   try {
     const user = await prisma.user.findUnique({
-      where: { uid: req.user.id },
+      where: { id: req.user.id },
       include: { mentee: true, mentor: true },
     });
     res.json({ user });

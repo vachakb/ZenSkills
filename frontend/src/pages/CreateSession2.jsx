@@ -2,11 +2,15 @@ import React from "react";
 import { Form, Button, Col, Row, Card, InputGroup } from "react-bootstrap";
 import { Formik, FieldArray } from "formik";
 import * as Yup from "yup";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 
 
 const SessionForm1 = () => {
+  const navigate = useNavigate();
+
+  const prevForm = useLocation().state;
+
   const daysOfWeek = [
     "SUNDAYS",
     "MONDAYS",
@@ -47,7 +51,7 @@ const SessionForm1 = () => {
         initialValues={initialValues}
         validationSchema={validationSchema}
         onSubmit={(values) => {
-          console.log("Form Values:", values);
+          console.log("Form Values:", { ...values, ...prevForm });
         
         }}
       >
@@ -185,7 +189,7 @@ const SessionForm1 = () => {
 
             {/* Footer Buttons */}
             <div className="form-footer">
-              <Button variant="outline-primary" className="back-button">
+              <Button type="button" variant="outline-primary" className="back-button" onClick={() => navigate("/createsession_1")}>
                 Back
               </Button>
               <Button type="submit" variant="primary" className="next-button">
