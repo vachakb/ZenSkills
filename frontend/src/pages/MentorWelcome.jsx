@@ -24,10 +24,8 @@ import { getUserProfile } from "../apis/user";
 export default function MentorWelcome({events_}){
   const [events, setEvents] = useState(events_);
     
-    const location = useLocation();
 
-    const userName = location.state?.name || "User";
-  
+
     const sessiondata = [
       /*{name:"test1",date:new Date()},
           {name:"test2",date:new Date()},*/
@@ -43,6 +41,8 @@ export default function MentorWelcome({events_}){
       console.error(err)
     }
   }
+
+  const userName = profile?.name || "User";
 
   useEffect(() => { onLoad() }, []);
   

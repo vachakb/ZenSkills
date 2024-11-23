@@ -46,12 +46,15 @@ function Login() {
               login({ ...data, role: isMentor ? "mentor" : "mentee" })
                 .then((res) => {
                   saveSession(res);
-                  navigate("/mentee_welcome");
+                  navigate(isMentor ? "/mentor_welcome" : "/mentee_welcome");
                 })
                 .catch((err) => {
                   console.error(err);
-                  // TODO error modal
-                  alert(err);
+                  console.log(err.response)
+
+                  if (err.response && err.response.status === 401) {
+                    alert("Wrong credentials. Check for correct email, password and role.");
+                  }
                 })
             }
           >

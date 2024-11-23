@@ -16,7 +16,7 @@ async function getMenteeProfile(req, res) {
     if (!mentee) return res.status(404).json({ error: "Mentee not found" });
 
     const response = {
-      name: mentee.name,
+      name: mentee.User.name,
       bio: mentee.bio,
       occupation: mentee.company,
       title: mentee.mentee_title,
