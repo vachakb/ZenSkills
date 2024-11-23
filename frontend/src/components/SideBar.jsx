@@ -9,6 +9,7 @@ import { FaRegClock } from "react-icons/fa6";
 import { BiMessageDetail } from "react-icons/bi";
 import { MdWorkOutline } from "react-icons/md";
 import classNames from "classnames";
+import useSession from "../hooks/useSession";
 
 function SideBar(props) {
   const navbarClassname = classNames({
@@ -16,6 +17,8 @@ function SideBar(props) {
     "d-block": props.show,
     "d-none": !props.show
   });
+
+  const { session } = useSession();
 
   return (
     <Navbar
@@ -29,7 +32,7 @@ function SideBar(props) {
         style={{ width: "100%", height: "100%" }}
       >
         <Nav.Link
-          href=""
+          href={session.role === "mentor" ? "/mentor_welcome" : "mentee_welcome"}
           className="d-flex flex-column align-items-center mb-2"
           style={{ color: "white", fontSize: "10px" }}
         >
@@ -37,7 +40,7 @@ function SideBar(props) {
           <span>Home</span>
         </Nav.Link>
         <Nav.Link
-          href=""
+          href={session.role === "mentee" ? "/explore" : ""}
           className="d-flex flex-column align-items-center mb-2"
           style={{ color: "white", fontSize: "10px" }}
         >

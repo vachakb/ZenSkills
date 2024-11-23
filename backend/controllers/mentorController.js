@@ -100,11 +100,9 @@ const getMentorProfile = async (req, res) => {
 
     // Fetch mentor profile
     const mentor = await prisma.mentor.findUnique({
-      where: { mentor_id: mentorId },
+      where: { id: mentorId },
       include: {
-        mentor_expertise: {
-          include: { tags: true }, // Include expertise tags
-        },
+        expertise: true,
         User: true,
       },
     });
@@ -115,14 +113,14 @@ const getMentorProfile = async (req, res) => {
     }
 
     const mentorProfile = {
-      name: mentor.name,
+      name: mentor.User.name,
       bio: mentor.bio,
       occupation: mentor.mentor_job_title,
       rating: mentor.rating,
       workExperiences: [], // Populate this with custom logic if needed
-      expertise: mentor.mentor_expertise.map((i) => i.tags.tag_name),
-      isMentor: true,
+      expertise: mentor.expertise,
     };
+
     res.status(200).json(mentorProfile);
   } catch (error) {
     console.error("Error fetching mentor profile:", error);

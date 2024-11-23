@@ -281,7 +281,7 @@ model MentorSession {
   durationMinutes Int
   topics MentorSessionTopic[]
   timeSlots TimeSlot[]
-  mentors mentor[]
+  mentor mentor
 }
 
 model MentorSessionTopic {

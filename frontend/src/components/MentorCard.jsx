@@ -1,3 +1,4 @@
+import { useNavigate } from "react-router-dom";
 import demoMentorImage from "../assets/mentorImage.png";
 import { FaStar, FaBriefcase, FaRegComment } from "react-icons/fa";
 
@@ -13,8 +14,12 @@ import { FaStar, FaBriefcase, FaRegComment } from "react-icons/fa";
 // };
 
 export default function MentorCard({ mentor }) {
+  const navigate = useNavigate();
+
   return (
-    <div className="card h-100 shadow-sm p-3 d-flex flex-column">
+    <div style={{ cursor: "pointer" }} className="card h-100 shadow-sm p-3 d-flex flex-column" onClick={() => {
+      navigate("/mentee_exploring/" + mentor.id);
+    }}>
       {/* Mentor Image */}
       <img
         src={demoMentorImage}

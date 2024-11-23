@@ -49,7 +49,7 @@ export default function MentorWelcome({events_}){
     const [tasks, setTasks] = useState([
         { label: "Complete your profile", done: true },
         { label: "Setup your calendar", done: false },
-        { label: "Create your first session", done: profile?.mentor?.created_first_session },
+        { label: "Create your first session", done: false },
       
       
       

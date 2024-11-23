@@ -119,7 +119,7 @@ const ProfileCard = ({ profile }) => {
               {(profile.isMentor ? profile.expertise : profile.interests).map(
                 (interest, index) => (
                   <Badge
-                    key={index}
+                    key={interest.tag_id}
                     bg="warning"
                     text="dark"
                     className="me-2 mb-2"
@@ -129,7 +129,7 @@ const ProfileCard = ({ profile }) => {
                       boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
                     }}
                   >
-                    {interest}
+                    {interest.tag_name}
                   </Badge>
                 ),
               )}

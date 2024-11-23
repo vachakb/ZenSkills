@@ -1,5 +1,7 @@
+import { useEffect, useState } from "react";
 import { Button, Card } from "react-bootstrap";
 import { GiTwoCoins } from "react-icons/gi";
+import { getAllAvailableSessions } from "../apis/session";
 
 const sessions = [
   {
@@ -20,6 +22,21 @@ const sessions = [
 ];
 
 function AvailableSessions() {
+    // const [sessions, setSessions] = useState([]);
+
+  const onLoad = async () => {
+    try {
+      const res = await getAllAvailableSessions();
+      // setSessions(res.data.sessions);
+    } catch (err) {
+      console.log(err);
+    }
+  }
+
+    useEffect(() => {
+        onLoad()
+    }, []);
+
   return (
     <Card style={{ borderRadius: "10px" }}>
       <Card.Body className="d-flex flex-column gap-4">
