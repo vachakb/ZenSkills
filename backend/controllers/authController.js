@@ -145,7 +145,6 @@ exports.googleCallback = async (req, res) => {
           role: "mentee",
           status: "active",
           is_deleted: false,
-          gender: "prefer_not_to_say",
           phone_number: "0000000000",
           location: "Unknown",
           password: "",
