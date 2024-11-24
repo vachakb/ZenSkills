@@ -4,10 +4,10 @@ exports.getAllAvailableSessions = async (req, res) => {
   try {
     const sessions = await prisma.MentorSession.findMany({
       include: {
-        mentors: true,
+        mentor: true,
       },
       where: {
-        mentors: {
+        mentor: {
           some: {
             User: {
               id: req.user.id,
@@ -68,7 +68,7 @@ exports.createSession = async (req, res) => {
         timeSlots: {
           create: timeSlots,
         },
-        mentors: {
+        mentor: {
           connect: {
             id: mentor.id,
           },
