@@ -4,8 +4,9 @@ import ReactPaginate from "react-paginate";
 import axios from "axios";
 import { fetchTags, fetchMentors, fetchMentorsbyAI } from "../apis/explore";
 import classNames from "classnames";
+import "../styles/style.css"
 
-export default function ExploreMentor( ) {
+export default function ExploreMentor({mentors_}) {
   const [mentors, setMentors] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [allTags, setAllTags] = useState([]);
@@ -23,7 +24,7 @@ export default function ExploreMentor( ) {
       const tagsResponse = await fetchTags();
       setAllTags(tagsResponse?.data?.tags || []);
       const mentorsResponse = await fetchMentors(currentPage, itemsPerPage, searchTerm, selectedTags);
-      setMentors(mentorsResponse?.data?.mentors || []);
+      setMentors(mentorsResponse?.data?.mentors || mentors_);
       setTotalPages(Math.ceil((mentorsResponse?.data?.totalMentorsCount || 0) / itemsPerPage));
     })(); // IIFE: Immediately invoked function expression
   }, []);
@@ -35,7 +36,7 @@ export default function ExploreMentor( ) {
       searchTerm,
       selectedTags
     );
-    setMentors(response?.data?.mentors || []);
+    setMentors(response?.data?.mentors || mentors_);
     setTotalPages(
       Math.ceil((response?.data?.totalMentorsCount || 0) / itemsPerPage)
     );

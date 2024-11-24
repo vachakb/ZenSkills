@@ -32,7 +32,7 @@ function SideBar(props) {
         style={{ width: "100%", height: "100%" }}
       >
         <Nav.Link
-          href={session.role === "mentor" ? "/mentor_welcome" : "/mentee_welcome"}
+          href={session?.role === "mentor" ? "/mentor_welcome" : "/mentee_welcome"}
           className="d-flex flex-column align-items-center mb-2"
           style={{ color: "white", fontSize: "10px" }}
         >
@@ -40,7 +40,7 @@ function SideBar(props) {
           <span>Home</span>
         </Nav.Link>
         <Nav.Link
-          href={session.role === "mentee" ? "/explore" : ""}
+          href={session?.role === "mentee" ? "/explore" : ""}
           className="d-flex flex-column align-items-center mb-2"
           style={{ color: "white", fontSize: "10px" }}
         >

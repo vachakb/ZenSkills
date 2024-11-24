@@ -106,3 +106,17 @@
   
   
   
+/* For single-line truncation */
+.text-truncate {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+/* For multi-line truncation (e.g., currentPost) */
+.text-truncate-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2; /* Number of lines */
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}

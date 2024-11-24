@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import demoMentorImage from "../assets/mentorImage.png";
 import { FaStar, FaBriefcase, FaRegComment } from "react-icons/fa";
+import "../styles/style.css";
 
 // passed mentor object should be like this
 // const mentor = {
@@ -17,9 +18,13 @@ export default function MentorCard({ mentor }) {
   const navigate = useNavigate();
 
   return (
-    <div style={{ cursor: "pointer" }} className="card h-100 shadow-sm p-3 d-flex flex-column" onClick={() => {
-      navigate("/mentee_exploring/" + mentor.id);
-    }}>
+    <div
+      style={{ cursor: "pointer" }}
+      className="card h-100 shadow-sm p-3 d-flex flex-column"
+      onClick={() => {
+        navigate("/mentee_exploring/" + mentor.id);
+      }}
+    >
       {/* Mentor Image */}
       <img
         src={demoMentorImage}
@@ -33,40 +38,34 @@ export default function MentorCard({ mentor }) {
         {/* Top Section */}
         <div>
           {/* Name and Rating */}
-          <div className="d-flex justify-content-between align-items-center mb-3">
+          <div className="d-flex justify-content-between align-items-center mb-3 name-rating-wrapper">
             <h5
               className="card-title fw-bold text-truncate"
               title={mentor.name}
             >
               {mentor.name}
             </h5>
-            <div className="d-flex align-items-center text-warning">
-              <FaStar size={15} />
+            <div className="d-flex align-items-center text-warning rating-wrapper">
+              <FaStar size={20} style={{ fontSize: "20px" }} />
               <span className="ms-2">{mentor.rating}</span>
             </div>
           </div>
 
-          {/* Current Post (2 Lines Max) */}
+          {/* Current Post */}
           <div className="d-flex mb-3 align-items-start">
-            <FaBriefcase size={20} className="me-2" />
-            <div
-              style={{
-                display: "-webkit-box",
-                WebkitLineClamp: 2,
-                WebkitBoxOrient: "vertical",
-                overflow: "hidden",
-                lineHeight: "1.2em",
-                maxHeight: "2.4em", // Ensures two lines
-              }}
-              title={mentor.currentPost}
-            >
-              {mentor.currentPost} {mentor.company}
+            <FaBriefcase
+              size={20}
+              style={{ fontSize: "20px" }}
+              className="me-2"
+            />
+            <div className="text-truncate-2" title={mentor.currentPost}>
+              {mentor.currentPost}
             </div>
           </div>
 
           {/* Sessions and Reviews */}
           <div className="d-flex align-items-center mb-3">
-            <FaRegComment size={20} />
+            <FaRegComment size={20} style={{ fontSize: "20px" }} />
             <span className="ms-2">
               {mentor.noOfSessions} Sessions ({mentor.noOfReviews} Reviews)
             </span>
@@ -79,11 +78,13 @@ export default function MentorCard({ mentor }) {
         {/* Bottom Section */}
         <div className="row text-center">
           <div className="col-6">
-            <div className="fw-bold">Experience</div>
-            <div>{mentor.experienceYears} Years, {mentor.experienceMonths} Months</div>
+            <div className="fw-bold text-truncate">Experience</div>
+            <div>
+              {mentor.experienceYears} Years, {mentor.experienceMonths} Months
+            </div>
           </div>
           <div className="col-6">
-            <div className="fw-bold">Credit Score</div>
+            <div className="fw-bold text-truncate">Credit Score</div>
             <div>{mentor.creditScore}</div>
           </div>
         </div>
