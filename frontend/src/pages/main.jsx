@@ -32,6 +32,7 @@ import SessionForm1 from "./CreateSession2.jsx";
 import Meeting from "./Meeting.jsx";
 import WorkshopDetails from "./WorkshopDetails.jsx";
 import Sessions from "./Sessions.jsx";
+import Dashboard from "./Dashboard.jsx";
 
 const mentor = {
   id: "id",
@@ -129,6 +130,10 @@ const router = createBrowserRouter([
     path: "/",
     element: <App />,
     children: [
+      {
+        path: "/",
+        element: <Dashboard />,
+      },
       {
         path: "upcoming",
         element: <Upcoming />,

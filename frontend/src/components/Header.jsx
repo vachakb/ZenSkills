@@ -1,32 +1,28 @@
 import Container from "react-bootstrap/Container";
 import Nav from "react-bootstrap/Nav";
 import Navbar from "react-bootstrap/Navbar";
-import NavDropdown from "react-bootstrap/NavDropdown";
-import { ServiceBell16Filled } from "@fluentui/react-icons";
-import { GiHamburgerMenu, GiTwoCoins } from "react-icons/gi";
-function Header(props) {
+import { GiHamburgerMenu } from "react-icons/gi";
+
+function Header({ onToggleSideBar }) {
   return (
-    <Navbar expand="lg" className="bg-primary px-4">
+    <Navbar expand="lg" className="bg-primary px-4 d-flex align-items-center">
       <Navbar.Brand href="/" className="text-white">
         ZenSkills
       </Navbar.Brand>
-      <Navbar.Toggle aria-controls="basic-navbar-nav" />
-      <Nav className="d-flex flex-row ms-auto gap-2">
-        <Nav.Link>
-          <img src="/bell.svg" style={{ width: "28px" }} />
-        </Nav.Link>
-        <Nav.Link>
-          <GiTwoCoins
-            color="#ffa426"
-            size={"1.5em"}
-            style={{ width: "28px" }}
+      <Nav className="ms-auto d-flex align-items-center gap-3">
+        <div className="d-flex align-items-center gap-3">
+          <img src="/bell.svg" alt="Notifications" style={{ width: "28px" }} />
+          <GiHamburgerMenu
+            color="white"
+            size="1.8em"
+            onClick={onToggleSideBar}
+            className="d-md-none"
+            style={{ cursor: "pointer" }}
           />
-        </Nav.Link>
-        <Nav.Link className="d-md-none">
-          <GiHamburgerMenu color="#ffa426" size="1.5em" style={{ width: "28px" }} onClick={props.onToggleSideBar} />
-        </Nav.Link>
+        </div>
       </Nav>
     </Navbar>
   );
 }
+
 export default Header;
