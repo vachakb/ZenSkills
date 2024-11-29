@@ -1,20 +1,15 @@
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { verificationEmailCallback } from "../apis/user";
 import { useEffect } from "react";
-import useSession from "../hooks/useSession";
 
 function VerifyEmailCallback() {
   const [searchParams, _] = useSearchParams();
 
   const navigate = useNavigate();
 
-  const { saveSession } = useSession();
-
   useEffect(() => {
-    verificationEmailCallback(searchParams.get("token")).then((res) => {
-      saveSession(res);
-      navigate("/register/1");
-    });
+    verificationEmailCallback(searchParams.get("token"))
+      .then(() => navigate("/register/1"));
   }, [searchParams]);
 
   return (

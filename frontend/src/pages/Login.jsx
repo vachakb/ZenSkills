@@ -18,8 +18,6 @@ function Login() {
 
   const navigate = useNavigate();
 
-  const { saveSession } = useSession();
-
   const schema = yup.object({
     email: yup
       .string()
@@ -44,10 +42,7 @@ function Login() {
             }}
             onSubmit={async (data) =>
               login({ ...data, role: isMentor ? "mentor" : "mentee" })
-                .then((res) => {
-                  saveSession(res);
-                  navigate(isMentor ? "/mentor_welcome" : "/mentee_welcome");
-                })
+                .then(() => navigate(isMentor ? "/mentor_welcome" : "/mentee_welcome"))
                 .catch((err) => {
                   console.error(err);
                   console.log(err.response)
