@@ -28,6 +28,3 @@ services:
     command: bash -c "sleep 3 && npx prisma migrate dev && npm run dev"
     volumes:
       - ./backend:/backend
-
-networks:
-  common-net: {}
