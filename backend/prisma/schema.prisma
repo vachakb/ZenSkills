@@ -27,6 +27,8 @@ model User {
   userBadges    UserBadge[]
   JobApplication JobApplication[] @relation(map: "job_application_user_fk")
   language      String?     @db.VarChar(100)
+  conversations Conversation[]
+  messages Message[]
 }
 
 
@@ -308,4 +310,43 @@ enum Day {
   THURSDAYS
   FRIDAYS
   SATURDAYS
+}
+
+model Conversation {
+  id String @id @default(uuid())
+  title String?
+  type ConversationType
+  created_at  DateTime @db.Timestamptz(6) @default(now())
+  messages Message[]
+  users User[]
+}
+
+enum ConversationType {
+  PRIVATE
+  GROUP
+}
+
+model Message {
+  id                String @id @default(uuid())
+  sender_id         String
+  sender            User @relation(fields: [sender_id], references: [id])
+  conversation_id   String
+  conversation      Conversation @relation(fields: [conversation_id], references: [id])
+  content           String
+  type              MessageType
+  attachment        Attachment?
+  created_at        DateTime @db.Timestamptz(6) @default(now())
+  updated_at        DateTime @db.Timestamptz(6) @default(now())
+}
+
+enum MessageType {
+  USER
+  SYSTEM
+}
+
+model Attachment {
+  id String @id @default(uuid())
+  file String
+  message_id String @unique
+  message Message @relation(fields: [message_id], references: [id])
 }
