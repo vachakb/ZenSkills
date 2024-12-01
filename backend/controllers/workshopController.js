@@ -45,4 +45,43 @@ const getWorkshopById = async (req, res) => {
   }
 };
 
-module.exports = { getAllWorkshops, getWorkshopById };
+const createWorkshop = async (req, res) => {
+  try {
+    const {
+      title,
+      description,
+      date,
+      duration,
+      workshop_image,
+      created_by,
+      max_participants,
+      deadline,
+      visibility,
+    } = req.body;
+
+    const newWorkshop = await prisma.workshops.create({
+      data: {
+        title,
+        description,
+        date: new Date(date),
+        duration,
+        workshop_image,
+        created_by,
+        max_participants,
+        deadline: new Date(deadline),
+        visibility,
+      },
+    });
+
+    res.status(201).json(newWorkshop);
+  } catch (error) {
+    console.error("Error creating workshop:", error);
+    res.status(500).json({ error: "Error creating workshop" });
+  }
+};
+
+module.exports = {
+  getAllWorkshops,
+  getWorkshopById,
+  createWorkshop,
+};
