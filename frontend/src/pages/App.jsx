@@ -1,7 +1,7 @@
 import { Outlet, useLocation } from "react-router-dom"; // Import only useLocation
 import Header from "../components/Header";
 import SideBar from "../components/SideBar";
-import { useState } from "react";
+import { useLayoutEffect, useRef, useState } from "react";
 import classNames from "classnames";
 import Dashboard from "./Dashboard";
 
@@ -18,8 +18,19 @@ const excludedRoutes = [
   { path: "/meeting/:meetingId" },
 ];
 
-function Layout({ children }) {
+function App() {
   const location = useLocation();
+
+    const header = useRef(null);
+
+  const [contentHeight, setContentHeight] = useState(0);
+
+    useLayoutEffect(() => {
+      console.log(header);
+      if (header.current) {
+        setContentHeight(document.documentElement.scrollHeight - header.current.offsetHeight)
+      }
+    }, [])
 
   // Check if the current route matches any excluded route
   const isExcluded = excludedRoutes.some((route) =>
@@ -33,33 +44,23 @@ function Layout({ children }) {
   // Conditionally render Header and SideBar based on the route
   return (
     <>
-      {!isExcluded && <Header onToggleSideBar={toggleSideBar} />}
+      {!isExcluded && <Header onToggleSideBar={toggleSideBar} headerRef={header} />}
 
       <div className="d-flex flex-grow-1">
         {!isExcluded && <SideBar show={showSideBar} />}
 
         <div
-          style={{ overflowY: "auto", overflowX: "hidden" }}
+          style={{ overflowY: "auto", overflowX: "hidden", height: contentHeight }}
           className={classNames({
-            "flex-grow-1 position-relative": true,
+            "flex-grow-1": true,
             "p-3": !isExcluded,
           })}
         >
-          <div className="position-absolute w-100">
             {/* Content for the page will go here, likely rendered using an <Outlet /> in your routing */}
-            {children}
-          </div>
+            <Outlet />
         </div>
       </div>
     </>
-  );
-}
-
-function App() {
-  return (
-    <Layout>
-      <Outlet />
-    </Layout>
   );
 }
 

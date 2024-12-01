@@ -6,11 +6,11 @@ import ProfileMenu from "./profileMenu";
 import { useLocation } from "react-router-dom";
 import useProfile from "../hooks/useProfile";
 
-function Header({ onToggleSideBar }) {
+function Header({ onToggleSideBar, headerRef }) {
   const profile = useProfile();
   const location = useLocation();
   return (
-    <Navbar expand="lg" className="bg-primary px-4 d-flex align-items-center">
+    <Navbar expand="lg" className="bg-primary px-4 d-flex align-items-center" ref={headerRef}>
       <Navbar.Brand href="/" className="text-white">
         ZenSkills
       </Navbar.Brand>
