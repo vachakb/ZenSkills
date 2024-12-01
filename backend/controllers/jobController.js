@@ -140,8 +140,39 @@ const createJob = async (req, res) => {
   }
 };
 
+const updateJob = async (req, res) => {
+  try {
+    const { jobId } = req.params;
+    const { title, description, company_name, company_details, location, job_type, qualifications, benefits, app_details, posted_by, deadline, salary } = req.body;
+
+    const updatedJob = await prisma.job.update({
+      where: { id: jobId },
+      data: {
+        title,
+        description,
+        company_name,
+        company_details,
+        location,
+        job_type,
+        qualifications,
+        benefits,
+        app_details,
+        posted_by,
+        deadline: new Date(deadline),
+        salary,
+      },
+    });
+
+    res.status(200).json(updatedJob);
+  } catch (error) {
+    console.error("Error updating job:", error);
+    res.status(500).json({ error: "Failed to update job" });
+  }
+};
+
 module.exports = {
   getJobDetails,
   getJobs,
   createJob,
+  updateJob,
 };
