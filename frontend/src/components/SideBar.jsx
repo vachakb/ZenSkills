@@ -76,7 +76,7 @@ function SideBar(props) {
 
         {/* Messages link */}
         <Nav.Link
-          href=""
+          href="/chat"
           className="d-flex flex-column align-items-center mb-2"
           style={{ color: "white", fontSize: "10px" }}
         >

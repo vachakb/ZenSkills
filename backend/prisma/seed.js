@@ -54,7 +54,7 @@ const main = async () => {
         email: "mentee@example.com",
         name: "Jane Doe",
         password: await argon2.hash("password"),
-        role: "mentor",
+        role: "mentee",
         is_verified: true,
         gender: "Female",
         location: "New Delhi",
