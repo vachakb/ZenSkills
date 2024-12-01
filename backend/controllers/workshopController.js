@@ -20,7 +20,11 @@ const getWorkshopById = async (req, res) => {
       include: {
         mentor: {
           select: {
-            name: true,
+            User: {
+              select: {
+                name: true,
+              },
+            },
           },
         },
       },

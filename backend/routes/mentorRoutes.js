@@ -1,5 +1,5 @@
 const express = require("express");
-const { getMentors, getMentorProfile } = require("../controllers/mentorController");
+const { getMentors, getMentorProfile,editProfile} = require("../controllers/mentorController");
 const { getReviewsByMentorId, addReview } = require("../controllers/reviewController");
 
 
@@ -10,6 +10,10 @@ router.get("/", getMentors);
 
 // Endpoint to fetch mentor profile
 router.get("/:mentorId", getMentorProfile);
+
+// Endpoint to edit mentor profile
+router.put("/:mentorId/edit", editProfile);
+
 
 // Endpoint to fetch reviews by mentor ID
 router.get("/reviews/:mentorId", getReviewsByMentorId);

@@ -33,6 +33,58 @@ async function getMenteeProfile(req, res) {
   }
 }
 
+async function editProfile(req, res) {
+  const { menteeId } = req.params;
+  const { name, email, location, language, phone_number, bio, title, occupation, interests } = req.body;
+
+  try {
+    // Fetch the current mentee profile
+    const currentMentee = await prisma.mentee.findUnique({
+      where: { id: menteeId },
+      include: { User: true },
+    });
+
+    if (!currentMentee) {
+      return res.status(404).json({ error: "Mentee not found" });
+    }
+
+    // Prepare the data for updating the mentee profile
+    const menteeData = {
+      bio: bio !== undefined ? bio : currentMentee.bio,
+      mentee_title: title !== undefined ? title : currentMentee.mentee_title,
+      company: occupation !== undefined ? occupation : currentMentee.company,
+      interests: interests !== undefined ? { set: interests } : undefined,
+    };
+
+    // Update the mentee profile
+    const updatedMentee = await prisma.mentee.update({
+      where: { id: menteeId },
+      data: menteeData,
+    });
+
+    // Prepare the data for updating the user details
+    const userData = {
+      name: name !== undefined ? name : currentMentee.User.name,
+      email: email !== undefined ? email : currentMentee.User.email,
+      phone_number: phone_number !== undefined ? phone_number : currentMentee.User.phone_number,
+      location: location !== undefined ? location : currentMentee.User.location,
+      language: language !== undefined ? language : currentMentee.User.language,
+    };
+
+    // Update the user details
+    const updatedUser = await prisma.user.update({
+      where: { id: currentMentee.user_id },
+      data: userData,
+    });
+
+    res.json({ message: "Profile updated successfully", mentee: updatedMentee, user: updatedUser });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Failed to update profile" });
+  }
+}
+
 module.exports = {
   getMenteeProfile,
+  editProfile,
 };
