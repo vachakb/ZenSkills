@@ -21,7 +21,7 @@ const excludedRoutes = [
 function App() {
   const location = useLocation();
 
-    const header = useRef(null);
+  const header = useRef(null);
 
   const [contentHeight, setContentHeight] = useState(0);
 
