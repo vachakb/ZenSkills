@@ -81,10 +81,10 @@ const main = async () => {
     console.log("Mentor created successfully!");
 
     const mentee = await prisma.mentee.upsert({
-      where: { user_id: user.id },
+      where: { user_id: user1.id },
       update: {},
       create: {
-        user_id: user.id,
+        user_id: user1.id,
         bio: "Computer science student",
         company: "XYZ School",
         mentee_title: "Student",
