@@ -73,7 +73,7 @@ const getJobDetails = async (req, res) => {
 };
 
 const getJobs = async (req, res) => {
-  const { search, location, jobTypes, minSalary, maxSalary, page, limit } = req.query;
+  const { search, location, jobTypes, minSalary, maxSalary, page=1, limit=10} = req.query;
 
   const filters = {
     ...(search && { title: { contains: search, mode: "insensitive" } }),
@@ -113,7 +113,35 @@ const getJobs = async (req, res) => {
   }
 };
 
+const createJob = async (req, res) => {
+  try {
+    const { title, description, company_name, company_details, location, job_type, qualifications, benefits, app_details, posted_by, deadline, salary } = req.body;
+
+    const newJob = await prisma.job.create({
+      data: {
+        title,
+        description,
+        company_name,
+        company_details,
+        location,
+        job_type,
+        qualifications,
+        benefits,
+        app_details,
+        posted_by,
+        deadline: new Date(deadline),
+        salary,
+      },
+    });
+
+    res.status(201).json(newJob);
+  } catch (error) {
+    res.status(500).json({ error: "Failed to create job" });
+  }
+};
+
 module.exports = {
   getJobDetails,
   getJobs,
+  createJob,
 };
