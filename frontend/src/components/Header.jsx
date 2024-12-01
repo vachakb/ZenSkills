@@ -2,14 +2,19 @@ import Container from "react-bootstrap/Container";
 import Nav from "react-bootstrap/Nav";
 import Navbar from "react-bootstrap/Navbar";
 import { GiHamburgerMenu } from "react-icons/gi";
+import ProfileMenu from "./profileMenu";
+import useSession from "../hooks/useSession";
+import { useLocation } from "react-router-dom";
 
 function Header({ onToggleSideBar }) {
+  const { session } = useSession();
+  const location = useLocation();
   return (
     <Navbar expand="lg" className="bg-primary px-4 d-flex align-items-center">
       <Navbar.Brand href="/" className="text-white">
         ZenSkills
       </Navbar.Brand>
-      <Nav className="ms-auto d-flex align-items-center gap-3">
+      <Nav className="ms-auto d-flex align-items-center gap-4">
         <div className="d-flex align-items-center gap-3">
           <img src="/bell.svg" alt="Notifications" style={{ width: "28px" }} />
           <GiHamburgerMenu
@@ -20,6 +25,16 @@ function Header({ onToggleSideBar }) {
             style={{ cursor: "pointer" }}
           />
         </div>
+     
+        <Nav.Link
+          // href="/register"  // Link to user profile page
+          className="d-flex flex-column align-items-center mb-0"
+          style={{ color: "white", fontSize: "10px" }}
+        >
+          <ProfileMenu session={session} />
+          {/* <FaRegUserCircle color="white" size={"2.3em"} className="mb-1" /> */}
+          {/* <span>Profile</span> */}
+        </Nav.Link>
       </Nav>
     </Navbar>
   );

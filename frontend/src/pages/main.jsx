@@ -33,6 +33,7 @@ import Meeting from "./Meeting.jsx";
 import WorkshopDetails from "./WorkshopDetails.jsx";
 import Sessions from "./Sessions.jsx";
 import Dashboard from "./Dashboard.jsx";
+import UserProfile from "./UserProfile.jsx";
 
 const mentor = {
   id: "id",
@@ -231,7 +232,11 @@ const router = createBrowserRouter([
       {
         path: "sessions",
         element: <Sessions/>
-      }
+      },
+      {
+        path: "user_profile",
+        element: <UserProfile />,
+      },
     ],
   },
 ]);

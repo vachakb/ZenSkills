@@ -1,12 +1,21 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Card, Button } from "react-bootstrap";
 import { FaRegUserCircle } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
+import { useLocation } from "react-router-dom";
+
 
 function ProfileMenu({ session }) {
   const [showMenu, setShowMenu] = useState(false);
+  const isEditing = useLocation().state?.isEditing??false;
+ 
+  const navigate = useNavigate();
+ 
+
   const menuRef = useRef(null);
 
   const toggleMenu = () => setShowMenu((prev) => !prev);
+ 
 
   // Close the menu when clicking outside
   useEffect(() => {
@@ -30,20 +39,21 @@ function ProfileMenu({ session }) {
         className="d-flex flex-column align-items-center"
         style={{ cursor: "pointer", color: "white" }}
       >
-        <FaRegUserCircle size={"2.3em"} className="mb-1" />
-        <span style={{ fontSize: "10px" }}>Profile</span>
+        <FaRegUserCircle size={"2.3em"} />
       </div>
 
       {/* Stylish Menu */}
       {showMenu && (
         <Card
-          className="position-absolute start-100 top-50 translate-middle-y"
+          className="position-absolute start-50  mt-4"
           style={{
             backgroundColor: "#fff",
             boxShadow: "0 4px 8px rgba(0, 0, 0, 0.2)",
             width: "200px",
             borderRadius: "10px",
             zIndex: 10,
+            transform: "translateX(-90%)",
+          
           }}
         >
           <Card.Body className="d-flex flex-column align-items-center p-3">
@@ -53,15 +63,34 @@ function ProfileMenu({ session }) {
               <small className="text-muted">{session?.user?.email}</small>
             </div>
             <Button
-              variant="primary"
+              variant="outline-primary"
               className="w-100 mb-2"
-              href="/profile"
+             
               style={{ borderRadius: "20px" }}
+              onClick={() => navigate("user_profile", { state: { isEditing: false} })}
             >
               View Profile
             </Button>
             <Button
-              variant="danger"
+              variant="outline-primary"
+              className="w-100 mb-2"
+              onClick={() => navigate("user_profile", { state: { isEditing: true } })}
+              style={{ borderRadius: "20px" }}
+              
+            >
+              {console.log(isEditing)}
+              Edit Profile
+            </Button>
+            <Button
+              variant="outline-primary"
+              className="w-100 mb-2"
+              href="/profile"
+              style={{ borderRadius: "20px" }}
+            >
+              Settings
+            </Button>
+            <Button
+              variant="outline-primary"
               className="w-100"
               onClick={() => {
                 console.log("Logging out...");
@@ -70,6 +99,7 @@ function ProfileMenu({ session }) {
             >
               Logout
             </Button>
+            
           </Card.Body>
         </Card>
       )}

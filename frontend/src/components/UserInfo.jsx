@@ -3,7 +3,7 @@ import { Card } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import { DateTime } from "luxon";
 
-const UserInfo = ({ profile }) => {
+const UserInfo = ({ profile, isEditing }) => {
     const calculateDateDifference = (workExperience) => {
         const from = workExperience.from;
         const to = workExperience.to ?? DateTime.now()
@@ -89,15 +89,21 @@ const UserInfo = ({ profile }) => {
                         <div className="card-body">
                             <h5 className="card-title">Education</h5>
                             <ul className="list-group list-group-flush">
-                                <li className="list-group-item">
-                                    Computer Engineering <br />
-                                    <span className="text-muted">at ABC College</span>
+                            <li className="list-group-item d-flex justify-content-between align-items-center">
+                                    UX/UI Designing
+                                    <span className="text-muted">3 mos ago</span>
                                 </li>
                                 <li className="list-group-item">
-                                    Higher Secondary School <br />
+                                    Python Programming Language <br />
                                     <span className="text-muted">at Institute name</span>
                                 </li>
-                            </ul>
+           {/*} {profile.education.map((item)  => (
+              <li className="list-group-item">
+                {item.educationQualification} <br />
+                <span className="text-muted">{item.companyName}</span>
+              </li>
+            ))}*/}
+          </ul>
                             <a href="#education" className="text-primary mt-2 d-block">
                                 See more
                             </a>
