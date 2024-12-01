@@ -32,8 +32,10 @@ const main = async () => {
 
     console.log("Tags upserted successfully!");
 
-    const user = await prisma.user.create({
-      data: {
+    const user = await prisma.user.upsert({
+      where: { email: "mentor@example.com" },
+      update: {},
+      create: {
         email: "mentor@example.com",
         name: "John Doe",
         password: await argon2.hash("password"),
@@ -45,10 +47,27 @@ const main = async () => {
       },
     });
 
-    console.log("User created successfully!");
+    const user1 = await prisma.user.upsert({
+      where: { email: "mentee@example.com" },
+      update: {},
+      create: {
+        email: "mentee@example.com",
+        name: "Jane Doe",
+        password: await argon2.hash("password"),
+        role: "mentor",
+        is_verified: true,
+        gender: "Female",
+        location: "New Delhi",
+        is_deleted: false,
+      },
+    });
 
-    const mentor = await prisma.mentor.create({
-      data: {
+    console.log("Users created successfully!");
+
+    const mentor = await prisma.mentor.upsert({
+      where: { user_id: user.id },
+      update: {},
+      create: {
         user_id: user.id,
         bio: "Experienced software engineer",
         experience_years: 5,
@@ -60,6 +79,19 @@ const main = async () => {
     });
 
     console.log("Mentor created successfully!");
+
+    const mentee = await prisma.mentee.upsert({
+      where: { user_id: user.id },
+      update: {},
+      create: {
+        user_id: user.id,
+        bio: "Computer science student",
+        company: "XYZ School",
+        mentee_title: "Student",
+      },
+    });
+
+    console.log("Mentee created successfully!");
 
     const expertiseTags = ["Frontend", "Backend"];
     const tagRecords = await prisma.tags.findMany({
@@ -85,6 +117,49 @@ const main = async () => {
     );
 
     console.log("Mentor expertise added successfully!");
+
+    tagRecords.map(
+      async (tag) =>
+        await prisma.mentee.update({
+          where: {
+            id: mentee.id,
+          },
+          data: {
+            interests: {
+              connect: {
+                tag_id: tag.tag_id,
+              },
+            },
+          },
+        }),
+    );
+
+    console.log("Mentee interests added successfully!");
+
+    const conversations = [
+      {
+        type: "PRIVATE",
+        users: {
+          connect: [{ id: user.id }, { id: user1.id }],
+        },
+      },
+      {
+        title: "Nice little group chat",
+        type: "GROUP",
+        users: {
+          connect: [{ id: user.id }, { id: user1.id }],
+        },
+      },
+    ];
+
+    conversations.forEach(
+      async (conversation) =>
+        await prisma.conversation.create({
+          data: conversation,
+        }),
+    );
+
+    console.log("Conversations created successfully");
   } catch (error) {
     console.error("Error seeding database:", error);
   } finally {
