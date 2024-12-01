@@ -25,6 +25,10 @@ function googleCallback(token) {
     token: token,
   });
 }
+function getUserInfo(params) {
+  return axios.get(`${API_URL}/user`);
+  
+}
 
 function getAllTags() {
   return axiosInstance.get(`/tags`);

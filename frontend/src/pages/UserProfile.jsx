@@ -6,10 +6,12 @@ import Statistics from "../components/Statistics";
 import Achievements from "../components/Achievements";
 
 import axios from "axios";
-import { useParams } from "react-router-dom";
+import { useLocation, useParams } from "react-router-dom";
 
 import Milestones from "../components/Milestones";
 import MenteeSessions from "../components/MenteeSessions";
+import useProfile from "../hooks/useProfile"
+
 
 
 const profile = {
@@ -50,39 +52,18 @@ const timelineData = [
   },
 ];
 
-function MenteeProfile() {
+function UserProfile() {
   const { menteeId } = useParams();
+  const isEditing= useLocation().state;
+  
   const [radioValue, setRadioValue] = useState("1");
-  const [profile, setProfile] = useState({
-    bio: "",
-    name: "",
-    occupation: "",
-    title: "",
-    interests: [],
-    education: [],
-    isMentor: false,
-  });
+  
   const radios = [
     { name: "Overview", value: "1" },
     { name: "Milestones", value: "2" },
   ];
 
-  // Fetch profile data from backend
-  useEffect(() => {
-    const fetchProfile = async () => {
-      try {
-        // const menteeId = "mentee-1-id";
-        const response = await axios.get(
-          `http://localhost:5000/api/mentee/${menteeId}`
-        );
-        setProfile(response.data);
-      } catch (err) {
-        console.error(err);
-      }
-    };
-
-    fetchProfile();
-  }, []);
+ const profile = useProfile();
 
   const getButtonStyle = (value) => {
     if (radioValue === value) {
@@ -113,7 +94,7 @@ function MenteeProfile() {
       
           }}
         >
-          <ProfileCard profile={profile} />
+          <ProfileCard profile={profile} isCurrentUser= {true} isEditing={isEditing}/>
           <div
             className="pt-0 mt-0"
             style={{ width: "100%", borderBottom: "1px solid grey" }}
@@ -137,7 +118,7 @@ function MenteeProfile() {
             </ButtonGroup>
           </div>
           <div className="mt-3">
-            {radioValue === "1" && <UserInfo profile={profile} />}
+            {radioValue === "1" && <UserInfo profile={profile} isEditing={isEditing} />}
             {radioValue === "2" && <Milestones data={timelineData}/> }
             
           </div>
@@ -169,4 +150,4 @@ function MenteeProfile() {
   );
 }
 
-export default MenteeProfile;
+export default UserProfile;

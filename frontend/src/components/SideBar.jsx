@@ -31,7 +31,7 @@ function SideBar(props) {
       style={{ maxWidth: "18%" }}
     >
       <Nav
-        className="flex-column align-items-center justify-content-between w-100"
+        className="flex-column align-items-center justify-content-between w-100 mt-1"
         style={{ width: "100%", height: "100%" }}
       >
         {/* Home link - Conditional based on session */}
@@ -76,7 +76,7 @@ function SideBar(props) {
 
         {/* Messages link */}
         <Nav.Link
-          href=""
+          href="/chat"
           className="d-flex flex-column align-items-center mb-2"
           style={{ color: "white", fontSize: "10px" }}
         >
@@ -96,15 +96,7 @@ function SideBar(props) {
 
         {/* Profile link */}
         <div className="mt-auto"></div>
-        <Nav.Link
-          // href="/register"  // Link to user profile page
-          className="d-flex flex-column align-items-center mb-5 mt-auto"
-          style={{ color: "white", fontSize: "10px" }}
-        >
-          <ProfileMenu session={session} />
-          {/* <FaRegUserCircle color="white" size={"2.3em"} className="mb-1" /> */}
-          {/* <span>Profile</span> */}
-        </Nav.Link>
+        
       </Nav>
     </Navbar>
   );

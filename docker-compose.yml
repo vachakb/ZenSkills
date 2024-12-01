@@ -8,6 +8,8 @@ services:
     environment:
       POSTGRES_USER: test
       POSTGRES_PASSWORD: test
+    volumes:
+      - ./postgres-data:/var/lib/postgresql/data
   frontend:
     image: node:lts-bookworm-slim
     ports:
@@ -16,15 +18,15 @@ services:
     command: npx vite --host
     volumes:
       - ./frontend:/frontend
-  backend:
-    environment:
-      DB_HOST: "db"
-    image: node:lts-bookworm
-    ports:
-      - "5000:5000"
-    working_dir: /backend
-    depends_on:
-      - db
-    command: bash -c "sleep 3 && npx prisma migrate dev && npm run dev"
-    volumes:
-      - ./backend:/backend
+  # backend:
+  #   environment:
+  #     DB_HOST: "db"
+  #   ports:
+  #     - "5000:5000"
+  #   depends_on:
+  #     - db
+  #   build:
+  #     context: ./backend
+  #     dockerfile: Dockerfile-env
+  #   volumes:
+  #     - ./backend:/backend
