@@ -19,8 +19,8 @@ const ProfileCard = ({ profile,isCurrentUser = false,isEditing }) => {
   };
   const initialValues = {
     name: profile.name,
-    title: profile.title,
-    occupation: profile.occupation,
+    title: profile.mentee_title,
+    occupation: profile.company,
     expertise: profile.expertise || [],
     interests: profile.interests || [],
   };
@@ -141,7 +141,7 @@ const ProfileCard = ({ profile,isCurrentUser = false,isEditing }) => {
                       <>
                         <h5 className="mb-0 fs-4">{profile.name}</h5>
                         <small className="text-muted">
-                          {profile.title} at<br/>{profile.occupation}
+                          {profile.mentee.mentee_title} at<br/>{profile.mentee.company}
                         </small>
                       </>
                     )}

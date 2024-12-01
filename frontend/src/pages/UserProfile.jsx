@@ -54,7 +54,7 @@ const timelineData = [
 
 function UserProfile() {
   const { menteeId } = useParams();
-  const isEditing= useLocation().state;
+  const isEditing = useLocation().state?.isEditing??false;
   
   const [radioValue, setRadioValue] = useState("1");
   
