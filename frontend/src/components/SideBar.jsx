@@ -8,12 +8,12 @@ import { FaRegClock } from "react-icons/fa6";
 import { BiMessageDetail } from "react-icons/bi";
 import { MdWorkOutline } from "react-icons/md";
 import classNames from "classnames";
-import useSession from "../hooks/useSession";
 import { useLocation } from "react-router-dom";  // To track current route
 import ProfileMenu from "./profileMenu";
+import useProfile from "../hooks/useProfile";
 
 function SideBar(props) {
-  const { session } = useSession();
+  const profile = useProfile();
   const location = useLocation();  // Get current route for conditional checks
 
   // Classnames for sidebar visibility (controlled by `show` prop passed from parent)
@@ -36,7 +36,7 @@ function SideBar(props) {
       >
         {/* Home link - Conditional based on session */}
         <Nav.Link
-          href={session?.role === "mentor" ? "/mentor_welcome" : "/mentee_welcome"}
+          href={profile?.role === "mentor" ? "/mentor_welcome" : "/mentee_welcome"}
           className="d-flex flex-column align-items-center mb-2"
           style={{ color: "white", fontSize: "10px" }}
         >
@@ -46,7 +46,7 @@ function SideBar(props) {
 
         {/* Explore link - Conditional for mentees */}
         <Nav.Link
-          href={session?.role === "mentee" ? "/explore" : ""}
+          href={profile?.role === "mentee" ? "/explore" : ""}
           className="d-flex flex-column align-items-center mb-2"
           style={{ color: "white", fontSize: "10px" }}
         >

@@ -3,11 +3,11 @@ import Nav from "react-bootstrap/Nav";
 import Navbar from "react-bootstrap/Navbar";
 import { GiHamburgerMenu } from "react-icons/gi";
 import ProfileMenu from "./profileMenu";
-import useSession from "../hooks/useSession";
 import { useLocation } from "react-router-dom";
+import useProfile from "../hooks/useProfile";
 
 function Header({ onToggleSideBar }) {
-  const { session } = useSession();
+  const profile = useProfile();
   const location = useLocation();
   return (
     <Navbar expand="lg" className="bg-primary px-4 d-flex align-items-center">
@@ -31,7 +31,7 @@ function Header({ onToggleSideBar }) {
           className="d-flex flex-column align-items-center mb-0"
           style={{ color: "white", fontSize: "10px" }}
         >
-          <ProfileMenu session={session} />
+          <ProfileMenu profile={profile} />
           {/* <FaRegUserCircle color="white" size={"2.3em"} className="mb-1" /> */}
           {/* <span>Profile</span> */}
         </Nav.Link>

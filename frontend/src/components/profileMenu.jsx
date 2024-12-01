@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { useLocation } from "react-router-dom";
 
 
-function ProfileMenu({ session }) {
+function ProfileMenu({ profile }) {
   const [showMenu, setShowMenu] = useState(false);
   const isEditing = useLocation().state?.isEditing??false;
  
@@ -59,8 +59,8 @@ function ProfileMenu({ session }) {
           <Card.Body className="d-flex flex-column align-items-center p-3">
             <div className="text-center mb-3">
               <FaRegUserCircle size={"3em"} className="mb-2" color="gray" />
-              <h6 className="m-0">{session?.user?.name || "User"}</h6>
-              <small className="text-muted">{session?.user?.email}</small>
+              <h6 className="m-0">{profile?.name || "User"}</h6>
+              <small className="text-muted">{profile?.email}</small>
             </div>
             <Button
               variant="outline-primary"

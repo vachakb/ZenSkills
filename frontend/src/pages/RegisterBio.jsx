@@ -7,16 +7,16 @@ import { useLocation } from "react-router-dom";
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { registerUser } from "../apis/user";
-import useSession from "../hooks/useSession";
 import { getAllTags } from "../apis/user";
 import Select from "../components/Select";
+import useProfile from "../hooks/useProfile";
 
 function RegisterBio() {
   const prevForm = useLocation().state;
 
-  const { session } = useSession();
+  const profile = useProfile();
 
-  const isMentor = session.role === "mentor";
+  const isMentor = profile.role === "mentor";
 
   const navigate = useNavigate();
 

@@ -7,7 +7,6 @@ import { useState } from "react";
 import { GoogleLogin } from "@react-oauth/google";
 import { useNavigate } from "react-router-dom";
 import { googleCallback, login } from "../apis/user";
-import useSession from "../hooks/useSession";
 
 // TODO put into env
 const GOOGLE_CLIENT_ID =

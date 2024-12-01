@@ -3,7 +3,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { Card } from "react-bootstrap";
 import classNames from "classnames";
 import { Link } from "react-router-dom";
-import useSession from "../hooks/useSession";
+import useProfile from "../hooks/useProfile";
 
 const sessions = [
   {
@@ -51,7 +51,7 @@ const sessions = [
 function Calendar() {
   const [selectedDate, setSelectedDate] = useState(DateTime.local());
 
-  const { session } = useSession();
+  const profile = useProfile();
 
   const selectedDateSessions = useMemo(() => {
     return sessions.filter((session) =>
@@ -254,7 +254,7 @@ function Calendar() {
             >
               Go to all session
             </Link>
-            {session.role === "mentor" ? (
+            {profile.role === "mentor" ? (
               <Link style={{ color: "#037F7D" }} to="/createsession_1">
                 Book a session
               </Link>

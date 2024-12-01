@@ -19,28 +19,14 @@ import { RiCopperCoinLine } from "react-icons/ri";
 import EventCard from "../components/Events";
 import MentorCard from "../components/MentorCard";
 import axios from "axios";
-import useSession from "../hooks/useSession";
-import { getUserProfile } from "../apis/user";
+import useProfile from "../hooks/useProfile";
 
 const API_URL = "http://localhost:5000";
 
 function MenteeWelcome({ mentors_, events_ }) {
   const [mentors, setMentors] = useState(mentors_);
 
-  const [profile, setProfile] = useState();
-
-  const onLoad = async () => {
-    try {
-      const res = await getUserProfile();
-      setProfile(res.data.profile);
-    } catch (err) {
-      console.error(err);
-    }
-  };
-
-  useEffect(() => {
-    onLoad()
-  }, [])
+  const profile = useProfile();
 
   const userName = profile?.name || "User";
 

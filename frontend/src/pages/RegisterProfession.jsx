@@ -5,14 +5,14 @@ import * as yup from "yup";
 import { Formik } from "formik";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useMemo } from "react";
-import useSession from "../hooks/useSession";
+import useProfile from "../hooks/useProfile";
 
 function RegisterProfession() {
   const prevForm = useLocation().state;
 
-  const { session } = useSession();
+  const profile = useProfile();
 
-  const isMentor = session.role === "mentor";
+  const isMentor = profile.role === "mentor";
 
   console.log(isMentor)
 
