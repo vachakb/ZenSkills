@@ -129,18 +129,13 @@ const getMentorProfile = async (req, res) => {
 };
 
 const editProfile = async (req, res) => {
+  const userId = req.user.id;
+  const { name, email, location, language, phone_number, bio, title, occupation, expertise } = req.body;
+
   try {
-    const { mentorId } = req.params;
-    const { name, email, location, language, phone_number, bio, title, occupation, expertise } = req.body;
-
-    // Validate mentorId
-    if (!mentorId) {
-      return res.status(400).json({ error: "Mentor ID is required" });
-    }
-
     // Fetch the current mentor profile
     const currentMentor = await prisma.mentor.findUnique({
-      where: { id: mentorId },
+      where: { user_id: userId },
       include: { User: true },
     });
 
@@ -158,7 +153,7 @@ const editProfile = async (req, res) => {
 
     // Update the mentor profile
     const updatedMentor = await prisma.mentor.update({
-      where: { id: mentorId },
+      where: { user_id: userId },
       data: mentorData,
     });
 
@@ -173,7 +168,7 @@ const editProfile = async (req, res) => {
 
     // Update the user details
     const updatedUser = await prisma.user.update({
-      where: { id: currentMentor.user_id },
+      where: { id: userId },
       data: userData,
     });
 

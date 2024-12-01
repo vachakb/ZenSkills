@@ -34,13 +34,13 @@ async function getMenteeProfile(req, res) {
 }
 
 async function editProfile(req, res) {
-  const { menteeId } = req.params;
+  const userId = req.user.id;
   const { name, email, location, language, phone_number, bio, title, occupation, interests } = req.body;
 
   try {
     // Fetch the current mentee profile
     const currentMentee = await prisma.mentee.findUnique({
-      where: { id: menteeId },
+      where: { user_id: userId },
       include: { User: true },
     });
 
@@ -58,7 +58,7 @@ async function editProfile(req, res) {
 
     // Update the mentee profile
     const updatedMentee = await prisma.mentee.update({
-      where: { id: menteeId },
+      where: { user_id: userId },
       data: menteeData,
     });
 
@@ -73,7 +73,7 @@ async function editProfile(req, res) {
 
     // Update the user details
     const updatedUser = await prisma.user.update({
-      where: { id: currentMentee.user_id },
+      where: { id: userId },
       data: userData,
     });
 
