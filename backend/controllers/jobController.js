@@ -143,6 +143,25 @@ const createJob = async (req, res) => {
 const updateJob = async (req, res) => {
   try {
     const { jobId } = req.params;
+
+    // TODO - Uncomment for authentication check
+    // const userId = req.user.id;
+
+    // const job = await prisma.job.findUnique({
+    //   where: { id: jobId },
+    //   include: {
+    //     mentor: true, 
+    //   },
+    // });
+
+    // if (!job) {
+    //   return res.status(404).json({ error: "Job not found" });
+    // }
+
+    // if (job.mentor.userId !== userId) { // Ensure the correct field is checked
+    //   return res.status(403).json({ error: "You do not have permission to update this job" });
+    // }
+
     const { title, description, company_name, company_details, location, job_type, qualifications, benefits, app_details, posted_by, deadline, salary } = req.body;
 
     const updatedJob = await prisma.job.update({
@@ -170,9 +189,44 @@ const updateJob = async (req, res) => {
   }
 };
 
+const deleteJob = async (req, res) => {
+  try {
+    const { jobId } = req.params;
+
+    // TODO - Uncomment for authentication check
+    // const userId = req.user.id; 
+
+    // const job = await prisma.job.findUnique({
+    //   where: { id: jobId },
+    //   include: {
+    //     mentor: true, 
+    //   },
+    // });
+
+  
+    // if (!job) {
+    //   return res.status(404).json({ error: "Job not found" });
+    // }
+
+    // if (job.mentor.user_id !== userId) {
+    //   return res.status(403).json({ error: "You do not have permission to delete this job" });
+    // }
+
+    await prisma.job.delete({
+      where: { id: jobId },
+    });
+
+    res.status(200).json({ message: "Job deleted successfully" });
+  } catch (error) {
+    console.error("Error deleting job:", error);
+    res.status(500).json({ error: "Failed to delete job" });
+  }
+};
+
 module.exports = {
   getJobDetails,
   getJobs,
   createJob,
   updateJob,
+  deleteJob,
 };
