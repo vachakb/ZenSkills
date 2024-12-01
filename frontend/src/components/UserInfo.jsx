@@ -24,7 +24,7 @@ const UserInfo = ({ profile, isEditing }) => {
                 <div className="card-body">
                     <h5 className="card-title">BIO</h5>
                     <p className="card-text">
-                        {profile.bio}
+                        {profile.mentee.bio}
                     </p>
                 </div>
             </div>
