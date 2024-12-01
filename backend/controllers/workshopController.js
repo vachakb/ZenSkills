@@ -80,8 +80,52 @@ const createWorkshop = async (req, res) => {
   }
 };
 
+const updateWorkshop = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    // TODO - Uncomment for authentication check
+    // const userId = req.user.id;
+
+    // const workshop = await prisma.workshops.findUnique({
+    //   where: { id },
+    // });
+
+    // if (!workshop) {
+    //   return res.status(404).json({ error: "Workshop not found" });
+    // }
+
+    // if (workshop.created_by !== userId) {
+    //   return res.status(403).json({ error: "You are not authorized to update this workshop" });
+    // }
+
+    const { title, description, date, duration, workshop_image, max_participants, deadline, visibility } = req.body;
+    
+    const updatedWorkshop = await prisma.workshops.update({
+      where: { id },
+      data: {
+        title,
+        description,
+        date: new Date(date),
+        duration,
+        workshop_image,
+        max_participants,
+        deadline: new Date(deadline),
+        visibility,
+      },
+    });
+
+    res.status(200).json(updatedWorkshop);
+  } catch (error) {
+    console.error("Error updating workshop:", error);
+    res.status(500).json({ error: "Error updating workshop" });
+  }
+};
+
+
 module.exports = {
   getAllWorkshops,
   getWorkshopById,
   createWorkshop,
+  updateWorkshop,
 };
