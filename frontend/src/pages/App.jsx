@@ -25,16 +25,28 @@ function App() {
 
   const [contentHeight, setContentHeight] = useState(0);
 
-    useLayoutEffect(() => {
-      console.log(header);
-      if (header.current) {
-        setContentHeight(document.documentElement.scrollHeight - header.current.offsetHeight)
-      }
-    }, [])
+  const calculateContentHeight = () => {
+    if (header.current) {
+      setContentHeight(
+        document.documentElement.scrollHeight - header.current.offsetHeight,
+      );
+    } else {
+      setContentHeight(document.documentElement.scrollHeight);
+    }
+  };
+
+  useLayoutEffect(() => {
+    calculateContentHeight()
+    window.addEventListener("resize", calculateContentHeight);
+
+    return () => {
+      window.removeEventListener("resize", calculateContentHeight);
+    };
+  }, []);
 
   // Check if the current route matches any excluded route
   const isExcluded = excludedRoutes.some((route) =>
-    location.pathname.match(route.path)
+    location.pathname.match(route.path),
   );
 
   const [showSideBar, setShowSideBar] = useState(false);
@@ -44,20 +56,26 @@ function App() {
   // Conditionally render Header and SideBar based on the route
   return (
     <>
-      {!isExcluded && <Header onToggleSideBar={toggleSideBar} headerRef={header} />}
+      {!isExcluded && (
+        <Header onToggleSideBar={toggleSideBar} headerRef={header} />
+      )}
 
       <div className="d-flex flex-grow-1">
         {!isExcluded && <SideBar show={showSideBar} />}
 
         <div
-          style={{ overflowY: "auto", overflowX: "hidden", height: contentHeight }}
+          style={{
+            overflowY: "auto",
+            overflowX: "hidden",
+            height: contentHeight,
+          }}
           className={classNames({
             "flex-grow-1": true,
             "p-3": !isExcluded,
           })}
         >
-            {/* Content for the page will go here, likely rendered using an <Outlet /> in your routing */}
-            <Outlet />
+          {/* Content for the page will go here, likely rendered using an <Outlet /> in your routing */}
+          <Outlet />
         </div>
       </div>
     </>
