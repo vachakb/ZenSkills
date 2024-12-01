@@ -7,14 +7,12 @@ const getMentors = async (req, res) => {
       page = 0,
       limit = 10,
       search = "",
-      selectedTags = [],
+      selectedTags = "",
       noOfMenteesMentored = 0,
     } = req.query;
 
     // check selectedTags is array of strings
-    const tagsArray = Array.isArray(selectedTags)
-      ? selectedTags
-      : JSON.parse(selectedTags || "[]");
+    const tagsArray = selectedTags.length === 0 ? [] : selectedTags.split(",");
 
     const offset = page * limit;
 
@@ -24,18 +22,16 @@ const getMentors = async (req, res) => {
           OR: [
             { bio: { contains: search, mode: "insensitive" } },
             { mentor_job_title: { contains: search, mode: "insensitive" } },
-            { name: { contains: search, mode: "insensitive" } },
+            { User: { name: { contains: search, mode: "insensitive" } } },
           ],
         },
         { number_of_mentees_mentored: { gte: parseInt(noOfMenteesMentored) } },
         ...(tagsArray.length
           ? [
               {
-                mentor_expertise: {
+                expertise: {
                   some: {
-                    tags: {
-                      tag_name: { in: tagsArray },
-                    },
+                    tag_name: { in: tagsArray },
                   },
                 },
               },
@@ -50,20 +46,17 @@ const getMentors = async (req, res) => {
       take: parseInt(limit),
       include: {
         User: true,
-        mentor_expertise: {
-          include: {
-            tags: true,
-          },
-        },
+        expertise: true,
       },
     });
 
     const formattedMentors = mentors.map((mentor) => ({
-      Experience: mentor.experience_years,
+      experienceYears: mentor.experience_years,
+      experienceMonths: mentor.experience_months,
       creditScore: mentor.credit_score,
-      currentPost: mentor.mentor_job_title,
+      title: mentor.mentor_job_title,
       id: mentor.id,
-      name: mentor.name,
+      name: mentor.User.name,
       noOfReviews: mentor.noOfReviews || 0, // TODO Add reviews logic
       noOfSessions: mentor.number_of_sessions,
       rating: mentor.rating,
@@ -88,10 +81,8 @@ const getMentors = async (req, res) => {
 const getTags = async (req, res) => {
   try {
     console.log("Fetching tags");
-    const tags = await prisma.tags.findMany({
-      select: { tag_name: true },
-    });
-    res.status(200).json({ tags: tags.map((tag) => tag.tag_name) });
+    const tags = await prisma.tags.findMany();
+    res.status(200).json({ tags });
   } catch (error) {
     console.error("Error fetching tags:", error);
     res.status(500).json({ error: "Error fetching tags" });
@@ -109,11 +100,9 @@ const getMentorProfile = async (req, res) => {
 
     // Fetch mentor profile
     const mentor = await prisma.mentor.findUnique({
-      where: { mentor_id: mentorId },
+      where: { id: mentorId },
       include: {
-        mentor_expertise: {
-          include: { tags: true }, // Include expertise tags
-        },
+        expertise: true,
         User: true,
       },
     });
@@ -124,14 +113,14 @@ const getMentorProfile = async (req, res) => {
     }
 
     const mentorProfile = {
-      name: mentor.name,
+      name: mentor.User.name,
       bio: mentor.bio,
       occupation: mentor.mentor_job_title,
       rating: mentor.rating,
       workExperiences: [], // Populate this with custom logic if needed
-      expertise: mentor.mentor_expertise.map((i) => i.tags.tag_name),
-      isMentor: true,
+      expertise: mentor.expertise,
     };
+
     res.status(200).json(mentorProfile);
   } catch (error) {
     console.error("Error fetching mentor profile:", error);

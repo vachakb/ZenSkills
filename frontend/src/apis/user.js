@@ -30,6 +30,14 @@ function getUserInfo(params) {
   
 }
 
+function getAllTags() {
+  return axiosInstance.get(`/tags`);
+}
+
+function getUserProfile() {
+  return axiosInstance.get("/profile");
+}
+
 export {
   login,
   register,
@@ -37,4 +45,6 @@ export {
   verificationEmailCallback,
   registerUser,
   googleCallback,
+  getAllTags,
+  getUserProfile,
 };

@@ -1,28 +1,28 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
-import { Dropdown, Button } from "react-bootstrap";
+import { Dropdown, Button, Card } from "react-bootstrap";
+import { useNavigate } from "react-router-dom";
+import { getAllTopics } from "../apis/session";
 
 const SessionForm = () => {
+  const navigate = useNavigate();
+
   const [selectedTopics, setSelectedTopics] = useState([]);
   const [availableTopics, setAvailableTopics] = useState([
-    "Design Thinking",
-    "Web Development",
-    "Data Science",
-    "Leadership",
   ]);
 
   const handleSelectTopic = (topic, setFieldValue) => {
     if (selectedTopics.length < 3) {
       const newSelectedTopics = [...selectedTopics, topic];
       setSelectedTopics(newSelectedTopics);
-      setAvailableTopics(availableTopics.filter((t) => t !== topic));
+      setAvailableTopics(availableTopics.filter((t) => t.name !== topic.name));
       setFieldValue("selectedTopics", newSelectedTopics);
     }
   };
 
   const handleRemoveTag = (topic, setFieldValue) => {
-    const newSelectedTopics = selectedTopics.filter((t) => t !== topic);
+    const newSelectedTopics = selectedTopics.filter((t) => t.name !== topic.name);
     setSelectedTopics(newSelectedTopics);
     setAvailableTopics([...availableTopics, topic]);
     setFieldValue("selectedTopics", newSelectedTopics);
@@ -40,10 +40,21 @@ const SessionForm = () => {
       .max(3, "You can select a maximum of 3 topics"),
   });
 
+  const onLoad = async () => {
+    try {
+      const res = await getAllTopics();
+      setAvailableTopics(res.data.topics);
+    } catch (err) {
+      console.error(err)
+    }
+  }
+
+    useEffect((() => {
+        onLoad()
+    }), [])
+
   return (
-    <div className="full-page">
-      <div className="form-container">
-        <h3><u>Tell us about your session</u></h3>
+      <div style={{ maxWidth: "90%" }} className="border p-3 rounded mx-auto">
         <Formik
           initialValues={{
             sessionName: "",
@@ -53,11 +64,25 @@ const SessionForm = () => {
           }}
           validationSchema={validationSchema}
           onSubmit={(values) => {
-            console.log(values);
+            navigate("/createsession_2", { state: values })
           }}
         >
           {({ setFieldValue }) => (
             <Form>
+            {/* Title and Card Header */}
+            <h2 className="form-title">Create new 1:1 session</h2>
+            <Card className="session-card mb-4">
+              <Card.Body>
+                <Card.Title>Tell us about your session</Card.Title>
+                <Card.Text>
+                  Names, duration, public/private
+                  <Button variant="link" className="edit-button">
+                    <i className="bi bi-pencil-fill"></i>
+                  </Button>
+                </Card.Text>
+              </Card.Body>
+            </Card>
+
               <div className="mb-3 mt-3">
                 <label htmlFor="sessionName" className="form-label">
                   Session name <span className="text-danger">*</span>
@@ -122,12 +147,12 @@ const SessionForm = () => {
                 <div className="d-flex flex-wrap gap-2 mb-2">
                   {selectedTopics.map((topic, index) => (
                     <span
-                      key={index}
+                      key={topic.id}
                       className="badge bg-primary text-white px-3 py-2"
                       style={{ borderRadius: "20px", cursor: "pointer" }}
                       onClick={() => handleRemoveTag(topic, setFieldValue)}
                     >
-                      {topic} <span className="ms-2">✕</span>
+                      {topic.name} <span className="ms-2">✕</span>
                     </span>
                   ))}
                 </div>
@@ -155,10 +180,10 @@ const SessionForm = () => {
                   >
                     {availableTopics.map((topic, index) => (
                       <Dropdown.Item
-                        key={index}
+                        key={topic.id}
                         onClick={() => handleSelectTopic(topic, setFieldValue)}
                       >
-                        {topic}
+                        {topic.name}
                       </Dropdown.Item>
                     ))}
                   </Dropdown.Menu>
@@ -171,10 +196,7 @@ const SessionForm = () => {
               </div>
 
               <div className="d-flex justify-content-between mt-4">
-                <Button variant="outline-primary" type="button">
-                  Back
-                </Button>
-                <Button variant="primary" type="submit">
+                <Button className="ms-auto" variant="primary" type="submit">
                   Next
                 </Button>
               </div>
@@ -182,7 +204,6 @@ const SessionForm = () => {
           )}
         </Formik>
       </div>
-    </div>
   );
 };
 

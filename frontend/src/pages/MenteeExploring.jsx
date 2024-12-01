@@ -112,7 +112,7 @@ function MenteeExploring() {
           // TODO replace with API URL
           `http://localhost:5000/api/mentors/${mentorId}`
         );
-        setProfile(response.data);
+        setProfile({ ...response.data, isMentor: true });
       } catch (err) {
         console.error(err);
       }

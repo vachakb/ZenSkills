@@ -41,16 +41,25 @@ const generateToken = (user) => {
 };
 
 exports.login = new LocalStrategy(
-  { usernameField: "email" },
-  async (email, password, done) => {
-    const user = await prisma.user.findUniqueOrThrow({
-      where: { email: email },
-    });
+  { usernameField: "email", passReqToCallback: true },
+  async (req, email, password, done) => {
+    try {
+      const user = await prisma.user.findUnique({
+        where: { email: email, role: req.body.role },
+      });
 
-    if (await argon2.verify(user.password, password)) {
-      done(null, user);
-    } else {
-      throw Error("Unauthorized");
+      if (!user) {
+        done(null, false);
+        return;
+      }
+
+      if (await argon2.verify(user.password, password)) {
+        done(null, user);
+      } else {
+        done(null, false);
+      }
+    } catch (err) {
+      done(err);
     }
   },
 );
@@ -136,7 +145,6 @@ exports.googleCallback = async (req, res) => {
           role: "mentee",
           status: "active",
           is_deleted: false,
-          gender: "prefer_not_to_say",
           phone_number: "0000000000",
           location: "Unknown",
           password: "",

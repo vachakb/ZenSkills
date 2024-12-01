@@ -1,5 +1,6 @@
 generator client {
   provider = "prisma-client-js"
+  previewFeatures = ["omitApi"]
 }
 
 datasource db {
@@ -23,8 +24,7 @@ model User {
   is_verified   Boolean      @default(false)
   mentee        mentee?
   mentor        mentor?
-  userBadges    UserBadge[]  
-
+  userBadges    UserBadge[]
   JobApplication JobApplication[] @relation(map: "job_application_user_fk")
   language      String?     @db.VarChar(100)
 }
@@ -37,17 +37,9 @@ model mentee {
   company          String?            @db.VarChar(255)
   user_id String @unique
   User             User?              @relation(fields: [user_id], references: [id])
-  mentee_interests String?
+  interests tags[]
   education MenteeEducation[]
   Review          Review[]            @relation(map: "review_mentee_fk")
-}
-
-model mentee_interests {
-  id           String @id @default(uuid())
-  tag_id              String
-  // mentee_interests_id String @id(map: "mentee_interests_pk") @default(uuid())
-  // mentee              mentee @relation(fields: [mentee_id], references: [id], onDelete: Cascade, map: "mentee_interests_mentee_fk")
-  tags                tags   @relation(fields: [tag_id], references: [tag_id], onDelete: Cascade, map: "mentee_interests_tags_fk")
 }
 
 model mentor {
@@ -61,7 +53,7 @@ model mentor {
   mentor_job_title           String             @db.VarChar(50)
   user_id String @unique
   User             User?              @relation(fields: [user_id], references: [id])
-  mentor_expertise           String?
+  expertise           tags[]
   number_of_sessions         Int                @default(0)
   credit_score               Float              @default(75)    
   education                  MentorEducation[]
@@ -69,19 +61,13 @@ model mentor {
   Job                       Job[]               @relation(map: "job_posted_by_fk")
 
 
+  sessions MentorSession[]
 
   meeting_sessions           meeting_sessions[]   
   workshops                  workshops[]    
   Review                     Review[]           @relation(map: "review_mentor_fk")
-}
 
-
-model mentor_expertise {
-  id           String @id @default(uuid())
-  tag_id              String
-  // mentor_expertise_id String @id(map: "mentor_expertise_pk") @default(uuid())
-  // mentor              mentor @relation(fields: [mentor_id], references: [id], onDelete: Cascade)
-  tags                tags   @relation(fields: [tag_id], references: [tag_id], onDelete: Cascade, map: "mentor_expertise_tags_fk")
+  created_first_session Boolean @default(false)
 }
 
 model tags {
@@ -90,8 +76,8 @@ model tags {
   parent_tag_id   String?
   parent          tags?     @relation("TagHierarchy", fields: [parent_tag_id], references: [tag_id])
   children        tags[]    @relation("TagHierarchy")
-  mentee_interests mentee_interests[]
-  mentor_expertise mentor_expertise[]
+  mentees mentee[]
+  mentors mentor[]
 }
 
 model tempuser {
@@ -286,4 +272,40 @@ model Review {
   mentor       mentor   @relation(fields: [mentor_id], references: [id], onDelete: Cascade, map: "review_mentor_fk")
 
   @@index([mentee_id, mentor_id])                         
+}
+
+model MentorSession {
+      id String @id @default(uuid())
+  name String
+  description String
+  durationMinutes Int
+  topics MentorSessionTopic[]
+  timeSlots TimeSlot[]
+  mentor mentor[]
+}
+
+model MentorSessionTopic {
+      id String @id @default(uuid())
+      name String @unique
+      sessions MentorSession[]
+}
+
+model TimeSlot {
+      id String @id @default(uuid())
+      day Day
+      // from DateTime @db.Time()
+      // to DateTime @db.Time()
+      from String
+      to String
+      sessions MentorSession[]
+}
+
+enum Day {
+  SUNDAYS
+  MONDAYS
+  TUESDAYS
+  WEDNESDAYS
+  THURSDAYS
+  FRIDAYS
+  SATURDAYS
 }

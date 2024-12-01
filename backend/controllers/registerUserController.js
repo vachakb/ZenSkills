@@ -29,8 +29,12 @@ const registerUserProfile = async (req, res) => {
           user_id: user.id,
           bio,
           company: companyOrSchool,
-          mentee_interests: interests,
           mentee_title: title,
+          interests: {
+            connect: interests.map((tag) => ({
+              tag_id: tag.tag_id,
+            })),
+          },
         },
       });
     } else if (user.role === "mentor") {
@@ -38,11 +42,13 @@ const registerUserProfile = async (req, res) => {
         data: {
           user_id: user.id,
           bio,
-          mentor_title: title,
-          mentor_expertise: expertise,
+          mentor_job_title: title,
           experience_years: years,
           experience_months: months,
           company,
+          expertise: {
+            connect: expertise.map((tag) => ({ tag_id: tag.tag_id })),
+          },
         },
       });
     }

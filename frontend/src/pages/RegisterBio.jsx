@@ -4,10 +4,12 @@ import TextField from "../components/TextField";
 import * as yup from "yup";
 import { Formik } from "formik";
 import { useLocation } from "react-router-dom";
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { registerUser } from "../apis/user";
 import useSession from "../hooks/useSession";
+import { getAllTags } from "../apis/user";
+import Select from "../components/Select";
 
 function RegisterBio() {
   const prevForm = useLocation().state;
@@ -18,15 +20,30 @@ function RegisterBio() {
 
   const navigate = useNavigate();
 
+  const [tags, setTags] = useState([]);
+
+  const [selectedTags, setSelectedTags] = useState([]);
+
+  const onLoad = async () => {
+    try {
+      const res = await getAllTags();
+      setTags(res.data.tags);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  useEffect(() => {
+    onLoad();
+  }, []);
+
   const schema = useMemo(() => {
     if (isMentor) {
       return yup.object({
-        expertise: yup.string().required("This is a required field"),
         bio: yup.string(),
       });
     } else {
       return yup.object({
-        interests: yup.string().required("This is a required field"),
         bio: yup.string(),
       });
     }
@@ -39,12 +56,15 @@ function RegisterBio() {
           <Formik
             validationSchema={schema}
             initialValues={{
-              interests: "",
-              expertise: "",
               bio: "",
             }}
             onSubmit={async (data) =>
-              registerUser({ ...prevForm, ...data })
+              registerUser({
+                ...prevForm,
+                ...data,
+                expertise: isMentor ? selectedTags : null,
+                interests: isMentor ? null : selectedTags,
+              })
                 .then(() => {
                   if (!isMentor) {
                     navigate("/mentee_welcome", {
@@ -75,17 +95,36 @@ function RegisterBio() {
                   </h6>
                   <h1 className="my-4 fw-bold">Almost There!</h1>
                 </div>
-                <TextField
+                <Select
                   name={isMentor ? "expertise" : "interests"}
                   label={isMentor ? "Expertise" : "Interests"}
                   type="text"
-                  value={
-                    isMentor
-                      ? formikProps.values.expertise
-                      : formikProps.values.interests
-                  }
-                  placeholder="Web Design"
-                  onChange={formikProps.handleChange}
+                  value="Select..."
+                  options={tags.map((tag) => tag.tag_name)}
+                  placeholder="Select..."
+                  onChange={(ev) => {
+                    // HACK just make it work for now
+                    const selectedValue = ev.currentTarget.value;
+
+                    let selectedTag;
+
+                    for (const tag of tags) {
+                      if (tag.tag_name === selectedValue) {
+                        selectedTag = tag;
+                        break;
+                      }
+                    }
+
+                    if (
+                      !selectedTags
+                        .map((tag) => tag.tag_name)
+                        .includes(selectedValue)
+                    ) {
+                      const arrCopy = [...selectedTags];
+                      arrCopy.push(selectedTag);
+                      setSelectedTags(arrCopy);
+                    }
+                  }}
                   onBlur={formikProps.handleBlur}
                   isValid={
                     isMentor
@@ -108,6 +147,16 @@ function RegisterBio() {
                   }
                   required
                 />
+                <div className="d-flex gap-2">
+                  {selectedTags.map((value) => (
+                    <div
+                      style={{ borderRadius: "24px", minWidth: "50px" }}
+                      className="border border-2 px-2 py-2 text-center"
+                    >
+                      <span key={value.tag_id}>{value.tag_name}</span>
+                    </div>
+                  ))}
+                </div>
                 <TextField
                   as="textarea"
                   rows="5"

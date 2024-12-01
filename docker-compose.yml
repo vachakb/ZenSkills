@@ -1,0 +1,30 @@
+services:
+  db:
+    image: postgres
+    restart: always
+    shm_size: 128mb
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: test
+      POSTGRES_PASSWORD: test
+  frontend:
+    image: node:lts-bookworm-slim
+    ports:
+      - "5173:5173"
+    working_dir: /frontend
+    command: npx vite --host
+    volumes:
+      - ./frontend:/frontend
+  backend:
+    environment:
+      DB_HOST: "db"
+    image: node:lts-bookworm
+    ports:
+      - "5000:5000"
+    working_dir: /backend
+    depends_on:
+      - db
+    command: bash -c "sleep 3 && npx prisma migrate dev && npm run dev"
+    volumes:
+      - ./backend:/backend

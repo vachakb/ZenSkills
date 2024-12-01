@@ -6,21 +6,21 @@ async function getMenteeProfile(req, res) {
 
   try {
     const mentee = await prisma.mentee.findUnique({
-      where: { mentee_id: menteeId },
+      where: { id: menteeId },
       include: {
         User: true,
-        mentee_interests: { include: { tags: true } },
+        interests: true,
       },
     });
 
     if (!mentee) return res.status(404).json({ error: "Mentee not found" });
 
     const response = {
-      name: mentee.name,
+      name: mentee.User.name,
       bio: mentee.bio,
       occupation: mentee.company,
       title: mentee.mentee_title,
-      interests: mentee.mentee_interests.map((i) => i.tags.tag_name),
+      interests: mentee.interests,
       isMentor: false,
     };
 

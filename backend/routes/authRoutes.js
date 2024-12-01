@@ -151,14 +151,20 @@ router.post(
         then: (schema) => schema.integer().min(0).required(),
       }),
       companyOrSchool: yup.string(),
-      expertise: yup.string().when([], {
-        is: () => req.user.role == "mentor",
-        then: (schema) => schema.required(),
-      }),
-      interests: yup.string().when([], {
-        is: () => req.user.role == "mentee",
-        then: (schema) => schema.required(),
-      }),
+      expertise: yup
+        .array()
+        .nullable()
+        .when([], {
+          is: () => req.user.role == "mentor",
+          then: (schema) => schema.required(),
+        }),
+      interests: yup
+        .array()
+        .nullable()
+        .when([], {
+          is: () => req.user.role == "mentee",
+          then: (schema) => schema.required(),
+        }),
       bio: yup.string(),
     });
   }),

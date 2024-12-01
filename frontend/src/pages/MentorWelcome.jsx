@@ -19,17 +19,32 @@ import {
   import EventCard from "../components/Events";
   import MentorCard from "../components/MentorCard"
   import "../styles/style.css";
+import Calendar from "../components/Calendar";
+import { getUserProfile } from "../apis/user";
 export default function MentorWelcome({events_}){
   const [events, setEvents] = useState(events_);
     
-    const location = useLocation();
 
-    const userName = location.state?.name || "User";
-  
+
     const sessiondata = [
       /*{name:"test1",date:new Date()},
           {name:"test2",date:new Date()},*/
     ];
+
+  const [profile, setProfile] = useState({});
+
+  const onLoad = async () => {
+    try {
+      const res = await getUserProfile();
+      setProfile(res.data.profile);
+    } catch (err) {
+      console.error(err)
+    }
+  }
+
+  const userName = profile?.name || "User";
+
+  useEffect(() => { onLoad() }, []);
   
     const [tasks, setTasks] = useState([
         { label: "Complete your profile", done: true },
@@ -171,7 +186,9 @@ export default function MentorWelcome({events_}){
         
       
         <div className="flex-grow-0 ms-auto" style={{position:'fixed', right:'15px'}}>
-        
+          <div className="mb-5">
+            <Calendar />
+          </div>
           <Card
             text="primary"
             bg="white"

@@ -32,6 +32,7 @@ import SessionForm1 from "./CreateSession2.jsx";
 import Meeting from "./Meeting.jsx";
 import WorkshopDetails from "./WorkshopDetails.jsx";
 import Sessions from "./Sessions.jsx";
+import Dashboard from "./Dashboard.jsx";
 
 const mentor = {
   id: "id",
@@ -40,7 +41,9 @@ const mentor = {
   currentPost: "Test Architecture manager at Align",
   noOfSessions: 19,
   noOfReviews: 4,
-  Experience: 23,
+  // Experience: 23,
+  experienceYears: 10,
+  experienceMonths: 7,
   creditScore: 95,
 };
 const eventdetails = {
@@ -61,7 +64,65 @@ const demoTags = [
   "Web Development",
 ];
 
-const mentors = Array(12).fill(mentor);
+// const mentors = Array(12).fill(mentor);
+const mentors = [
+  {
+    id: "mentor_001",
+    name: "Alice Johnson",
+    rating: 4.8,
+    currentPost: "Senior Data Scientist at Google",
+    noOfSessions: 25,
+    noOfReviews: 8,
+    experienceYears: 12,
+    experienceMonths: 3,
+    creditScore: 98,
+  },
+  {
+    id: "mentor_002",
+    name: "Bob Martinez",
+    rating: 4.2,
+    currentPost: "DevOps Engineer at Amazon",
+    noOfSessions: 15,
+    noOfReviews: 6,
+    experienceYears: 8,
+    experienceMonths: 10,
+    creditScore: 92,
+  },
+  {
+    id: "mentor_003",
+    name: "Chloe Kim",
+    rating: 4.9,
+    currentPost: "Lead UX Designer at Adobe",
+    noOfSessions: 30,
+    noOfReviews: 12,
+    experienceYears: 14,
+    experienceMonths: 2,
+    creditScore: 99,
+  },
+  {
+    id: "mentor_004",
+    name: "David Patel",
+    rating: 4.7,
+    currentPost: "AI Researcher at OpenAI",
+    noOfSessions: 40,
+    noOfReviews: 20,
+    experienceYears: 11,
+    experienceMonths: 6,
+    creditScore: 96,
+  },
+  {
+    id: "mentor_005",
+    name: "Emily Wright",
+    rating: 4.5,
+    currentPost: "Blockchain Developer at IBM",
+    noOfSessions: 18,
+    noOfReviews: 7,
+    experienceYears: 9,
+    experienceMonths: 8,
+    creditScore: 94,
+  },
+];
+
 const events = Array(6).fill(eventdetails);
 
 const router = createBrowserRouter([
@@ -69,6 +130,10 @@ const router = createBrowserRouter([
     path: "/",
     element: <App />,
     children: [
+      {
+        path: "/",
+        element: <Dashboard />,
+      },
       {
         path: "upcoming",
         element: <Upcoming />,

@@ -6,7 +6,7 @@ const { getJobs } = require("../controllers/jobController");
 
 const router = express.Router();
 
-// router.get("/profile", getUserProfile);
+router.get("/profile", getUserProfile);
 
 // Endpoint to fetch tags
 router.get("/tags", getTags);
