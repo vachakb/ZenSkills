@@ -3,7 +3,6 @@ import Header from "../components/Header";
 import SideBar from "../components/SideBar";
 import { useState } from "react";
 import classNames from "classnames";
-import userContext from "../components/userContext";
 import Dashboard from "./Dashboard";
 
 // Define the excluded routes
@@ -33,7 +32,7 @@ function Layout({ children }) {
 
   // Conditionally render Header and SideBar based on the route
   return (
-    <userContext.Provider>
+    <>
       {!isExcluded && <Header onToggleSideBar={toggleSideBar} />}
 
       <div className="d-flex flex-grow-1">
@@ -52,7 +51,7 @@ function Layout({ children }) {
           </div>
         </div>
       </div>
-    </userContext.Provider>
+    </>
   );
 }
 
