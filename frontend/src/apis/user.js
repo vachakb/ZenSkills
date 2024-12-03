@@ -8,6 +8,10 @@ function register(user) {
   return axiosInstance.post(`/auth/register`, user);
 }
 
+function logout() {
+  return axiosInstance.post("/auth/logout");
+}
+
 function sendVerificationEmail(email) {
   return axiosInstance.post(`/auth/verify`, { email });
 }
@@ -27,7 +31,6 @@ function googleCallback(token) {
 }
 function getUserInfo(params) {
   return axios.get(`${API_URL}/user`);
-  
 }
 
 function getAllTags() {
@@ -41,6 +44,7 @@ function getUserProfile() {
 export {
   login,
   register,
+  logout,
   sendVerificationEmail,
   verificationEmailCallback,
   registerUser,

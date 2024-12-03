@@ -166,3 +166,12 @@ exports.googleCallback = async (req, res) => {
     res.status(400).json({ error: "Invalid Google token." });
   }
 };
+
+exports.logout = function (req, res, next) {
+  req.logout(function (err) {
+    if (err) {
+      return next(err);
+    }
+    res.sendStatus(200);
+  });
+};

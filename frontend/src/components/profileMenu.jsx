@@ -3,6 +3,7 @@ import { Card, Button } from "react-bootstrap";
 import { FaRegUserCircle } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import { useLocation } from "react-router-dom";
+import { logout } from "../apis/user";
 
 
 function ProfileMenu({ profile }) {
@@ -93,7 +94,9 @@ function ProfileMenu({ profile }) {
               variant="outline-primary"
               className="w-100"
               onClick={() => {
-                console.log("Logging out...");
+                logout().then(() => {
+                  navigate("/login");
+                })
               }}
               style={{ borderRadius: "20px" }}
             >
