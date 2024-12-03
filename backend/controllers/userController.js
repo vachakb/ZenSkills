@@ -7,10 +7,14 @@ exports.getUserProfile = async (req, res) => {
       where: { id: req.user.id },
       include: {
         mentee: {
-          interests: true,
+          include: {
+            interests: true,
+          },
         },
         mentor: {
-          expertise: true,
+          include: {
+            expertise: true,
+          },
         },
       },
       omit: {
