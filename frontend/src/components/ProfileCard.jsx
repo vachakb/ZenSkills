@@ -17,12 +17,12 @@ const ProfileCard = ({ profile,isCurrentUser = false,isEditing }) => {
         alert("Failed to copy the link: " + err);
       });
   };
+
   const initialValues = {
     name: profile.name,
-    title: profile.mentee_title,
-    occupation: profile.company,
-    expertise: profile.expertise || [],
-    interests: profile.interests || [],
+    title: profile.role == "mentor" ? profile.mentor.mentor_job_title : profile?.mentee?.mentee_title,
+    occupation: profile.role == "mentor" ? profile.mentor.company : profile?.mentee?.company,
+    skills: profile.role == "mentor" ? profile.mentor.expertise : profile?.mentee?.interests,
   };
 
 
@@ -139,9 +139,9 @@ const ProfileCard = ({ profile,isCurrentUser = false,isEditing }) => {
                       </>
                     ) : (
                       <>
-                        <h5 className="mb-0 fs-4">{profile.name}</h5>
+                        <h5 className="mb-0 fs-4">{profile?.name}</h5>
                         <small className="text-muted">
-                          {profile.mentee.mentee_title} at<br/>{profile.mentee.company}
+                          {profile?.mentee?.mentee_title} at<br/>{profile?.mentee?.company}
                         </small>
                       </>
                     )}
@@ -155,8 +155,8 @@ const ProfileCard = ({ profile,isCurrentUser = false,isEditing }) => {
                   </Card.Title>
                   <hr className="mb-2" />
                   <div className="d-flex flex-wrap justify-content-center justify-content-md-start">
-                    {(profile.isMentor ? values.expertise : values.interests).map(
-                      (interest, index) => (
+                    {(profile?.mentee?.interests ?? profile?.mentor?.expertise ?? []).map(
+                      (skill, index) => (
                         <Badge
                           key={index}
                           bg="warning"
@@ -178,7 +178,7 @@ const ProfileCard = ({ profile,isCurrentUser = false,isEditing }) => {
                               className="form-control"
                             />
                           ) : (
-                            interest.tag_name
+                            skill.tag_name
                           )}
                         </Badge>
                       )
