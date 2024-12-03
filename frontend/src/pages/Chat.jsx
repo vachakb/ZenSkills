@@ -80,6 +80,7 @@ function Chat() {
       sendJsonMessage(payload);
       setMessage("");
       setFileToUpload(undefined);
+      setIsChatAtBottom(true)
     }
   };
 
