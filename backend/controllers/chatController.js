@@ -27,6 +27,35 @@ exports.getAllConversations = async (req, res) => {
   });
 };
 
+// TODO validation, file size check
+exports.saveAttachment = async (req, res) => {
+  const attachment = await prisma.attachment.create({
+    omit: {
+      message_id: true,
+      path: true,
+    },
+    data: {
+      filename: req.file.originalname,
+      path: req.file.path,
+      size: req.file.size,
+    },
+  });
+  res.json({ attachment: attachment });
+};
+
+// TODO validation
+exports.downloadAttachment = async (req, res) => {
+  const attachment_id = req.params.id;
+
+  const attachment = await prisma.attachment.findUnique({
+    where: {
+      id: attachment_id,
+    },
+  });
+
+  res.download(attachment.path, attachment.filename);
+};
+
 exports.connect = (ws, req) => {
   clientsConnected.set(req.user.id, ws);
 
@@ -42,6 +71,7 @@ exports.connect = (ws, req) => {
         const messages = await prisma.message.findMany({
           include: {
             sender: true,
+            attachment: true,
           },
           omit: {
             sender_id: true,
@@ -69,6 +99,7 @@ exports.connect = (ws, req) => {
         const message = await prisma.message.create({
           include: {
             sender: true,
+            attachment: true,
           },
           omit: {
             sender_id: true,
@@ -85,12 +116,17 @@ exports.connect = (ws, req) => {
                 id: msg.conversation_id,
               },
             },
+            attachment: msg.attachment_id
+              ? {
+                  connect: {
+                    id: msg.attachment_id,
+                  },
+                }
+              : null,
             content: msg.content,
             type: "USER",
           },
         });
-
-        console.log(message);
 
         conversationMembers.forEach((member) => {
           const client = clientsConnected.get(member.id);

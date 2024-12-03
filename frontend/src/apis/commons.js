@@ -14,4 +14,4 @@ const axiosInstance = axios.create({
   baseURL: API_URL + "/api",
 });
 
-export { axiosInstance };
+export { API_URL, axiosInstance };

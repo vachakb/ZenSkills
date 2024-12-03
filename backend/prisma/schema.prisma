@@ -346,7 +346,9 @@ enum MessageType {
 
 model Attachment {
   id String @id @default(uuid())
-  file String
-  message_id String @unique
-  message Message @relation(fields: [message_id], references: [id])
+  filename String
+  path String
+  size Int
+  message_id String? @unique
+  message Message? @relation(fields: [message_id], references: [id])
 }
