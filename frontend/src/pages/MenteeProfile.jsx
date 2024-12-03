@@ -160,7 +160,7 @@ function MenteeProfile() {
             }}
           >
             <Statistics />
-            <MenteeSessions />
+          
             <Achievements />
           </div>
         </div>
