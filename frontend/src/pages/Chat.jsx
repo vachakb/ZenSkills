@@ -74,7 +74,7 @@ function Chat() {
         type: "MESSAGE",
         content: message,
         conversation_id: conversations[selectedConversation].id,
-        attachment_id: fileToUpload.id,
+        attachment_id: fileToUpload ? fileToUpload.id : undefined,
       };
       //setMessages([...messages, payload]);
       sendJsonMessage(payload);

@@ -96,7 +96,7 @@ exports.connect = (ws, req) => {
           },
         });
 
-        const message = await prisma.message.create({
+        const messageData = {
           include: {
             sender: true,
             attachment: true,
@@ -116,17 +116,20 @@ exports.connect = (ws, req) => {
                 id: msg.conversation_id,
               },
             },
-            attachment: msg.attachment_id
-              ? {
-                  connect: {
-                    id: msg.attachment_id,
-                  },
-                }
-              : null,
             content: msg.content,
             type: "USER",
           },
-        });
+        };
+
+        if (msg.attachment_id) {
+          messageData.data.attachment = {
+            connect: {
+              id: msg.attachment_id,
+            },
+          };
+        }
+
+        const message = await prisma.message.create(messageData);
 
         conversationMembers.forEach((member) => {
           const client = clientsConnected.get(member.id);
