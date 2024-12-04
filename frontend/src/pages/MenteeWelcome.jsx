@@ -6,6 +6,7 @@ import {
   Button,
   Card,
   ProgressBar,
+  Spinner,
 } from "react-bootstrap";
 import { useMemo, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
@@ -26,7 +27,7 @@ const API_URL = "http://localhost:5000";
 function MenteeWelcome({ mentors_, events_ }) {
   const [mentors, setMentors] = useState(mentors_);
 
-  const profile = useProfile();
+  const { profile, isProfileLoading } = useProfile();
 
   const userName = profile?.name || "User";
 
@@ -79,6 +80,14 @@ function MenteeWelcome({ mentors_, events_ }) {
     }
     fetchData();
   }, []);
+
+  if (isProfileLoading) {
+    return (
+      <div className="d-flex h-100 w-100 justify-content-center align-items-center">
+        <Spinner />
+      </div>
+    );
+  }
 
   return (
     <Container className="d-flex flex-column gap-4 px-md-4" fluid>

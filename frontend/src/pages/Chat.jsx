@@ -1,11 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import useProfile from "../hooks/useProfile";
 import useWebSocket from "react-use-websocket";
-import {
-  getAllConversations,
-  saveAttachment,
-} from "../apis/chat";
-import { Button, Form } from "react-bootstrap";
+import { getAllConversations, saveAttachment } from "../apis/chat";
+import { Button, Form, Spinner } from "react-bootstrap";
 import classNames from "classnames";
 import { API_URL } from "../apis/commons";
 
@@ -33,7 +30,7 @@ function Conversation({ children, onClick }) {
 }
 
 function Chat() {
-  const profile = useProfile();
+  const { profile, isProfileLoading } = useProfile();
 
   const [fileToUpload, setFileToUpload] = useState();
 
@@ -80,7 +77,7 @@ function Chat() {
       sendJsonMessage(payload);
       setMessage("");
       setFileToUpload(undefined);
-      setIsChatAtBottom(true)
+      setIsChatAtBottom(true);
     }
   };
 
@@ -115,8 +112,12 @@ function Chat() {
     saveAttachment(file).then((res) => setFileToUpload(res.data.attachment));
   };
 
-  if (isConversationsLoading) {
-    return <div>Loading...</div>;
+  if (isProfileLoading || isConversationsLoading) {
+    return (
+      <div className="d-flex h-100 w-100 justify-content-center align-items-center">
+        <Spinner />
+      </div>
+    );
   }
 
   return (
@@ -204,7 +205,11 @@ function Chat() {
                     </div>
                   )}
                   {msg.attachment && (
-                    <a className="text-decoration-none" href={`${API_URL}/api/chat/attachment/${msg.attachment.id}`} download>
+                    <a
+                      className="text-decoration-none"
+                      href={`${API_URL}/api/chat/attachment/${msg.attachment.id}`}
+                      download
+                    >
                       <div
                         style={{ cursor: "pointer" }}
                         className="d-flex gap-2 px-3 py-1"

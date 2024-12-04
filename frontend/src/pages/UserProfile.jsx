@@ -1,13 +1,10 @@
-import { ButtonGroup, ToggleButton } from "react-bootstrap";
+import { ButtonGroup, Spinner, ToggleButton } from "react-bootstrap";
 import ProfileCard from "../components/ProfileCard";
 import UserInfo from "../components/UserInfo";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Statistics from "../components/Statistics";
 import Achievements from "../components/Achievements";
-
-import axios from "axios";
-import { useLocation, useParams } from "react-router-dom";
-
+import { useLocation } from "react-router-dom";
 import Milestones from "../components/Milestones";
 import MenteeSessions from "../components/MenteeSessions";
 import useProfile from "../hooks/useProfile"
@@ -53,7 +50,6 @@ const timelineData = [
 ];
 
 function UserProfile() {
-  const { menteeId } = useParams();
   const isEditing = useLocation().state?.isEditing??false;
   
   const [radioValue, setRadioValue] = useState("1");
@@ -62,8 +58,6 @@ function UserProfile() {
     { name: "Overview", value: "1" },
     { name: "Milestones", value: "2" },
   ];
-
- const profile = useProfile();
 
   const getButtonStyle = (value) => {
     if (radioValue === value) {
@@ -81,6 +75,16 @@ function UserProfile() {
       backgroundColor: "white",
     };
   };
+
+  const { profile, isProfileLoading } = useProfile();
+
+  if (isProfileLoading) {
+    return (
+      <div className="d-flex h-100 w-100 justify-content-center align-items-center">
+        <Spinner />
+      </div>
+    );
+  }
 
   return (
     <div className="container-fluid">

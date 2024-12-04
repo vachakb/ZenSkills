@@ -7,7 +7,7 @@ import { useLocation } from "react-router-dom";
 import useProfile from "../hooks/useProfile";
 
 function Header({ onToggleSideBar, headerRef }) {
-  const profile = useProfile();
+  const { profile } = useProfile();
   const location = useLocation();
   return (
     <Navbar expand="lg" className="bg-primary px-4 d-flex align-items-center" ref={headerRef}>

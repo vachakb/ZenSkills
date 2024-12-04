@@ -13,7 +13,7 @@ import ProfileMenu from "./profileMenu";
 import useProfile from "../hooks/useProfile";
 
 function SideBar(props) {
-  const profile = useProfile();
+  const { profile } = useProfile();
   const location = useLocation();  // Get current route for conditional checks
 
   // Classnames for sidebar visibility (controlled by `show` prop passed from parent)

@@ -51,7 +51,7 @@ const sessions = [
 function Calendar() {
   const [selectedDate, setSelectedDate] = useState(DateTime.local());
 
-  const profile = useProfile();
+  const { profile } = useProfile();
 
   const selectedDateSessions = useMemo(() => {
     return sessions.filter((session) =>

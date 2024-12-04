@@ -3,13 +3,17 @@ import { getUserProfile } from "../apis/user";
 
 const useProfile = () => {
   const [profile, setProfile] = useState({});
+  const [isProfileLoading, setIsProfileLoading] = useState(true);
 
   useEffect(() => {
     let ignore = false;
 
+    setIsProfileLoading(true);
+
     getUserProfile().then((res) => {
       if (!ignore) {
         setProfile(res.data.profile);
+        setIsProfileLoading(false)
       }
     });
 
@@ -18,7 +22,7 @@ const useProfile = () => {
     };
   }, []);
 
-  return profile;
+  return { profile, isProfileLoading };
 };
 
 export default useProfile;
