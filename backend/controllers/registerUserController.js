@@ -45,6 +45,7 @@ const registerUserProfile = async (req, res) => {
           mentor_job_title: title,
           experience_years: years,
           experience_months: months,
+          rating: 0,
           company,
           expertise: {
             connect: expertise.map((tag) => ({ tag_id: tag.tag_id })),

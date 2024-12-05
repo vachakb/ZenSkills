@@ -29,6 +29,8 @@ model User {
   language      String?     @db.VarChar(100)
   conversations Conversation[]
   messages Message[]
+
+  WorkshopBooking WorkshopBooking[]
 }
 
 
@@ -246,6 +248,22 @@ model workshops {
   visibility      visibility @default(Public)       
 
   @@index([created_by])      
+  WorkshopBooking WorkshopBooking[]
+}
+
+model WorkshopBooking {
+  id          String   @id @default(uuid())
+  workshop_id String
+  user_id     String
+  attended    Boolean  @default(false) // New field to track attendance
+  created_at  DateTime @default(now())
+
+  workshop    workshops @relation(fields: [workshop_id], references: [id])
+  user        User      @relation(fields: [user_id], references: [id])
+
+  @@unique([workshop_id, user_id])
+  @@index([workshop_id])
+  @@index([user_id])
 }
 
 

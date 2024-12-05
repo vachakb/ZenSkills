@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
-import { getWorkshopById } from "../apis/workshops";
+import { getWorkshopById, bookWorkshop } from "../apis/workshops";
 import { formatDateTime } from "../misc/formatDateTime";
+import useProfile from "../hooks/useProfile"; // Import the useProfile hook
 // TODO Make calls using axios
 
 const WorkshopDetails = () => {
@@ -31,12 +32,14 @@ const WorkshopDetails = () => {
   //     completionStatus: false,
   //   };
 
+  const { profile } = useProfile(); // Get the user profile
+  const userId = profile?.id; // Extract the userId from the profile
   const { date, time } = formatDateTime(workshopData.date);
 
   async function fetchWorkshopData() {
     try {
       const response = await getWorkshopById(workshopId);
-      setWorkshopData(response.data);
+      setWorkshopData(response.data)
     } catch (error) {
       console.error("Error fetching workshop details:", error);
     }
@@ -48,22 +51,17 @@ const WorkshopDetails = () => {
 
   const handleBooking = async () => {
     setLoading(true);
-    const responce = await fetch(`/api/workshops/${workshopId}`, {
-      method: "POST",
-      headers: {
-        "content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        workshopId,
-        userId,
-      }),
-    });
-    if (responce.ok) {
-      await fetchWorkshopData();
-      console.log("session for workshop is booked");
-      alert("You have successfully booked the workshop!");
-      //   navigate("/workshops"); // Redirect to workshops page after booking
-    } else {
+    try {
+      const response = await bookWorkshop(workshopId, userId);
+      if (response.status === 201) {
+        await fetchWorkshopData();
+        console.log("Session for workshop is booked");
+        alert("You have successfully booked the workshop!");
+      } else {
+        alert("Unable to book seat");
+      }
+    } catch (error) {
+      console.error("Error booking workshop:", error);
       alert("Unable to book seat");
     }
     setLoading(false);
