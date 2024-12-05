@@ -9,6 +9,7 @@ const userRoutes = require("./routes/userRoutes");
 const mentorRoutes = require("./routes/mentorRoutes");
 const menteeRoutes = require("./routes/menteeRoutes");
 const sessionRoutes = require("./routes/sessionRoutes");
+const jobRoutes = require("./routes/jobRoutes");
 
 const session = require("express-session");
 const { PrismaSessionStore } = require("@quixo3/prisma-session-store");
@@ -53,6 +54,7 @@ app.use("/api/mentors", mentorRoutes);
 app.use("/api/mentee", menteeRoutes);
 app.use("/api/workshops", workshopRoutes);
 app.use("/api/session", sessionRoutes);
+app.use("/api/jobs", jobRoutes);
 
 require("express-ws")(app);
 const chatRoutes = require("./routes/chatRoutes");
