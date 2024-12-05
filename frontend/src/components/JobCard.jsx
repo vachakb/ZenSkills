@@ -1,21 +1,29 @@
-import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import React from "react";
+import { useNavigate } from "react-router-dom";
 
-const JobCard = ({ id, title, jobTypes, salary, company, location, applicants, logo }) => {
-
+const JobCard = ({
+  id,
+  title,
+  jobTypes,
+  salary,
+  company,
+  location,
+  applicants,
+  logo,
+}) => {
   const navigate = useNavigate();
 
-  function handleJobDeailsClick(id){
-    console.log("navigationg to details of job with id: ", id)
-    navigate(`/jobs/${id}`)
+  function handleJobDeailsClick(id) {
+    console.log("navigationg to details of job with id: ", id);
+    navigate(`/jobs/${id}`);
   }
 
   // Generate initials from the company name for the placeholder
   const getInitials = (name) => {
     return name
-      .split(' ')
+      .split(" ")
       .map((word) => word[0])
-      .join('')
+      .join("")
       .toUpperCase();
   };
 
@@ -32,8 +40,8 @@ const JobCard = ({ id, title, jobTypes, salary, company, location, applicants, l
 
         {/* Job Type and Salary */}
         <div className="mb-3">
-          {jobTypes.map(jobType=>{
-            return <span className="badge bg-success mx-1">{jobType}</span>
+          {jobTypes.map((jobType) => {
+            return <span className="badge bg-success mx-1">{jobType}</span>;
           })}
         </div>
 
@@ -46,7 +54,7 @@ const JobCard = ({ id, title, jobTypes, salary, company, location, applicants, l
           <img
             src={logoUrl}
             alt={`${company} logo`}
-            style={{ width: '40px', height: '40px', objectFit: 'cover' }}
+            style={{ width: "40px", height: "40px", objectFit: "cover" }}
             className="rounded-circle me-3"
           />
           <div>
@@ -62,10 +70,20 @@ const JobCard = ({ id, title, jobTypes, salary, company, location, applicants, l
 
         {/* Action Buttons */}
         <div className="d-flex justify-content-between">
-          <button className="btn btn-outline-primary" onClick={()=>handleJobDeailsClick(id)}>View Details</button>
-          <button className="btn btn-primary" type="button"
-          data-bs-toggle="modal"
-          data-bs-target="#applyJobModal">Apply Now</button>
+          <button
+            className="btn btn-outline-primary"
+            onClick={() => handleJobDeailsClick(id)}
+          >
+            View Details
+          </button>
+          <button
+            className="btn btn-primary"
+            type="button"
+            data-bs-toggle="modal"
+            data-bs-target="#applyJobModal"
+          >
+            Apply Now
+          </button>
         </div>
       </div>
     </div>

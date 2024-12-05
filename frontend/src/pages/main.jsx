@@ -35,6 +35,7 @@ import Sessions from "./Sessions.jsx";
 import Dashboard from "./Dashboard.jsx";
 import UserProfile from "./UserProfile.jsx";
 import Chat from "./Chat.jsx";
+import LandingPage from "./LandingPage.jsx";
 
 const mentor = {
   id: "id",
@@ -243,7 +244,10 @@ const router = createBrowserRouter([
         element: <Chat />
       }
     ],
-  },
+  },{
+    path: "landing-page",
+    element: <LandingPage/>
+  }
 ]);
 
 createRoot(document.getElementById("root")).render(
