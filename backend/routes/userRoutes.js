@@ -1,11 +1,7 @@
 const express = require("express");
 const { getUserProfile,deleteProfile } = require("../controllers/userController");
 const { getTags } = require("../controllers/mentorController");
-const { getJobDetails } = require("../controllers/jobController");
-const { getJobs } = require("../controllers/jobController");
-const { createJob } = require("../controllers/jobController");
-const { updateJob } = require("../controllers/jobController");
-const { deleteJob } = require("../controllers/jobController");
+
 
 
 const router = express.Router();
@@ -17,20 +13,5 @@ router.delete("/profile/delete", deleteProfile);
 
 // Endpoint to fetch tags
 router.get("/tags", getTags);
-
-// Endpoint to fetch all jobs
-router.get("/jobs/", getJobs);
-
-// Endpoint to fetch a particular job
-router.get("/jobs/:jobId", getJobDetails);
-
-// Endpoint to create a new job
-router.post("/jobs", createJob);
-
-// Endpoint to update a job
-router.put("/jobs/:jobId", updateJob);
-
-// Endpoint to delete a job
-router.delete("/jobs/:jobId", deleteJob);
 
 module.exports = router;
