@@ -9,7 +9,7 @@ import { logout } from "../apis/user";
 function ProfileMenu({ profile }) {
   const [showMenu, setShowMenu] = useState(false);
   const isEditing = useLocation().state?.isEditing??false;
- 
+
   const navigate = useNavigate();
  
 
