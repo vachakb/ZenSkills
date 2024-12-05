@@ -5,10 +5,10 @@ const {
   registerUserProfile,
 } = require("../controllers/registerUserController");
 const passport = require("passport");
-const { verify } = require("crypto");
 const { validation } = require("../middlewares/validation");
 const { protected } = require("../middlewares/protected");
 const MagicLinkStrategy = require("passport-magic-link").Strategy;
+const CustomStrategy = require("passport-custom").Strategy;
 const yup = require("yup");
 const { languages } = require("../misc/languages");
 const { states } = require("../misc/states");
@@ -89,16 +89,26 @@ router.get(
     action: "acceptToken",
     failWithError: true,
   }),
-  (req, res) => {
-    res.status(200).json({ email: req.user.email, role: req.user.role });
+  (_, res) => {
+    res.status(200);
   },
   (_, res) => {
     res.sendStatus(500);
   },
 );
 
-// Google OAuth callback route
-router.post("/google/callback", authController.googleCallback);
+passport.use("google", new CustomStrategy(authController.googleCallback));
+
+router.post(
+  "/google/callback",
+  passport.authenticate("google", { failWithError: true }),
+  (req, res) => {
+    res.json({ isRegistered: req.isRegistered });
+  },
+  (_, res) => {
+    res.sendStatus(500);
+  },
+);
 
 // Registration route
 router.post(

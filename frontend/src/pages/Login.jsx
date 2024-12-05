@@ -8,10 +8,6 @@ import { GoogleLogin } from "@react-oauth/google";
 import { useNavigate } from "react-router-dom";
 import { googleCallback, login } from "../apis/user";
 
-// TODO put into env
-const GOOGLE_CLIENT_ID =
-  "172493269774-4qr965tabedoqajcv49jpu2btps6sg8v.apps.googleusercontent.com";
-
 function Login() {
   const [isMentor, setIsMentor] = useState(false);
 
@@ -41,13 +37,17 @@ function Login() {
             }}
             onSubmit={async (data) =>
               login({ ...data, role: isMentor ? "mentor" : "mentee" })
-                .then(() => navigate(isMentor ? "/mentor_welcome" : "/mentee_welcome"))
+                .then(() =>
+                  navigate(isMentor ? "/mentor_welcome" : "/mentee_welcome"),
+                )
                 .catch((err) => {
                   console.error(err);
-                  console.log(err.response)
+                  console.log(err.response);
 
                   if (err.response && err.response.status === 401) {
-                    alert("Wrong credentials. Check for correct email, password and role.");
+                    alert(
+                      "Wrong credentials. Check for correct email, password and role.",
+                    );
                   }
                 })
             }
@@ -144,12 +144,21 @@ function Login() {
                 </div>
 
                 <div className="align-self-center">
-                  {" "}
                   <GoogleLogin
-                    clientId={GOOGLE_CLIENT_ID}
                     onSuccess={async (response) =>
-                      googleCallback(response.credential)
-                        .then((res) => console.log(res))
+                      googleCallback({
+                        token: response.credential,
+                        role: isMentor ? "mentor" : "mentee",
+                      })
+                        .then((res) => {
+                          if (res.data.isRegistered) {
+                            navigate(
+                              isMentor ? "/mentor_welcome" : "/mentee_welcome",
+                            );
+                          } else {
+                            navigate("/register/1");
+                          }
+                        })
                         .catch(console.error(err))
                     }
                     onError={() => {

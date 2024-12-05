@@ -1,12 +1,10 @@
-const bcrypt = require("bcryptjs");
-const jwt = require("jsonwebtoken");
 const prisma = require("../models/prismaClient");
-const { OAuth2Client } = require("google-auth-library");
-const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 const nodemailer = require("nodemailer");
-const validator = require("validator");
 const LocalStrategy = require("passport-local");
 const argon2 = require("argon2");
+const { OAuth2Client } = require("google-auth-library");
+
+const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
 const sendVerificationEmail = async (email, token) => {
   const transporter = nodemailer.createTransport({
@@ -29,15 +27,6 @@ const sendVerificationEmail = async (email, token) => {
       <a href="${verificationUrl}">Verify Email</a>
     `,
   });
-};
-
-// Utility: Generate JWT
-const generateToken = (user) => {
-  return jwt.sign(
-    { id: user.uid, email: user.email, role: user.role },
-    process.env.JWT_SECRET,
-    { expiresIn: "1h" },
-  );
 };
 
 exports.login = new LocalStrategy(
@@ -119,9 +108,10 @@ exports.verifyEmail = async (user) => {
   return newUser;
 };
 
-// Google OAuth Callback
-exports.googleCallback = async (req, res) => {
-  const { token } = req.body;
+exports.googleCallback = async (req, done) => {
+  const { token, role } = req.body;
+
+  console.log(token);
 
   try {
     // Verify the Google token
@@ -134,6 +124,10 @@ exports.googleCallback = async (req, res) => {
     const { email, sub: googleId } = payload;
 
     let user = await prisma.user.findUnique({
+      include: {
+        mentee: true,
+        mentor: true,
+      },
       where: { email },
     });
 
@@ -142,28 +136,28 @@ exports.googleCallback = async (req, res) => {
         data: {
           email,
           googleId,
-          role: "mentee",
           status: "active",
           is_deleted: false,
-          phone_number: "0000000000",
-          location: "Unknown",
+          // phone_number: "0000000000",
+          // location: "Unknown",
           password: "",
-          created_at: new Date(),
+          role,
+          // created_at: new Date(),
         },
       });
     }
 
-    // Generate JWT token for the authenticated user
-    const jwtToken = generateToken(user);
-    res.json({
-      success: true,
-      token: jwtToken,
-      role: user.role,
-      user,
-    });
+    if (user.role === "mentor" && user.mentor) {
+      req.isRegistered = true;
+    } else if (user.role === "mentee" && user.mentee) {
+      req.isRegistered = true;
+    } else {
+      req.isRegistered = false;
+    }
+
+    done(null, user);
   } catch (err) {
-    console.error("Error verifying Google token:", err);
-    res.status(400).json({ error: "Invalid Google token." });
+    done(err);
   }
 };
 
