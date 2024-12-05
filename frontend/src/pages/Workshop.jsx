@@ -5,7 +5,7 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { getAllWorkshops } from "../apis/workshops";
 import { formatDateTime } from "../misc/formatDateTime";
-// TODO Fix date
+import { format } from "date-fns"; // Import date-fns for date formatting
 // TODO Make calls using axios
 
 const WorkshopsPage = ({ demoTags }) => {
@@ -316,8 +316,8 @@ const WorkshopsPage = ({ demoTags }) => {
               <div className="card-body">
                 <h5 className="card-title">{workshop.title}</h5>
                 <p className="card-text">
-                  <strong>Date:</strong> {workshop.date} <br />
-                  <strong>Time:</strong> {workshop.time}
+                  <strong>Date:</strong> {format(new Date(workshop.date), "MMMM dd, yyyy")} <br />
+                  <strong>Time:</strong> {format(new Date(workshop.date), "hh:mm a")}
                 </p>
                 <div className="d-flex align-items-center mt-3">
                   <img
