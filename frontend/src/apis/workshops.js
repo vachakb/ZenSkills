@@ -8,4 +8,8 @@ function getWorkshopById(id) {
   return axiosInstance.get(`/workshops/${id}`);
 }
 
-export { getAllWorkshops, getWorkshopById };
+function bookWorkshop(workshopId, userId) {
+  return axiosInstance.post(`/workshops/${workshopId}/book`, { userId });
+}
+
+export { getAllWorkshops, getWorkshopById, bookWorkshop};

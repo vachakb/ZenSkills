@@ -46,6 +46,7 @@ const getWorkshopById = async (req, res) => {
 };
 
 const createWorkshop = async (req, res) => {
+  const userId = req.user.id;
   try {
     const {
       title,
@@ -53,7 +54,6 @@ const createWorkshop = async (req, res) => {
       date,
       duration,
       workshop_image,
-      created_by,
       max_participants,
       deadline,
       visibility,
@@ -66,7 +66,7 @@ const createWorkshop = async (req, res) => {
         date: new Date(date),
         duration,
         workshop_image,
-        created_by,
+        created_by: userId,
         max_participants,
         deadline: new Date(deadline),
         visibility,
@@ -153,10 +153,122 @@ const deleteWorkshop = async (req, res) => {
 };
 
 
+// Controller to mark attendance for a workshop
+const markAttendance = async (req, res) => {
+  const { id } = req.params;
+  const { userId } = req.body;
+  console.log(req.params)
+  console.log(userId)
+
+  //const userId = req.user.id;
+
+  try {
+    // Check if the booking exists
+    const booking = await prisma.WorkshopBooking.findUnique({
+      where: {
+        workshop_id_user_id: {
+          workshop_id: id,
+          user_id: userId,
+        },
+      },
+    });
+
+    if (!booking) {
+      return res.status(404).json({ error: "Booking not found" });
+    }
+
+    // Mark attendance
+    const updatedBooking = await prisma.WorkshopBooking.update({
+      where: {
+        workshop_id_user_id: {
+          workshop_id: id,
+          user_id: userId,
+        },
+      },
+      data: {
+        attended: true,
+      },
+    });
+
+    res.status(200).json(updatedBooking);
+  } catch (error) {
+    console.error("Error marking attendance:", error);
+    res.status(500).json({ error: "Error marking attendance" });
+  }
+};
+
+// Controller to fetch the number of users who attended a workshop
+const getWorkshopAttendance = async (req, res) => {
+  const { workshopId } = req.params;
+
+  try {
+    const attendanceCount = await prisma.WorkshopBooking.count({
+      where: {
+        workshop_id: workshopId,
+        attended: true,
+      },
+    });
+
+    res.status(200).json({ attendanceCount });
+  } catch (error) {
+    console.error("Error fetching workshop attendance:", error);
+    res.status(500).json({ error: "Error fetching workshop attendance" });
+  }
+};
+
+
+// Controller to book a workshop
+const bookWorkshop = async (req, res) => {
+  const { id: workshopId } = req.params;
+  const { userId } = req.body;
+
+  try {
+    // Check if the workshop exists
+    const workshop = await prisma.workshops.findUnique({
+      where: { id: workshopId },
+    });
+
+    if (!workshop) {
+      return res.status(404).json({ error: "Workshop not found" });
+    }
+
+    // Check if the user has already booked the workshop
+    const existingBooking = await prisma.WorkshopBooking.findUnique({
+      where: {
+        workshop_id_user_id: {
+          workshop_id: workshopId,
+          user_id: userId,
+        },
+      },
+    });
+
+    if (existingBooking) {
+      return res.status(400).json({ error: "User has already booked this workshop" });
+    }
+
+    // Create a new booking
+    const newBooking = await prisma.WorkshopBooking.create({
+      data: {
+        workshop_id: workshopId,
+        user_id: userId,
+      },
+    });
+
+    res.status(201).json(newBooking);
+  } catch (error) {
+    console.error("Error booking workshop:", error);
+    res.status(500).json({ error: "Error booking workshop" });
+  }
+};
+
+
 module.exports = {
   getAllWorkshops,
   getWorkshopById,
   createWorkshop,
   updateWorkshop,
   deleteWorkshop,
+  getWorkshopAttendance,
+  markAttendance,
+  bookWorkshop,
 };
