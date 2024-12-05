@@ -4,6 +4,7 @@ const {
   getAllTopics,
   getAllAvailableSessions,
   updateSession,
+  deleteSession,
 } = require("../controllers/sessionController");
 
 const router = express.Router();
@@ -15,5 +16,7 @@ router.post("/", createSession);
 router.get("/topics", getAllTopics);
 
 router.put("/:id", updateSession);
+
+router.delete("/:id", deleteSession);
 
 module.exports = router;

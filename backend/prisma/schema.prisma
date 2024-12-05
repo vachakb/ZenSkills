@@ -301,7 +301,10 @@ model MentorSession {
   durationMinutes Int
   topics MentorSessionTopic[]
   timeSlots TimeSlot[]
-  mentor mentor[]
+  mentor_id   String
+  mentor          mentor              @relation(fields: [mentor_id], references: [id])
+
+  @@index([mentor_id])
 }
 
 model MentorSessionTopic {

@@ -8,10 +8,8 @@ exports.getAllAvailableSessions = async (req, res) => {
       },
       where: {
         mentor: {
-          some: {
-            User: {
-              id: req.user.id,
-            },
+          User: {
+            id: req.user.id,
           },
         },
       },
@@ -68,11 +66,7 @@ exports.createSession = async (req, res) => {
         timeSlots: {
           create: timeSlots,
         },
-        mentor: {
-          connect: {
-            id: mentor.id,
-          },
-        },
+        mentor_id: mentor.id,
       },
     });
 
@@ -107,6 +101,19 @@ exports.updateSession = async (req, res) => {
   } = req.body;
 
   try {
+    const session = await prisma.MentorSession.findUnique({
+      where: { id },
+      include: { mentor: true },
+    });
+
+    if (
+      !session ||
+      session.mentor.length === 0 ||
+      session.mentor.user_id !== req.user.id
+    ) {
+      return res.sendStatus(403);
+    }
+
     const mentor = await prisma.mentor.findUnique({
       where: {
         user_id: req.user.id,
@@ -142,15 +149,45 @@ exports.updateSession = async (req, res) => {
           deleteMany: {},
           create: timeSlots,
         },
-        mentor: {
-          connect: {
-            id: mentor.id,
+        mentor_id: mentor.id,
+      },
+    });
+
+    res.json(updatedSession);
+  } catch (err) {
+    console.log(err);
+    res.sendStatus(500);
+  }
+};
+
+exports.deleteSession = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const session = await prisma.MentorSession.findUnique({
+      where: { id },
+      include: { mentor: true },
+    });
+
+    if (!session || session.mentor.user_id !== req.user.id) {
+      return res.sendStatus(403);
+    }
+
+    await prisma.timeSlot.deleteMany({
+      where: {
+        sessions: {
+          some: {
+            id: id,
           },
         },
       },
     });
 
-    res.json(updatedSession);
+    await prisma.MentorSession.delete({
+      where: { id: id },
+    });
+
+    res.sendStatus(204);
   } catch (err) {
     console.log(err);
     res.sendStatus(500);
