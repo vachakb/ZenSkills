@@ -37,6 +37,7 @@ import UserProfile from "./UserProfile.jsx";
 import Chat from "./Chat.jsx";
 import CreateJobs from "./CreateJobs.jsx";
 import CreateWorkshop from "./CreateWorkshop.jsx";
+import LandingPage from "./LandingPage.jsx";
 
 const mentor = {
   id: "id",
@@ -253,11 +254,15 @@ const router = createBrowserRouter([
         element: <CreateWorkshop />
       },
     ],
-  },
+  }, {
+    path: "landing-page",
+    element: <LandingPage />
+  }
 ]);
 
 createRoot(document.getElementById("root")).render(
-  <GoogleOAuthProvider clientId="172493269774-4qr965tabedoqajcv49jpu2btps6sg8v.apps.googleusercontent.com">
+  <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}
+  >
     <RouterProvider router={router} />
   </GoogleOAuthProvider>
 );

@@ -1,9 +1,9 @@
 import React from "react";
-import { Card } from "react-bootstrap";
+import { Card, Form } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import { DateTime } from "luxon";
 
-const UserInfo = ({ profile, isEditing }) => {
+const UserInfo = ({ profile, isEditing = false, formikProps = undefined }) => {
     const calculateDateDifference = (workExperience) => {
         const from = workExperience.from;
         const to = workExperience.to ?? DateTime.now()
@@ -23,9 +23,14 @@ const UserInfo = ({ profile, isEditing }) => {
             <div className="card mb-4">
                 <div className="card-body">
                     <h5 className="card-title">BIO</h5>
+                    { isEditing ?
+                      <Form.Control name="bio" as="textarea" placeholder="Write something about yourself" value={formikProps.values.bio} onChange={formikProps.handleChange} />
+:
+
                     <p className="card-text">
                         {profile?.mentee?.bio}
                     </p>
+                    }
                 </div>
             </div>
 

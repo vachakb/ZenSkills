@@ -8,8 +8,7 @@ import { useLocation } from "react-router-dom";
 import Milestones from "../components/Milestones";
 import MenteeSessions from "../components/MenteeSessions";
 import useProfile from "../hooks/useProfile"
-
-
+import { Form, Formik } from "formik";
 
 const profile = {
   isMentor: false,
@@ -87,18 +86,27 @@ function UserProfile() {
   }
 
   return (
-    <div className="container-fluid">
+    <Formik initialValues={{
+      name: profile.name,
+      title: profile.isMentor ? profile.mentor.mentor_job_title : profile?.mentee?.mentee_title,
+      occupation: profile.isMentor ? profile.mentor.company : profile.mentee.company,
+      skills: profile.isMentor ? profile.mentor.expertise : profile.mentee.interests,
+      bio: profile.isMentor ? profile.mentor.bio : profile.mentee.bio,
+    }}
+    onSubmit={data => console.log(data)}>
+    {(formikProps) => (
+    <Form noValidate className="container-fluid" onSubmit={formikProps.handleSubmit}>
       <div className="row" style={{ display: "flex" }}>
         {/* Main Content */}
         <div
           className="col-lg"
           style={{
             flex: "1",
-            marginRight: "10px", 
-      
+            marginRight: "10px",
+
           }}
         >
-          <ProfileCard profile={profile} isCurrentUser= {true} isEditing={isEditing}/>
+          <ProfileCard profile={profile} isCurrentUser= {true} isEditing={isEditing} formikProps={formikProps}/>
           <div
             className="pt-0 mt-0"
             style={{ width: "100%", borderBottom: "1px solid grey" }}
@@ -122,9 +130,9 @@ function UserProfile() {
             </ButtonGroup>
           </div>
           <div className="mt-3">
-            {radioValue === "1" && <UserInfo profile={profile} isEditing={isEditing} />}
+            {radioValue === "1" && <UserInfo profile={profile} isEditing={isEditing} formikProps={formikProps} />}
             {radioValue === "2" && <Milestones data={timelineData}/> }
-            
+
           </div>
         </div>
 
@@ -150,7 +158,9 @@ function UserProfile() {
           </div>
         </div>
       </div>
-    </div>
+    </Form>
+    )}
+    </Formik>
   );
 }
 

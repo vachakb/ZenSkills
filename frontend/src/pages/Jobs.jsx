@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import JobCard from "../components/JobCard";
 import "@fortawesome/fontawesome-free/css/all.min.css"; // Import Font Awesome CSS
 import getAddress from "./getCurrentLocation";
@@ -119,6 +119,20 @@ const JobList = () => {
 
   const handleMinSalaryChange = (e) => setMinSalary(e.target.value);
   const handleMaxSalaryChange = (e) => setMaxSalary(e.target.value);
+
+  useEffect(()=>{
+    function fetchAllJobs(){
+      try{
+        const responce = fetchJobs(searchTerm, locationInput, selectedJobTypes, minSalary, maxSalary, currentPage, itemsPerPage)
+        setFilteredJobs(responce?.data?.jobs)
+        setTotalPages(Math.ceil((responce?.data?.totalMentorsCount || 0)/ itemsPerPage));
+  
+      }catch(error){
+        console.error(error)
+      }
+    }
+    fetchAllJobs();
+  }, [])
 
   const handleSearch = () => {
     try{
