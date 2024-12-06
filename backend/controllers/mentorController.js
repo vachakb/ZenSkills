@@ -96,14 +96,13 @@ const getMentorProfile = async (req, res) => {
     if (!mentorId) {
       return res.status(400).json({ error: "Mentor ID is required" });
     }
-    console.log("Mentor ID:", mentorId);
 
-    // Fetch mentor profile
-    const mentor = await prisma.mentor.findUnique({
-      where: { id: mentorId },
-      include: {
-        expertise: true,
-        User: true,
+    const mentor = await prisma.user.findFirst({
+      include: { mentor: { include: { expertise: true } } },
+      where: {
+        mentor: {
+          id: mentorId,
+        },
       },
     });
 
@@ -112,16 +111,7 @@ const getMentorProfile = async (req, res) => {
       return res.status(404).json({ error: "Mentor not found" });
     }
 
-    const mentorProfile = {
-      name: mentor.User.name,
-      bio: mentor.bio,
-      occupation: mentor.mentor_job_title,
-      rating: mentor.rating,
-      workExperiences: [], // Populate this with custom logic if needed
-      expertise: mentor.expertise,
-    };
-
-    res.status(200).json(mentorProfile);
+    res.status(200).json({ profile: mentor });
   } catch (error) {
     console.error("Error fetching mentor profile:", error);
     res.status(500).json({ error: "Error fetching mentor profile" });
