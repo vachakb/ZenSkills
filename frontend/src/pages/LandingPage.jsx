@@ -1,6 +1,7 @@
 import React from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "../styles/landing-page.css";
+import 'bootstrap-icons/font/bootstrap-icons.css'; // Import Bootstrap Icons
 
 function App() {
   // Sample data with more mentors to demonstrate scrolling
@@ -78,9 +79,74 @@ function App() {
     // Add more mentors as needed
   ];
 
+  const whyChooseUs = [
+    {
+      title: "Find mentor in your domain",
+      content: "Explore our network of seasoned mentors, ready to illuminate your career path. From various domains, they offer invaluable guidance and expertise.",
+      icon: "fas fa-chalkboard-teacher", // Icon for mentorship
+    },
+    {
+      title: "Convenient Scheduling, Anytime, Anywhere",
+      content: "Enjoy the flexibility of scheduling mentor sessions and accessing learning materials anytime, anywhere. Adapt to your busy lifestyle with ease.",
+      icon: "fas fa-calendar-alt", // Icon for scheduling
+    },
+    {
+      title: "Continuous Learning and Development",
+      content: "Embark on a journey of continuous growth through curated resources and tailored learning paths. Stay ahead with our comprehensive learning solutions.",
+      icon: "fas fa-book", // Icon for learning
+    },
+    {
+      title: "User-Friendly Platform, Seamless Experience",
+      content: "Navigate our intuitive platform effortlessly. Engage with mentors and access learning resources seamlessly, ensuring an enjoyable and productive experience.",
+      icon: "fas fa-laptop", // Icon for platform
+    },
+    {
+      title: "Enhance skills with industry experts",
+      content: "Elevate your skills and knowledge by learning directly from industry experts. Gain invaluable insights and real-world experience to advance your career.",
+      icon: "fas fa-user-graduate", // Icon for industry expertise
+    },
+    {
+      title: "Years Of Experience, Early Career Support",
+      content: "Benefit from mentors with diverse experience and tailored guidance. Receive support from the start of your career journey and build a strong foundation for success.",
+      icon: "fas fa-briefcase", // Icon for experience & career support
+    }
+  ];
+
+  const footerLinks = [
+    {
+      href: "",
+      text: "Find Mentors"
+    }, {
+      href: "",
+      text: "Become a Mentor"
+    }, {
+      href: "",
+      text: "About Us"
+    }, {
+      href: "",
+      text: "Contact Us"
+    }
+  ]
+
+  const socialMediaProfileLinks = [
+    {
+      href: "https://facebook.com",
+      icon: "fa-facebook"
+    }, {
+      href: "https://x.com",
+      icon: "fa-x-twitter"
+    }, {
+      href: "https://linkedin.com",
+      icon: "fa-linkedin"
+    }, {
+      href: "https://github.com",
+      icon: "fa-github"
+    }
+  ]
+
   return (
     <div
-      className="bg-light"
+      className=""
       style={{ minHeight: "100vh", display: "flex", flexDirection: "column" }}
     >
       {/* Navbar */}
@@ -109,6 +175,7 @@ function App() {
                 Browse all mentors
               </button>
             </li>
+            <span className="text-white border border-1 mx-3"></span>
             <li className="nav-item">
               <a className="nav-link text-white" href="#get-started">
                 Get started
@@ -125,17 +192,23 @@ function App() {
 
       {/* Hero Section */}
       <div
-        className="container d-flex align-items-center mt-5"
-        // style={{ minHeight: "calc(100vh - 56px)" }} // 56px is the default navbar height
+        className="container align-items-center mt-5"
+      // style={{ minHeight: "calc(100vh - 56px)" }} // 56px is the default navbar height
       >
-        <div className="row w-100">
+        <div className="row w-100 mt-3 mb-5">
           {/* Left Side */}
           <div className="col-md-6 text-start">
-            <p className="text-secondary">
+            <p className="text-primary" style={{
+              textDecoration: "underline",
+              textDecorationColor: "var(--bs-warning)"
+            }}>
               Learn a new skill, launch a project, land your dream career.
             </p>
-            <h1 className="fw-bold display-4">1-on-1 Design Mentorship</h1>
-            <div className="input-group my-4">
+            <h1 className="fw-bold display-4 text-primary">1-on-1 Design Mentorship</h1>
+            <div className="input-group my-4 shadow">
+              <span className="input-group-text bg-light">
+                <i className="fas fa-search"></i> {/* Search Icon */}
+              </span>
               <input
                 type="text"
                 className="form-control"
@@ -144,19 +217,19 @@ function App() {
               <button className="btn btn-warning active">Search</button>
             </div>
             <div className="row mt-4">
-              <div className="col-6 col-md-3 text-center mb-3">
+              <div className="col-6 text-center my-4">
                 <h5>&#128100;</h5>
                 <p className="m-0">89% Happy members</p>
               </div>
-              <div className="col-6 col-md-3 text-center mb-3">
+              <div className="col-6 text-center my-4">
                 <h5>&#128218;</h5>
                 <p className="m-0">200K Qualified mentors</p>
               </div>
-              <div className="col-6 col-md-3 text-center mb-3">
+              <div className="col-6 text-center my-4">
                 <h5>&#127760;</h5>
                 <p className="m-0">150 Countries</p>
               </div>
-              <div className="col-6 col-md-3 text-center mb-3">
+              <div className="col-6 text-center my-4">
                 <h5>&#128279;</h5>
                 <p className="m-0">2M+ Connections</p>
               </div>
@@ -219,11 +292,75 @@ function App() {
             ))}
           </div>
         </div>
+
+        {/* why choose us? */}
+        <div className="row border border-2 rounded p-4 mb-5">
+          <div className="d-flex justify-content-center align-items-center rounded">
+            <p className="fs-4 fw-bold text-primary" style={{
+              textDecoration: "underline",
+              textDecorationColor: "var(--bs-primary)"
+            }}>Why choose us?</p>
+          </div>
+          <div className="container">
+            <div className="row">
+              {whyChooseUs.map((item) => {
+                return <div className="col-md-6 mb-3">
+                  <p className={`${item.icon} text-primary fs-2`}></p>
+                  <p className="fs-5 fw-bold">{item.title}</p>
+                  <p className="fs-6 fw-light">{item.content}</p>
+                </div>
+              })}
+            </div>
+          </div>
+        </div>
       </div>
 
-
-
-    </div>
+      {/* footer */}
+      <div className="bg-primary">
+        <div className="container p-4 text-white">
+          <div className="row">
+            <div className="col col-md-6">
+              <img
+                src="https://via.placeholder.com/50"
+                alt="User Avatar"
+                class="rounded-circle"
+                style={{
+                  width: "50px", /* Set the width of the avatar */
+                  height: "50px", /* Set the height of the avatar */
+                }}
+              />
+              <span className="mx-3 fs-3"><span className="fw-bold">ZenSkills</span>®</span>
+            </div>
+            <div className="col-md-3 fs-6 fw-lighter">
+              <ul className="list-unstyled">
+                {footerLinks.map((link) => {
+                  return <li key={link.text} className="my-2">
+                    <a href={`${link.href}`} className="text-decoration-none text-white">{link.text}</a>
+                  </li>
+                })}
+              </ul>
+            </div>
+            <div className="col-md-3">
+              <p className="fw-bold fs-4">Address</p>
+              <p className="fw-lighter fs-6">G H Patel College of Engineering & Technology, Bakrol Gate, VallabhVidya Nagar, Anand, Gujarat</p>
+              <div className="container text-center mt-5">
+                <ul className="list-unstyled d-flex justify-content-center">
+                  {
+                    socialMediaProfileLinks.map((link) => {
+                      return <li className="mx-3">
+                        <a href={`${link.href}`} target="_blank" rel="noopener noreferrer" className="text-white">
+                          <i className={`fa-brands ${link.icon} fa-2x`}></i>
+                        </a>
+                      </li>
+                    })
+                  }
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div >
   );
 }
 
