@@ -28,7 +28,7 @@ const UserInfo = ({ profile, isEditing = false, formikProps = undefined }) => {
 :
 
                     <p className="card-text">
-                        {profile?.mentee?.bio}
+                        {profile.isMentor ? profile.mentor.bio : profile.mentee.bio}
                     </p>
                     }
                 </div>
@@ -42,7 +42,7 @@ const UserInfo = ({ profile, isEditing = false, formikProps = undefined }) => {
                       <Card.Text>
                           <h5 className="m-0">WORK EXPERIENCE</h5>
                       </Card.Text>
-                {profile.workExperiences.map((workExperience) => (
+                {profile.mentor.workExperiences?.map((workExperience) => (
                     <div className="d-flex flex-column gap-2">
                         <div className="d-flex gap-2">
                             <img src="/rosette.svg" />

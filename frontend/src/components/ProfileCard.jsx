@@ -165,7 +165,7 @@ const ProfileCard = ({ profile, isCurrentUser = false, isEditing = false, formik
                 <>
                   <h5 className="mb-0 fs-4">{profile?.name}</h5>
                   <small className="text-muted">
-                    {profile?.mentee?.mentee_title} at<br />{profile?.mentee?.company}
+                    {profile.isMentor ? profile.mentor.mentor_job_title : profile.mentee.mentee_title} at<br />{(profile.isMentor ? profile.mentor : profile.mentee).company}
                   </small>
                 </>
               )}
