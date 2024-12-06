@@ -185,13 +185,7 @@ const ProfileCard = ({ profile,isCurrentUser = false,isEditing }) => {
                     )}
                   </div>
                 </Card.Body>
-                {isEditing && (
-                  <div className="d-flex justify-content-end mt-3">
-                    <Button variant="success" type="submit">
-                      Save
-                    </Button>
-                  </div>
-                )}
+               
               </Form>
             )}
           </Formik>

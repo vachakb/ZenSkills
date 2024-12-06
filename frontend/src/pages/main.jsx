@@ -35,6 +35,8 @@ import Sessions from "./Sessions.jsx";
 import Dashboard from "./Dashboard.jsx";
 import UserProfile from "./UserProfile.jsx";
 import Chat from "./Chat.jsx";
+import CreateJobs from "./CreateJobs.jsx";
+import CreateWorkshop from "./CreateWorkshop.jsx";
 
 const mentor = {
   id: "id",
@@ -232,7 +234,7 @@ const router = createBrowserRouter([
       },
       {
         path: "sessions",
-        element: <Sessions/>
+        element: <Sessions />
       },
       {
         path: "user_profile",
@@ -241,7 +243,15 @@ const router = createBrowserRouter([
       {
         path: "chat",
         element: <Chat />
-      }
+      },
+      {
+        path: "create_job",
+        element: <CreateJobs />
+      },
+      {
+        path: "create_workshop",
+        element: <CreateWorkshop />
+      },
     ],
   },
 ]);

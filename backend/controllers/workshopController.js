@@ -58,6 +58,7 @@ const createWorkshop = async (req, res) => {
       deadline,
       visibility,
     } = req.body;
+    const user = await prisma.User.findUnique({include:{mentor:true},where:{id:userId}})
 
     const newWorkshop = await prisma.workshops.create({
       data: {
@@ -66,7 +67,7 @@ const createWorkshop = async (req, res) => {
         date: new Date(date),
         duration,
         workshop_image,
-        created_by: userId,
+        mentor: {connect:{id:user.mentor.id}},
         max_participants,
         deadline: new Date(deadline),
         visibility,
