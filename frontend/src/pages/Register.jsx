@@ -1,4 +1,4 @@
-import { Col, Container, Row, Form, Button } from "react-bootstrap";
+import { Col, Container, Row, Form, Button, Spinner } from "react-bootstrap";
 import Authcard from "../components/Authcard";
 import TextField from "../components/TextField";
 import * as yup from "yup";
@@ -14,6 +14,8 @@ function Register() {
   const [verificationEmailSent, setVerificationEmailSent] = useState(false);
 
   const [verificationEmailAddress, setVerificationEmailAddress] = useState("example@example.com");
+
+  const [isLoading, setIsLoading] = useState(false);
 
   const schema = yup.object({
     email: yup
@@ -42,6 +44,8 @@ function Register() {
     <Container className="d-flex vh-100 p-0" fluid>
       <Authcard />
       <Col className="d-flex justify-content-center align-items-center">
+      {
+        isLoading ? <Spinner /> :
         <Row>
           { verificationEmailSent ?
             <div className="text-center w-75 m-auto">
@@ -60,6 +64,8 @@ function Register() {
               phoneNum: "",
             }}
             onSubmit={async (data) => {
+              setIsLoading(true);
+
               try {
                 await register({
                   ...data,
@@ -75,6 +81,8 @@ function Register() {
                     alert("A user with that email already exists.")
                   }
                 }
+              } finally {
+                setIsLoading(false);
               }
             }}
           >
@@ -217,6 +225,7 @@ function Register() {
           </Formik>
           }
         </Row>
+      }
       </Col>
     </Container>
   );
