@@ -120,7 +120,17 @@ const getMentorProfile = async (req, res) => {
 
 const editProfile = async (req, res) => {
   const userId = req.user.id;
-  const { name, email, location, language, phone_number, bio, title, occupation, expertise } = req.body;
+  const {
+    name,
+    email,
+    location,
+    language,
+    phone_number,
+    bio,
+    title,
+    occupation,
+    expertise,
+  } = req.body;
 
   try {
     // Fetch the current mentor profile
@@ -136,7 +146,8 @@ const editProfile = async (req, res) => {
     // Prepare the data for updating the mentor profile
     const mentorData = {
       bio: bio !== undefined ? bio : currentMentor.bio,
-      mentor_job_title: title !== undefined ? title : currentMentor.mentor_job_title,
+      mentor_job_title:
+        title !== undefined ? title : currentMentor.mentor_job_title,
       company: occupation !== undefined ? occupation : currentMentor.company,
       expertise: expertise !== undefined ? { set: expertise } : undefined,
     };
@@ -151,7 +162,10 @@ const editProfile = async (req, res) => {
     const userData = {
       name: name !== undefined ? name : currentMentor.User.name,
       email: email !== undefined ? email : currentMentor.User.email,
-      phone_number: phone_number !== undefined ? phone_number : currentMentor.User.phone_number,
+      phone_number:
+        phone_number !== undefined
+          ? phone_number
+          : currentMentor.User.phone_number,
       location: location !== undefined ? location : currentMentor.User.location,
       language: language !== undefined ? language : currentMentor.User.language,
     };
@@ -162,12 +176,15 @@ const editProfile = async (req, res) => {
       data: userData,
     });
 
-    res.json({ message: "Profile updated successfully", mentor: updatedMentor, user: updatedUser });
+    res.json({
+      message: "Profile updated successfully",
+      mentor: updatedMentor,
+      user: updatedUser,
+    });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Failed to update profile" });
   }
 };
-
 
 module.exports = { getMentors, getTags, getMentorProfile, editProfile };
