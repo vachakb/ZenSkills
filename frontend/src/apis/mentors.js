@@ -18,4 +18,8 @@ function getAllMentorTags() {
   return axiosInstance.get(`/mentors/tags`);
 }
 
-export { getAllMentors, getAllMentorTags };
+function getMentorProfile(mentorId) {
+  return axiosInstance.get(`/mentors/${mentorId}`);
+}
+
+export { getAllMentors, getAllMentorTags, getMentorProfile };

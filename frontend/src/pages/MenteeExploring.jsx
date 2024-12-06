@@ -1,4 +1,4 @@
-import { ButtonGroup, ToggleButton } from "react-bootstrap";
+import { ButtonGroup, Spinner, ToggleButton } from "react-bootstrap";
 import ProfileCard from "../components/ProfileCard";
 import UserInfo from "../components/UserInfo";
 import { useState, useEffect } from "react";
@@ -12,6 +12,8 @@ import { useParams } from "react-router-dom";
 import Milestones from "../components/Milestones";
 import ReviewsTab from "../components/ReviewsTab";
 import ResourcesTab from "../components/Resources";
+import { axiosInstance } from "../apis/commons";
+import { getMentorProfile } from "../apis/mentors";
 
 
 const profile = {
@@ -80,6 +82,9 @@ function MenteeExploring() {
     rating: 0,
     workExperiences: [],
   });
+
+  const [isLoading, setIsLoading] = useState(true);
+
   const radios = [
     { name: "Overview", value: "1" },
     { name: "Milestones", value: "2" },
@@ -104,22 +109,28 @@ function MenteeExploring() {
     };
   };
 
-  useEffect(() => {
-    const fetchProfile = async () => {
-      try {
-        // const mentorId = "mentor-1-id";
-        const response = await axios.get(
-          // TODO replace with API URL
-          `http://localhost:5000/api/mentors/${mentorId}`
-        );
-        setProfile({ ...response.data, isMentor: true });
-      } catch (err) {
-        console.error(err);
-      }
-    };
+   const onLoad = () => {
+     setIsLoading(true);
 
-    fetchProfile();
+     getMentorProfile(mentorId)
+       .then((res) => {
+         setProfile({ ...res.data.profile, isMentor: true });
+         setIsLoading(false);
+       })
+       .catch((err) => console.error(err));
+   };
+
+  useEffect(() => {
+    onLoad();
   }, []);
+
+  if (isLoading) {
+    return (
+      <div className="d-flex h-100 w-100 justify-content-center align-items-center">
+        <Spinner />
+      </div>
+    );
+  }
 
   return (
     <div className="container-fluid">
