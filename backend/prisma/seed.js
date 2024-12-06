@@ -62,6 +62,36 @@ const main = async () => {
       },
     });
 
+    await prisma.user.upsert({
+      where: { email: "user2@example.com" },
+      update: {},
+      create: {
+        email: "user2@example.com",
+        name: "Dude",
+        password: await argon2.hash("password"),
+        role: "mentor",
+        is_verified: true,
+        gender: "Male",
+        location: "New Delhi",
+        is_deleted: false,
+      },
+    });
+
+    await prisma.user.upsert({
+      where: { email: "user3@example.com" },
+      update: {},
+      create: {
+        email: "user3@example.com",
+        name: "dudette",
+        password: await argon2.hash("password"),
+        role: "mentee",
+        is_verified: true,
+        gender: "Female",
+        location: "New Delhi",
+        is_deleted: false,
+      },
+    });
+
     console.log("Users created successfully!");
 
     const mentor = await prisma.mentor.upsert({
@@ -135,6 +165,23 @@ const main = async () => {
     );
 
     console.log("Mentee interests added successfully!");
+
+    console.log(mentor.id);
+
+    await prisma.MentorSession.create({
+      data: {
+        name: "Web Development with React",
+        description: "Doing web development with React",
+        durationMinutes: 120,
+        mentor: {
+          connect: {
+            id: mentor.id,
+          },
+        },
+      },
+    });
+
+    console.log("Available sessions added successfully!");
 
     const conversations = [
       {
