@@ -21,22 +21,7 @@ const sessions = [
   },
 ];
 
-function AvailableSessions() {
-    // const [sessions, setSessions] = useState([]);
-
-  const onLoad = async () => {
-    try {
-      const res = await getAllAvailableSessions();
-      // setSessions(res.data.sessions);
-    } catch (err) {
-      console.log(err);
-    }
-  }
-
-    useEffect(() => {
-        onLoad()
-    }, []);
-
+function AvailableSessions({ sessions }) {
   return (
     <Card style={{ borderRadius: "10px" }}>
       <Card.Body className="d-flex flex-column gap-4">

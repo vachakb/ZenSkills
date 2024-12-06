@@ -83,6 +83,8 @@ function MenteeExploring() {
     workExperiences: [],
   });
 
+  const [sessions, setSessions] = useState([]);
+
   const [isLoading, setIsLoading] = useState(true);
 
   const radios = [
@@ -109,15 +111,19 @@ function MenteeExploring() {
     };
   };
 
-   const onLoad = () => {
+   const onLoad = async () => {
      setIsLoading(true);
 
-     getMentorProfile(mentorId)
-       .then((res) => {
-         setProfile({ ...res.data.profile, isMentor: true });
-         setIsLoading(false);
-       })
-       .catch((err) => console.error(err));
+     try {
+       const resMentorProfile = await getMentorProfile(mentorId);
+       setProfile({ ...resMentorProfile.data.profile, isMentor: true });
+       const resAvailableSessions = await getAllAvailableSessions();
+       setSessions(resAvailableSessions.data.sessions);
+     } catch (err) {
+       console.error(err);
+     } finally {
+       setIsLoading(false);
+     }
    };
 
   useEffect(() => {
@@ -192,7 +198,7 @@ function MenteeExploring() {
             }}
           >
             <Statistics />
-            <AvailableSessions />
+            <AvailableSessions sessions={sessions} />
           </div>
         </div>
       </div>
