@@ -1,15 +1,24 @@
 const prisma = require("../models/prismaClient");
 
 exports.getAllAvailableSessions = async (req, res) => {
+  const { mentorId } = req.body;
+
   try {
+    console.log(req.user.id);
     const sessions = await prisma.MentorSession.findMany({
       include: {
-        mentor: true,
+        mentor: {
+          include: {
+            User: true,
+          },
+        },
       },
       where: {
         mentor: {
-          User: {
-            id: req.user.id,
+          every: {
+            User: {
+              id: mentorId,
+            },
           },
         },
       },
