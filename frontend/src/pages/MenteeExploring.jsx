@@ -14,6 +14,7 @@ import ReviewsTab from "../components/ReviewsTab";
 import ResourcesTab from "../components/Resources";
 import { axiosInstance } from "../apis/commons";
 import { getMentorProfile } from "../apis/mentors";
+import { getAllAvailableSessions } from "../apis/session";
 
 
 const profile = {
