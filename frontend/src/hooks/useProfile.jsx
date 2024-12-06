@@ -12,6 +12,7 @@ const useProfile = () => {
 
     getUserProfile().then((res) => {
       if (!ignore) {
+        res.data.profile.isMentor = res.data.profile.role === "mentor";
         setProfile(res.data.profile);
         setIsProfileLoading(false)
       }
