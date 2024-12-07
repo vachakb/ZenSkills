@@ -12,8 +12,8 @@ function logout() {
   return axiosInstance.post("/auth/logout");
 }
 
-function sendVerificationEmail(email) {
-  return axiosInstance.post(`/auth/verify`, { email });
+function sendVerificationEmail(email, role) {
+  return axiosInstance.post(`/auth/verify`, { email, role });
 }
 
 function verificationEmailCallback(token) {

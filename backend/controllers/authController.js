@@ -6,7 +6,7 @@ const { OAuth2Client } = require("google-auth-library");
 
 const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
-const sendVerificationEmail = async (email, token) => {
+const sendVerificationEmail = async (user, token) => {
   const transporter = nodemailer.createTransport({
     service: "gmail", // You can use your email provider
     auth: {
@@ -15,11 +15,11 @@ const sendVerificationEmail = async (email, token) => {
     },
   });
 
-  const verificationUrl = `http://localhost:5173/verify/callback?token=${token}`;
+  const verificationUrl = `http://localhost:5173/verify/callback?token=${token}&role=${user.role}`;
 
   await transporter.sendMail({
     from: '"Mentoring Platform" <no-reply@example.com>',
-    to: email,
+    to: user.email,
     subject: "Email Verification",
     html: `
       <h2>Verify Your Email</h2>
@@ -57,8 +57,8 @@ exports.register = async (req, res) => {
   const { email, password, phoneNum, role } = req.body;
 
   if (
-    (await prisma.user.exists({ email: email })) ||
-    (await prisma.tempuser.exists({ email: email }))
+    (await prisma.user.existsUnique({ account_id: { email, role } })) ||
+    (await prisma.tempuser.existsUnique({ account_id: { email, role } }))
   ) {
     return res.sendStatus(409);
   }
@@ -83,12 +83,17 @@ exports.register = async (req, res) => {
 };
 
 exports.sendEmail = (user, token) => {
-  return sendVerificationEmail(user.email, token);
+  return sendVerificationEmail(user, token);
 };
 
 exports.verifyEmail = async (user) => {
   const tempuser = await prisma.tempuser.findUnique({
-    where: { email: user.email },
+    where: {
+      account_id: {
+        email: user.email,
+        role: user.role,
+      },
+    },
   });
 
   const newUser = await prisma.user.create({
@@ -103,7 +108,7 @@ exports.verifyEmail = async (user) => {
     },
   });
 
-  await prisma.tempuser.delete({ where: { email: tempuser.email } });
+  await prisma.tempuser.delete({ where: { id: tempuser.id } });
 
   return newUser;
 };

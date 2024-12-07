@@ -60,7 +60,7 @@ passport.use(
   new MagicLinkStrategy(
     {
       secret: process.env.AUTH_SECRET,
-      userFields: ["email"],
+      userFields: ["email", "role"],
       tokenField: "token",
       verifyUserAfterToken: true,
     },

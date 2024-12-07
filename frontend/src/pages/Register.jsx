@@ -77,11 +77,12 @@ function Register() {
                   setIsLoading(true);
 
                   try {
+                    const role = isMentor ? "mentor" : "mentee";
                     await register({
                       ...data,
                       role: isMentor ? "mentor" : "mentee",
                     });
-                    await sendVerificationEmail(data.email);
+                    await sendVerificationEmail(data.email, role);
                     setVerificationEmailAddress(data.email);
                     setVerificationEmailSent(true);
                   } catch (err) {
