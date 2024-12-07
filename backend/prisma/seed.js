@@ -166,8 +166,6 @@ const main = async () => {
 
     console.log("Mentee interests added successfully!");
 
-    console.log(mentor.id);
-
     await prisma.MentorSession.create({
       data: {
         name: "Web Development with React",
