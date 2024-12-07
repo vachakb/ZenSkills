@@ -34,7 +34,7 @@ exports.login = new LocalStrategy(
   async (req, email, password, done) => {
     try {
       const user = await prisma.user.findUnique({
-        where: { email: email, role: req.body.role },
+        where: { account_id: { email, role: req.role } },
       });
 
       if (!user) {
@@ -111,8 +111,6 @@ exports.verifyEmail = async (user) => {
 exports.googleCallback = async (req, done) => {
   const { token, role } = req.body;
 
-  console.log(token);
-
   try {
     // Verify the Google token
     const ticket = await googleClient.verifyIdToken({
@@ -125,10 +123,15 @@ exports.googleCallback = async (req, done) => {
 
     let user = await prisma.user.findUnique({
       include: {
-        mentee: true,
-        mentor: true,
+        mentee: role === "mentee",
+        mentor: role === "mentor",
       },
-      where: { email },
+      where: {
+        account_id: {
+          email,
+          role,
+        },
+      },
     });
 
     if (!user) {
@@ -147,9 +150,9 @@ exports.googleCallback = async (req, done) => {
       });
     }
 
-    if (user.role === "mentor" && user.mentor) {
+    if (role === "mentor" && user.mentor) {
       req.isRegistered = true;
-    } else if (user.role === "mentee" && user.mentee) {
+    } else if (role === "mentee" && user.mentee) {
       req.isRegistered = true;
     } else {
       req.isRegistered = false;

@@ -10,7 +10,7 @@ datasource db {
 
 model User {
   id            String       @id @default(uuid())
-  email         String       @unique(map: "user_unique_1") @db.VarChar(100)
+  email         String       @db.VarChar(100)
   name String?
   created_at    DateTime     @db.Timestamptz(6) @default(now())
   gender        gender_enum?
@@ -20,7 +20,7 @@ model User {
   phone_number  String?      @db.VarChar(13)
   status        UserStatus   @default(active)
   role          UserRole
-  googleId      String?      @unique(map: "user_unique") @db.VarChar
+  googleId      String?      @db.VarChar
   is_verified   Boolean      @default(false)
   mentee        mentee?
   mentor        mentor?
@@ -31,6 +31,8 @@ model User {
   messages Message[]
 
   WorkshopBooking WorkshopBooking[]
+
+  @@unique(name: "account_id", [email, role])
 }
 
 
@@ -40,7 +42,7 @@ model mentee {
   mentee_title     String             @db.VarChar(50) 
   company          String?            @db.VarChar(255)
   user_id String @unique
-  User             User?              @relation(fields: [user_id], references: [id])
+  User             User?              @relation(fields: [user_id], references: [id], onDelete: Cascade)
   interests tags[]
   education MenteeEducation[]
   Review          Review[]            @relation(map: "review_mentee_fk")
@@ -56,7 +58,7 @@ model mentor {
   company                    String?            @db.VarChar(255)
   mentor_job_title           String             @db.VarChar(50)
   user_id String @unique
-  User             User?              @relation(fields: [user_id], references: [id])
+  User             User?              @relation(fields: [user_id], references: [id], onDelete: Cascade)
   expertise           tags[]
   number_of_sessions         Int                @default(0)
   credit_score               Float              @default(75)    
@@ -350,7 +352,7 @@ enum ConversationType {
 model Message {
   id                String @id @default(uuid())
   sender_id         String
-  sender            User @relation(fields: [sender_id], references: [id])
+  sender            User @relation(fields: [sender_id], references: [id], onDelete: Cascade)
   conversation_id   String
   conversation      Conversation @relation(fields: [conversation_id], references: [id])
   content           String
