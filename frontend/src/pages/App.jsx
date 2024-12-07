@@ -42,7 +42,7 @@ function App() {
     return () => {
       window.removeEventListener("resize", calculateContentHeight);
     };
-  }, []);
+  }, [location]);
 
   // Check if the current route matches any excluded route
   const isExcluded = excludedRoutes.some((route) =>
