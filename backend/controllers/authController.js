@@ -32,9 +32,11 @@ const sendVerificationEmail = async (user, token) => {
 exports.login = new LocalStrategy(
   { usernameField: "email", passReqToCallback: true },
   async (req, email, password, done) => {
+    const { role } = req.body;
+
     try {
       const user = await prisma.user.findUnique({
-        where: { account_id: { email, role: req.role } },
+        where: { account_id: { email, role } },
       });
 
       if (!user) {
