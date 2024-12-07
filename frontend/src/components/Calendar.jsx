@@ -213,28 +213,28 @@ function Calendar() {
           >
             {selectedDateSessions.length > 0
               ? selectedDateSessions.map((session) => (
-                  <div className="d-flex flex-column gap-2" key={session.id}>
-                    <div className="d-flex gap-2 align-items-center">
-                      <h6 className="m-0">At {session.time}</h6>
-                      <div
-                        style={{ borderRadius: "24px" }}
-                        className={classNames({
-                          "px-2 py-1 text-white": true,
-                          "bg-success": session.status === "Confirmed",
-                          "bg-danger": session.status === "Pending",
-                        })}
-                      >
-                        <span>{session.status}</span>
-                      </div>
-                    </div>
-
-                    <div className="d-flex">
-                      <h6 className="m-0">
-                        <b>{session.title}</b> - {session.name}
-                      </h6>
+                <div className="d-flex flex-column gap-2" key={session.id}>
+                  <div className="d-flex gap-2 align-items-center">
+                    <h6 className="m-0">At {session.time}</h6>
+                    <div
+                      style={{ borderRadius: "24px" }}
+                      className={classNames({
+                        "px-2 py-1 text-white": true,
+                        "bg-success": session.status === "Confirmed",
+                        "bg-danger": session.status === "Pending",
+                      })}
+                    >
+                      <span>{session.status}</span>
                     </div>
                   </div>
-                ))
+
+                  <div className="d-flex">
+                    <h6 className="m-0">
+                      <b>{session.title}</b> - {session.name}
+                    </h6>
+                  </div>
+                </div>
+              ))
               : null}
           </div>
           <div className="d-flex flex-column align-items-start">
@@ -255,10 +255,10 @@ function Calendar() {
               Go to all session
             </Link>
             {profile.role === "mentor" ? (
-              <Link style={{ color: "#037F7D" }} to="/createsession_1">
-                Book a session
-              </Link>
-            ) : null}
+              null
+            ) : <Link style={{ color: "#037F7D" }} to="/">
+              Book a session
+            </Link>}
           </div>
         </div>
       </Card.Body>
