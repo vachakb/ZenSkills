@@ -90,7 +90,7 @@ router.get(
     failWithError: true,
   }),
   (_, res) => {
-    res.status(200);
+    res.sendStatus(200);
   },
   (_, res) => {
     res.sendStatus(500);
