@@ -12,11 +12,11 @@ const router = express.Router();
 
 router.get("/", getAllAvailableSessions);
 
-router.get("/:id", getSession);
-
 router.post("/", createSession);
 
 router.get("/topics", getAllTopics);
+
+router.get("/:id", getSession);
 
 router.put("/:id", updateSession);
 
