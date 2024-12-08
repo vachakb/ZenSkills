@@ -22,6 +22,16 @@ exports.getAllAvailableSessions = async (req, res) => {
   }
 };
 
+exports.getSession = async (req, res) => {
+  const session = await prisma.MentorSession.findUnique({
+    where: {
+      id: req.params.id,
+    },
+  });
+
+  return res.json({ session });
+};
+
 exports.createSession = async (req, res) => {
   const {
     sessionName,

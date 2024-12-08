@@ -5,11 +5,14 @@ const {
   getAllAvailableSessions,
   updateSession,
   deleteSession,
+  getSession,
 } = require("../controllers/sessionController");
 
 const router = express.Router();
 
 router.get("/", getAllAvailableSessions);
+
+router.get("/:id", getSession);
 
 router.post("/", createSession);
 
