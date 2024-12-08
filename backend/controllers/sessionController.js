@@ -15,10 +15,8 @@ exports.getAllAvailableSessions = async (req, res) => {
       },
       where: {
         mentor: {
-          every: {
-            User: {
-              id: mentorId,
-            },
+          User: {
+            id: mentorId,
           },
         },
       },
