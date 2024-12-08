@@ -2,9 +2,17 @@ const prisma = require("../models/prismaClient");
 const nodemailer = require("nodemailer");
 const LocalStrategy = require("passport-local");
 const argon2 = require("argon2");
-const { OAuth2Client } = require("google-auth-library");
+const { google } = require("googleapis");
 
-const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
+const googleAuthClient = new google.auth.OAuth2(
+  process.env.GOOGLE_CLIENT_ID,
+  process.env.GOOGLE_CLIENT_SECRET,
+  process.env.GOOGLE_CLIENT_REDIRECT_URI,
+);
+
+google.options({ auth: googleAuthClient });
+
+const googlePeopleClient = google.people("v1");
 
 const sendVerificationEmail = async (user, token) => {
   const transporter = nodemailer.createTransport({
@@ -115,20 +123,25 @@ exports.verifyEmail = async (user) => {
   return newUser;
 };
 
+async function getGoogleEmailAddress() {
+  const response = await googlePeopleClient.people.get({
+    resourceName: "people/me",
+    personFields: "emailAddresses",
+  });
+
+  return response.data.emailAddresses[0].value;
+}
+
 exports.googleCallback = async (req, done) => {
-  const { token, role } = req.body;
+  const { code, role } = req.body;
 
   try {
-    // Verify the Google token
-    const ticket = await googleClient.verifyIdToken({
-      idToken: token,
-      audience: process.env.GOOGLE_CLIENT_ID,
-    });
+    const { tokens } = await googleAuthClient.getToken(code);
+    googleAuthClient.setCredentials(tokens);
 
-    const payload = ticket.getPayload();
-    const { email, sub: googleId } = payload;
+    const email = await getGoogleEmailAddress();
 
-    let user = await prisma.user.findUnique({
+    const user = await prisma.user.upsert({
       include: {
         mentee: role === "mentee",
         mentor: role === "mentor",
@@ -139,23 +152,22 @@ exports.googleCallback = async (req, done) => {
           role,
         },
       },
+      update: {
+        googleAccessToken: tokens.access_token,
+        googleRefreshToken: tokens.refresh_token,
+        googleTokenExpiryDate: new Date(tokens.expiry_date),
+      },
+      create: {
+        email,
+        googleAccessToken: tokens.access_token,
+        googleRefreshToken: tokens.refresh_token,
+        googleTokenExpiryDate: new Date(tokens.expiry_date),
+        status: "active",
+        is_deleted: false,
+        password: "",
+        role,
+      },
     });
-
-    if (!user) {
-      user = await prisma.user.create({
-        data: {
-          email,
-          googleId,
-          status: "active",
-          is_deleted: false,
-          // phone_number: "0000000000",
-          // location: "Unknown",
-          password: "",
-          role,
-          // created_at: new Date(),
-        },
-      });
-    }
 
     if (role === "mentor" && user.mentor) {
       req.isRegistered = true;

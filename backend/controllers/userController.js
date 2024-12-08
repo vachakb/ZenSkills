@@ -19,7 +19,6 @@ exports.getUserProfile = async (req, res) => {
       },
       omit: {
         password: true,
-        googleId: true,
         created_at: true,
         is_deleted: true,
         is_verified: true,

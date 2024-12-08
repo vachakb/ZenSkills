@@ -20,8 +20,10 @@ model User {
   phone_number  String?      @db.VarChar(13)
   status        UserStatus   @default(active)
   role          UserRole
-  googleId      String?      @db.VarChar
-  is_verified   Boolean      @default(false)
+  googleAccessToken         String?      @db.VarChar
+  googleRefreshToken        String?      @db.VarChar
+  googleTokenExpiryDate     DateTime?
+  is_verified   Boolean     @default(false)
   mentee        mentee?
   mentor        mentor?
   userBadges    UserBadge[]

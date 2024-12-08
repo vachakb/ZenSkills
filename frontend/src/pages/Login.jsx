@@ -4,7 +4,7 @@ import TextField from "../components/TextField";
 import * as yup from "yup";
 import { Formik } from "formik";
 import { useState } from "react";
-import { GoogleLogin } from "@react-oauth/google";
+import { useGoogleLogin } from "@react-oauth/google";
 import { useNavigate } from "react-router-dom";
 import { googleCallback, login } from "../apis/user";
 
@@ -22,6 +22,28 @@ function Login() {
       .string()
       .required("This is a required field")
       .min(8, "Password should be at least 8 characters"),
+  });
+
+  const googleLogin = useGoogleLogin({
+    onSuccess: async (response) => {
+      googleCallback({
+        code: response.code,
+        role: isMentor ? "mentor" : "mentee",
+      })
+        .then((res) => {
+          if (res.data.isRegistered) {
+            navigate(isMentor ? "/mentor_welcome" : "/mentee_welcome");
+          } else {
+            navigate("/register/1");
+          }
+        })
+        .catch(console.error(err));
+    },
+    onError: () => {
+      console.log("Login Failed");
+    },
+    scope: "https://www.googleapis.com/auth/calendar",
+    flow: "auth-code"
   });
 
   return (
@@ -144,27 +166,9 @@ function Login() {
                 </div>
 
                 <div className="align-self-center">
-                  <GoogleLogin
-                    onSuccess={async (response) =>
-                      googleCallback({
-                        token: response.credential,
-                        role: isMentor ? "mentor" : "mentee",
-                      })
-                        .then((res) => {
-                          if (res.data.isRegistered) {
-                            navigate(
-                              isMentor ? "/mentor_welcome" : "/mentee_welcome",
-                            );
-                          } else {
-                            navigate("/register/1");
-                          }
-                        })
-                        .catch(console.error(err))
-                    }
-                    onError={() => {
-                      console.log("Login Failed");
-                    }}
-                  />
+                  <Button onClick={() => googleLogin()}>
+                    Login with Google
+                  </Button>
                 </div>
 
                 <p className="m-0 mx-auto">
