@@ -252,10 +252,8 @@ function Calendar({ profile }) {
             >
               Go to all session
             </Link>
-            {profile.role === "mentor" ? (
-              null
-            ) : <Link style={{ color: "#037F7D" }} to="/">
-              Book a session
+            {profile.isMentor && <Link style={{ color: "#037F7D" }} to="/createsession_1">
+              Create a session
             </Link>}
           </div>
         </div>
