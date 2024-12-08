@@ -33,7 +33,7 @@ const main = async () => {
     console.log("Tags upserted successfully!");
 
     const user = await prisma.user.upsert({
-      where: { email: "mentor@example.com" },
+      where: { account_id: { email: "mentor@example.com", role: "mentor" } },
       update: {},
       create: {
         email: "mentor@example.com",
@@ -48,7 +48,7 @@ const main = async () => {
     });
 
     const user1 = await prisma.user.upsert({
-      where: { email: "mentee@example.com" },
+      where: { account_id: { email: "mentee@example.com", role: "mentee" } },
       update: {},
       create: {
         email: "mentee@example.com",
@@ -63,7 +63,7 @@ const main = async () => {
     });
 
     await prisma.user.upsert({
-      where: { email: "user2@example.com" },
+      where: { account_id: { email: "user2@example.com", role: "mentor" } },
       update: {},
       create: {
         email: "user2@example.com",
@@ -78,7 +78,7 @@ const main = async () => {
     });
 
     await prisma.user.upsert({
-      where: { email: "user3@example.com" },
+      where: { account_id: { email: "user3@example.com", role: "mentee" } },
       update: {},
       create: {
         email: "user3@example.com",
