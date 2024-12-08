@@ -6,6 +6,7 @@ import {
   Button,
   Card,
   ProgressBar,
+  Spinner,
 } from "react-bootstrap";
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -21,6 +22,7 @@ import MentorCard from "../components/MentorCard"
 import "../styles/style.css";
 import Calendar from "../components/Calendar";
 import { getUserProfile } from "../apis/user";
+import useProfile from "../hooks/useProfile";
 export default function MentorWelcome({ events_ }) {
   const [events, setEvents] = useState(events_);
 
@@ -31,20 +33,9 @@ export default function MentorWelcome({ events_ }) {
         {name:"test2",date:new Date()},*/
   ];
 
-  const [profile, setProfile] = useState({});
-
-  const onLoad = async () => {
-    try {
-      const res = await getUserProfile();
-      setProfile(res.data.profile);
-    } catch (err) {
-      console.error(err)
-    }
-  }
+  const { profile, isProfileLoading } = useProfile();
 
   const userName = profile?.name || "User";
-
-  useEffect(() => { onLoad() }, []);
 
   const [tasks, setTasks] = useState([
     { label: "Complete your profile", done: true },
@@ -98,6 +89,14 @@ export default function MentorWelcome({ events_ }) {
     }
     fetchData();
   }, []);*/
+
+  if (isProfileLoading) {
+    return (
+      <div className="d-flex h-100 w-100 justify-content-center align-items-center">
+        <Spinner />
+      </div>
+    );
+  }
 
   return (
     <Container className="d-flex flex-column gap-4" fluid>
@@ -187,7 +186,7 @@ export default function MentorWelcome({ events_ }) {
 
         <div className="flex-grow-0 ms-auto" style={{ position: 'fixed', right: '15px' }}>
           <div className="mb-5">
-            <Calendar />
+            <Calendar profile={profile} />
           </div>
           <Card
             text="primary"

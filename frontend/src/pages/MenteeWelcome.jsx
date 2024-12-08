@@ -218,7 +218,7 @@ function MenteeWelcome({ mentors_, events_ }) {
                 </Card.Body>
               </Card>
             </div>
-            <Calendar></Calendar>
+            <Calendar profile={profile} />
           </div>
         </Col>
       </Row>
