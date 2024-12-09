@@ -4,12 +4,16 @@ exports.getAllAvailableSessions = async (req, res) => {
   const { mentorId } = req.body;
 
   try {
-    console.log(req.user.id);
     const sessions = await prisma.MentorSession.findMany({
       where: {
         mentor: {
           User: {
             id: mentorId,
+          },
+        },
+        timeSlots: {
+          some: {
+            mentee: null,
           },
         },
       },
@@ -24,10 +28,34 @@ exports.getAllAvailableSessions = async (req, res) => {
 
 exports.getSession = async (req, res) => {
   const session = await prisma.MentorSession.findUnique({
+    include: {
+      timeSlots: {
+        where: {
+          mentee: null,
+        },
+      },
+      mentor: {
+        include: {
+          User: true,
+        },
+      },
+    },
     where: {
       id: req.params.id,
     },
   });
+
+  if (session) {
+    const map = {};
+
+    session.timeSlots.forEach((timeSlot) => {
+      const prevArray = map[timeSlot.day] ?? [];
+      prevArray.push(timeSlot);
+      map[timeSlot.day] = prevArray;
+    });
+
+    session.timeSlots = map;
+  }
 
   return res.json({ session });
 };
@@ -94,6 +122,23 @@ exports.createSession = async (req, res) => {
     console.log(err);
     res.sendStatus(500);
   }
+};
+
+exports.bookSession = async (req, res) => {
+  const { timeSlotId } = req.params;
+
+  await prisma.TimeSlot.update({
+    where: { id: timeSlotId },
+    data: {
+      mentee: {
+        connect: {
+          user_id: req.user.id,
+        },
+      },
+    },
+  });
+
+  res.sendStatus(200);
 };
 
 exports.getAllTopics = async (req, res) => {

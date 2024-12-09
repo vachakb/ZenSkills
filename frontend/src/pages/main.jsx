@@ -38,6 +38,7 @@ import Chat from "./Chat.jsx";
 import CreateJobs from "./CreateJobs.jsx";
 import CreateWorkshop from "./CreateWorkshop.jsx";
 import LandingPage from "./LandingPage.jsx";
+import BookSession from "./BookSession.jsx";
 
 const mentor = {
   id: "id",
@@ -253,6 +254,10 @@ const router = createBrowserRouter([
         path: "create_workshop",
         element: <CreateWorkshop />
       },
+      {
+        path: "book_session/:availableSessionId",
+        element: <BookSession />
+      }
     ],
   }, {
     path: "landing-page",

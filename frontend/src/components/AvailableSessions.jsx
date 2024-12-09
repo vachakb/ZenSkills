@@ -2,8 +2,11 @@ import { Button, Card } from "react-bootstrap";
 import { GiTwoCoins } from "react-icons/gi";
 import classNames from "classnames";
 import { Duration } from "luxon";
+import { useNavigate } from "react-router-dom";
 
 function AvailableSessions({ sessions }) {
+  const navigate = useNavigate();
+
   return (
     <Card style={{ borderRadius: "10px" }}>
       <Card.Body
@@ -46,6 +49,9 @@ function AvailableSessions({ sessions }) {
                   style={{
                     backgroundColor: "#037F7D",
                     borderRadius: "10px",
+                  }}
+                  onClick={() => {
+                    navigate(`/book_session/${session.id}`);
                   }}
                 >
                   Book

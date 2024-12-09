@@ -48,6 +48,7 @@ model mentee {
   interests tags[]
   education MenteeEducation[]
   Review          Review[]            @relation(map: "review_mentee_fk")
+  booked_sessions TimeSlot[]
 }
 
 model mentor {
@@ -309,8 +310,6 @@ model MentorSession {
   timeSlots TimeSlot[]
   mentor_id   String
   mentor          mentor              @relation(fields: [mentor_id], references: [id])
-
-  @@index([mentor_id])
 }
 
 model MentorSessionTopic {
@@ -320,13 +319,16 @@ model MentorSessionTopic {
 }
 
 model TimeSlot {
-      id String @id @default(uuid())
-      day Day
-      // from DateTime @db.Time()
-      // to DateTime @db.Time()
-      from String
-      to String
-      sessions MentorSession[]
+    id String @id @default(uuid())
+    day Day
+    // from DateTime @db.Time()
+    // to DateTime @db.Time()
+    from String
+    to String
+    session_id String
+    session MentorSession        @relation(fields: [session_id], references: [id])
+    mentee_id     String?
+    mentee        mentee?          @relation(fields: [mentee_id], references: [id])
 }
 
 enum Day {
