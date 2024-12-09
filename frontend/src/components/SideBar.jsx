@@ -56,7 +56,7 @@ function SideBar(props) {
 
         {/* Workshops link */}
         <Nav.Link
-          href="workshops"
+          href="/workshops"
           className="d-flex flex-column align-items-center mb-2"
           style={{ color: "white", fontSize: "10px" }}
         >
