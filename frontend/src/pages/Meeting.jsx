@@ -1,17 +1,28 @@
 import {
+  createCameraVideoTrack,
   MeetingProvider,
   useFile,
+  useMediaDevice,
   useMeeting,
   useParticipant,
   usePubSub,
 } from "@videosdk.live/react-sdk";
-import axios from "axios";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Button, Form } from "react-bootstrap";
 import ReactPlayer from "react-player";
 import { useParams } from "react-router-dom";
 import classNames from "classnames";
 import { createRoom, getToken } from "../apis/meeting";
+import {
+  PiVideoCameraFill,
+  PiVideoCameraSlashFill,
+  PiMicrophoneFill,
+  PiMicrophoneSlashFill,
+  PiMonitorFill,
+  PiChatFill,
+  PiChatSlashFill,
+  PiDoorOpenFill,
+} from "react-icons/pi";
 
 function Chat({ open, meetingId, localParticipantId }) {
   const { publish, messages } = usePubSub(meetingId);
@@ -201,7 +212,7 @@ function Chat({ open, meetingId, localParticipantId }) {
                   borderRadius: "20px",
                   cursor:
                     value.payload && value.payload.isFile ? "pointer" : "unset",
-                  wordBreak: "break-word"
+                  wordBreak: "break-word",
                 }}
                 className="px-3 py-2 fs-6"
                 onClick={
@@ -282,48 +293,52 @@ function Chat({ open, meetingId, localParticipantId }) {
 
 function ControlButton({ src, label, color, onClick }) {
   return (
-    <div className="d-flex flex-column align-items-center gap-2">
+    <div
+      className="d-flex flex-column align-items-center gap-2"
+      onClick={onClick}
+    >
       <div
         style={{
           backgroundColor: color,
           borderRadius: "12px",
           cursor: "pointer",
+          aspectRatio: "4/4"
         }}
-        className="p-2 rounded-lg"
+        className="text-center p-2"
       >
-        <img src={src} onClick={onClick} />
+        { src }
       </div>
       <h5 className="text-white">{label}</h5>
     </div>
   );
 }
 
-function Controls({ className, onToggleChat }) {
-  const { leave, toggleMic, toggleWebcam } = useMeeting();
+function Controls({ className, openChat, onToggleChat }) {
+  const { leave, toggleMic, toggleWebcam, localMicOn, localWebcamOn } = useMeeting();
 
   return (
     <div className={classNames("d-flex gap-4", className)}>
       <ControlButton
-        src="/cam.svg"
+        src={localWebcamOn ? <PiVideoCameraFill /> : <PiVideoCameraSlashFill /> }
         label="Cam"
         color="#E4E6E8"
         onClick={() => toggleWebcam()}
       />
       <ControlButton
-        src="/mic.svg"
+        src={localMicOn ? <PiMicrophoneFill /> : <PiMicrophoneSlashFill /> }
         label="Mic"
         color="#E4E6E8"
         onClick={() => toggleMic()}
       />
-      <ControlButton src="/share.svg" label="Share" color="#E4E6E8" />
+      <ControlButton src={<PiMonitorFill />} label="Share" color="#E4E6E8" />
       <ControlButton
-        src="/chat.svg"
+        src={openChat ? <PiChatFill /> : <PiChatSlashFill />}
         label="Chat"
         color="#E4E6E8"
         onClick={onToggleChat}
       />
       <ControlButton
-        src="/leave.svg"
+        src={<PiDoorOpenFill />}
         label="Leave"
         color="#F04438"
         onClick={() => leave()}
@@ -388,8 +403,12 @@ function Participant({ style, participantId }) {
   );
 }
 
-function JoinMeeting({ meetingId, onJoined, name, onNameChange }) {
-  const { join, _ } = useMeeting();
+function JoinMeeting({ cameraEnabled, setCameraEnabled, micEnabled, setMicEnabled, meetingId, onJoined, name, onNameChange }) {
+  const { join } = useMeeting();
+
+  const [videoTrack, setVideoTrack] = useState();
+
+  const { checkPermissions, requestPermission, getCameras } = useMediaDevice();
 
   const onSubmit = () => {
     if (name.length > 0) {
@@ -398,8 +417,112 @@ function JoinMeeting({ meetingId, onJoined, name, onNameChange }) {
     }
   };
 
+  const setupVideoTrack = async () => {
+    const cameras = await getCameras();
+
+    if (cameras.length > 0) {
+      const camera = cameras[0];
+
+      setVideoTrack(
+        await createCameraVideoTrack({
+          cameraId: camera.deviceId,
+          encoderConfig: "h540p_w960p",
+          optimizationMode: "motion",
+          multiStream: false,
+        }),
+      );
+
+      setCameraEnabled(true);
+    }
+  };
+
+  const setup = async () => {
+    const permissions = await checkPermissions("audio_video");
+
+    if (!permissions.get("video")) {
+      const videoPermission = await requestPermission("video");
+      if (videoPermission.get("video")) {
+        setupVideoTrack();
+      }
+    } else {
+      setupVideoTrack();
+    }
+
+    if (!permissions.get("audio")) {
+      const audioPermission = await requestPermission("audio");
+      if (audioPermission.get("audio")) {
+        setMicEnabled(true);
+      }
+    } else {
+      console.log("nice")
+      setMicEnabled(true);
+    }
+  };
+
+  useEffect(() => {
+    setup();
+  }, []);
+
   return (
-    <div className="d-flex justify-content-center align-items-center vw-100 vh-100">
+    <div className="d-flex justify-content-evenly align-items-center vh-100">
+      <div className="position-relative">
+        <ReactPlayer
+          style={{
+            display: videoTrack ? "block" : "none",
+            backgroundColor: "#121212",
+          }}
+          playsInline
+          pip={false}
+          light={false}
+          controls={false}
+          muted={true}
+          playing={true}
+          url={videoTrack}
+        />
+        <div
+          style={{
+            display: videoTrack ? "none" : "flex",
+            aspectRatio: "16/9",
+            backgroundColor: "#121212",
+            width: "640px",
+          }}
+          className="justify-content-center align-items-center"
+        >
+          <h4 className="text-white">No video</h4>
+        </div>
+        <div
+          style={{ bottom: "0" }}
+          className="d-flex justify-content-center align-items-center gap-4 position-absolute w-100"
+        >
+          <ControlButton
+            src={
+              cameraEnabled ? <PiVideoCameraFill /> : <PiVideoCameraSlashFill />
+            }
+            label="Cam"
+            color="#E4E6E8"
+            onClick={() => {
+              if (videoTrack) {
+                videoTrack.getVideoTracks().forEach((track) => {
+                  track.stop();
+                  track.enabled = false;
+                  videoTrack.removeTrack(track);
+                });
+                setVideoTrack(undefined);
+                setCameraEnabled(false);
+              } else {
+                setupVideoTrack();
+                setCameraEnabled(true);
+              }
+            }}
+          />
+          <ControlButton
+            src={micEnabled ? <PiMicrophoneFill /> : <PiMicrophoneSlashFill />}
+            label="Mic"
+            color="#E4E6E8"
+            onClick={() => setMicEnabled(!micEnabled)}
+          />
+        </div>
+      </div>
       <div className="d-flex flex-column gap-2">
         <h3 className="m-0">Meeting ID: {meetingId}</h3>
         <div className="d-flex mx-auto gap-2">
@@ -426,6 +549,14 @@ function Room({ meetingId }) {
 
   const [openChat, setOpenChat] = useState(false);
 
+  if (!localParticipant) {
+    return (
+      <div className="d-flex justify-content-center align-items-center vw-100 vh-100">
+        <h3>The meeting ended.</h3>
+      </div>
+    );
+  }
+
   return (
     <div
       style={{ backgroundColor: "#303438", overflow: "hidden" }}
@@ -445,9 +576,12 @@ function Room({ meetingId }) {
         </div>
         <Controls
           className="mt-4 mx-auto"
+          openChat={openChat}
           onToggleChat={() => setOpenChat(!openChat)}
         />
-        <h6 className="text-white text-center m-0 mt-2">Meeting ID: {meetingId}</h6>
+        <h6 className="text-white text-center m-0 mt-2">
+          Meeting ID: {meetingId}
+        </h6>
       </div>
       <Chat
         open={openChat}
@@ -461,7 +595,7 @@ function Room({ meetingId }) {
 function Meeting() {
   const { meetingId } = useParams();
 
-  const [meetingIdToUse, setMeetingIdToUse] = useState(meetingId);
+  const [meetingIdToUse, setMeetingIdToUse] = useState();
 
   const [name, setName] = useState("");
 
@@ -469,25 +603,46 @@ function Meeting() {
 
   const [token, setToken] = useState();
 
+  const [cameraEnabled, setCameraEnabled] = useState(false);
+
+  const [micEnabled, setMicEnabled] = useState(false);
+
   const createMeeting = async () => {
     try {
-     const tokenRes = await getToken();
-      setToken(tokenRes.data.token);
-      const roomRes = await createRoom(tokenRes.data.token);
+      const roomRes = await createRoom(token);
       setMeetingIdToUse(roomRes.data.roomId);
-      history.pushState(`meeting ${roomRes.data.roomId}`, "ZenSkills", `${window.location.href}/${roomRes.data.roomId}`)
+      history.pushState(
+        `meeting ${roomRes.data.roomId}`,
+        "ZenSkills",
+        `${window.location.href}/${roomRes.data.roomId}`,
+      );
     } catch (err) {
       console.error(err);
     }
   };
+
+  const generateToken = () => {
+    getToken(meetingId)
+      .then((res) => {
+        setToken(res.data.token);
+        setMeetingIdToUse(meetingId);
+      })
+      .catch((err) => console.error(err));
+  };
+
+  useEffect(() => {
+    if (!token) {
+      generateToken();
+    }
+  }, []);
 
   if (meetingIdToUse) {
     return (
       <MeetingProvider
         config={{
           meetingId: meetingIdToUse,
-          micEnabled: true,
-          webcamEnabled: true,
+          micEnabled: micEnabled,
+          webcamEnabled: cameraEnabled,
           name: name,
         }}
         token={token}
@@ -500,6 +655,10 @@ function Meeting() {
             onJoined={() => setJoined(true)}
             name={name}
             onNameChange={setName}
+            cameraEnabled={cameraEnabled}
+            setCameraEnabled={setCameraEnabled}
+            micEnabled={micEnabled}
+            setMicEnabled={setMicEnabled}
           />
         )}
       </MeetingProvider>
