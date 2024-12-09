@@ -42,6 +42,13 @@ const addReview = async (req, res) => {
 
   try {
     const newReview = await prisma.Review.create({
+      include: {
+        mentee: {
+          include: {
+            User: true,
+          },
+        },
+      },
       data: {
         mentor: {
           connect: {
@@ -57,8 +64,16 @@ const addReview = async (req, res) => {
         description: reviewText,
       },
     });
+
+    const formattedReview = {
+      username: newReview.mentee.User.name,
+      date: newReview.created_at,
+      rating: newReview.rating,
+      reviewText: newReview.description,
+    };
+
     console.log("Review added:", newReview);
-    res.status(201).json(newReview);
+    res.status(201).json({ review: formattedReview });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Failed to add review" });
