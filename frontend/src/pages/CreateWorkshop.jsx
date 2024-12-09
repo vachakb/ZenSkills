@@ -12,6 +12,7 @@ import { MdHeight } from "react-icons/md";
 import { createWorkshop } from "../apis/workshops";
 
 const CreateWorkshop = () => {
+    const navigate = useNavigate();
     const validationSchema = Yup.object({
         title: Yup.string().required("Job title is required"),
         description: Yup.string().required("Job description is required"),
@@ -31,6 +32,12 @@ const CreateWorkshop = () => {
             .oneOf(["Private", "Public", "Mentors Only"], "This is a required field")
             .required("This is a required field"),
     });
+
+
+
+
+
+
     return (
         <div style={{ maxWidth: "90%" }} className="border p-3 rounded mx-auto">
             <Formik
@@ -45,7 +52,8 @@ const CreateWorkshop = () => {
                     deadline: "",
                 }}
                 validationSchema={validationSchema}
-                onSubmit={(data) => { createWorkshop(data) }}
+                onSubmit={(data) => { createWorkshop(data) }
+                }
 
 
             >
@@ -151,6 +159,7 @@ const CreateWorkshop = () => {
                                 name="workshop_image"
                                 className="form-control"
                                 placeholder="Select file"
+
                             />
                             <ErrorMessage
                                 name="workshop_image"
@@ -259,7 +268,7 @@ const CreateWorkshop = () => {
 
 
                         <div className="d-flex justify-content-between mt-4">
-                            <Button className="ms-auto" variant="primary" type="submit" onClick={() => console.log(formikProps.errors)}>
+                            <Button className="ms-auto" variant="primary" type="submit" onClick={() => navigate("/workshops")}>
                                 Next
                             </Button>
                         </div>
