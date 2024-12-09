@@ -2,81 +2,168 @@ import React from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "../styles/landing-page.css";
 import 'bootstrap-icons/font/bootstrap-icons.css'; // Import Bootstrap Icons
+import MentorCard from "../components/MentorCard"
 
 function App() {
   // Sample data with more mentors to demonstrate scrolling
   const mentors = [
     {
-      name: "Mentor 1",
-      role: "Product Designer",
-      skill: "Product Strategy",
-      lang: "JAVA",
+      id: "mentor_001",
+      name: "Alice Johnson",
       rating: 4.8,
+      currentPost: "DevOps Engineer at Amazon",
+      noOfSessions: 25,
+      noOfReviews: 8,
+      experienceYears: 12,
+      experienceMonths: 3,
+      creditScore: 98,
     },
     {
-      name: "Mentor 2",
-      role: "UX Designer",
-      skill: "User Research",
-      lang: "Python",
-      rating: 4.7,
+      id: "mentor_002",
+      name: "Bob Martinez",
+      rating: 4.2,
+      currentPost: "DevOps Engineer at Amazon",
+      noOfSessions: 15,
+      noOfReviews: 6,
+      experienceYears: 8,
+      experienceMonths: 10,
+      creditScore: 92,
     },
     {
-      name: "Mentor 3",
-      role: "UI Designer",
-      skill: "Visual Design",
-      lang: "JavaScript",
+      id: "mentor_003",
+      name: "Chloe Kim",
       rating: 4.9,
+      currentPost: "Lead UX Designer at Adobe",
+      noOfSessions: 30,
+      noOfReviews: 12,
+      experienceYears: 14,
+      experienceMonths: 2,
+      creditScore: 99,
     },
     {
-      name: "Mentor 4",
-      role: "Graphic Designer",
-      skill: "Branding",
-      lang: "C#",
-      rating: 4.6,
-    },
-    {
-      name: "Mentor 5",
-      role: "Interaction Designer",
-      skill: "Prototyping",
-      lang: "Ruby",
-      rating: 4.5,
-    },
-    {
-      name: "Mentor 6",
-      role: "Industrial Designer",
-      skill: "3D Modeling",
-      lang: "C++",
+      id: "mentor_004",
+      name: "David Patel",
       rating: 4.7,
+      currentPost: "AI Researcher at OpenAI",
+      noOfSessions: 40,
+      noOfReviews: 20,
+      experienceYears: 11,
+      experienceMonths: 6,
+      creditScore: 96,
     },
     {
-      name: "Mentor 7",
-      role: "Service Designer",
-      skill: "Service Blueprinting",
-      lang: "Go",
+      id: "mentor_005",
+      name: "Emily Wright",
+      rating: 4.5,
+      currentPost: "Blockchain Developer at IBM",
+      noOfSessions: 18,
+      noOfReviews: 7,
+      experienceYears: 9,
+      experienceMonths: 8,
+      creditScore: 94,
+    }, {
+      id: "mentor_001",
+      name: "Alice Johnson",
       rating: 4.8,
+      currentPost: "DevOps Engineer at Amazon",
+      noOfSessions: 25,
+      noOfReviews: 8,
+      experienceYears: 12,
+      experienceMonths: 3,
+      creditScore: 98,
+    }, {
+      id: "mentor_001",
+      name: "Alice Johnson",
+      rating: 4.8,
+      currentPost: "DevOps Engineer at Amazon",
+      noOfSessions: 25,
+      noOfReviews: 8,
+      experienceYears: 12,
+      experienceMonths: 3,
+      creditScore: 98,
+    }, {
+      id: "mentor_001",
+      name: "Alice Johnson",
+      rating: 4.8,
+      currentPost: "DevOps Engineer at Amazon",
+      noOfSessions: 25,
+      noOfReviews: 8,
+      experienceYears: 12,
+      experienceMonths: 3,
+      creditScore: 98,
+    },
+  ];
+
+  const mentors2 = [
+    {
+      name: "Alice Johnson",
+      role: "Senior Developer",
+      rating: 4.8,
+      skill: "JavaScript, React, Node.js",
+      lang: "English"
     },
     {
-      name: "Mentor 8",
-      role: "Motion Designer",
-      skill: "Animation",
-      lang: "Swift",
-      rating: 4.6,
-    },
-    {
-      name: "Mentor 9",
-      role: "Interior Designer",
-      skill: "Space Planning",
-      lang: "Kotlin",
+      name: "Bob Smith",
+      role: "Data Scientist",
       rating: 4.7,
+      skill: "Python, Machine Learning, SQL",
+      lang: "English"
     },
     {
-      name: "Mentor 10",
-      role: "Fashion Designer",
-      skill: "Textile Design",
-      lang: "PHP",
-      rating: 4.5,
+      name: "Carla Green",
+      role: "UX/UI Designer",
+      rating: 4.6,
+      skill: "Figma, Photoshop, Adobe XD",
+      lang: "Spanish"
     },
-    // Add more mentors as needed
+    {
+      name: "David Lee",
+      role: "Full Stack Developer",
+      rating: 4.9,
+      skill: "React, Node.js, MongoDB",
+      lang: "English"
+    },
+    {
+      name: "Eva Adams",
+      role: "Product Manager",
+      rating: 4.5,
+      skill: "Agile, Scrum, Product Strategy",
+      lang: "French"
+    }, {
+      name: "Alice Johnson",
+      role: "Senior Developer",
+      rating: 4.8,
+      skill: "JavaScript, React, Node.js",
+      lang: "English"
+    },
+    {
+      name: "Bob Smith",
+      role: "Data Scientist",
+      rating: 4.7,
+      skill: "Python, Machine Learning, SQL",
+      lang: "English"
+    },
+    {
+      name: "Carla Green",
+      role: "UX/UI Designer",
+      rating: 4.6,
+      skill: "Figma, Photoshop, Adobe XD",
+      lang: "Spanish"
+    },
+    {
+      name: "David Lee",
+      role: "Full Stack Developer",
+      rating: 4.9,
+      skill: "React, Node.js, MongoDB",
+      lang: "English"
+    },
+    {
+      name: "Eva Adams",
+      role: "Product Manager",
+      rating: 4.5,
+      skill: "Agile, Scrum, Product Strategy",
+      lang: "French"
+    }
   ];
 
   const whyChooseUs = [
@@ -143,6 +230,114 @@ function App() {
       icon: "fa-github"
     }
   ]
+
+  const howItWorks = [
+    {
+      title: "Search Mentors",
+      content: "Gain career and feedback from industry experts with Zenskills"
+    }, {
+      title: "Schedule a meeting",
+      content: "Schedule sessions with mentors at your prefered time for personalized guidance"
+    }, {
+      title: "Get the Mentorship",
+      content: "Content, refine, expand on our networking platform for professionals"
+    }
+  ]
+
+  let organizationsImages = [
+    "https://via.placeholder.com/100"
+  ]
+  organizationsImages = Array(15).fill(organizationsImages).flat();
+
+  const reviews = [
+    {
+      writer: "Lokesh",
+      profession: "Marketing Mentor",
+      content: "We've seen a significant improvements in out online presence, thanks to your experience in digital maketing strategies. Your guidance on SEO and content strategy has been spot on!"
+    }, {
+      writer: "Rahul Verma",
+      profession: "Technology Mentor",
+      content: "Thank you for guiding us through the intricacies of software archutecture and cosding best practices. Your practical insights have truly elevated our team's development skills."
+    }, {
+      writer: "Lokesh",
+      profession: "Marketing Mentor",
+      content: "We've seen a significant improvements in out online presence, thanks to your experience in digital maketing strategies. Your guidance on SEO and content strategy has been spot on!"
+    }
+  ]
+
+  const faqs = [
+    {
+      question: "What is ZenSkills is all about?",
+      answer: "ZenSkills is an online web platform where startups/founders can search for mentors, get connected with them and engage on a mentoring session."
+    }, {
+      question: "How does ZenSkills platform work?",
+      answer: "answer 2"
+    }, {
+      question: "Will I get a refund, if session gets canceled?",
+      answer: "answer 3"
+    }, {
+      question: "Can you videoChat in this platform?",
+      answer: "answer 4"
+    }
+  ]
+
+  // const mentorsCard = [
+  //   {
+  //     id: "mentor_001",
+  //     name: "Alice Johnson",
+  //     rating: 4.8,
+  //     currentPost: "Senior Data Scientist at Google",
+  //     noOfSessions: 25,
+  //     noOfReviews: 8,
+  //     experienceYears: 12,
+  //     experienceMonths: 3,
+  //     creditScore: 98,
+  //   },
+  //   {
+  //     id: "mentor_002",
+  //     name: "Bob Martinez",
+  //     rating: 4.2,
+  //     currentPost: "DevOps Engineer at Amazon",
+  //     noOfSessions: 15,
+  //     noOfReviews: 6,
+  //     experienceYears: 8,
+  //     experienceMonths: 10,
+  //     creditScore: 92,
+  //   },
+  //   {
+  //     id: "mentor_003",
+  //     name: "Chloe Kim",
+  //     rating: 4.9,
+  //     currentPost: "Lead UX Designer at Adobe",
+  //     noOfSessions: 30,
+  //     noOfReviews: 12,
+  //     experienceYears: 14,
+  //     experienceMonths: 2,
+  //     creditScore: 99,
+  //   },
+  //   {
+  //     id: "mentor_004",
+  //     name: "David Patel",
+  //     rating: 4.7,
+  //     currentPost: "AI Researcher at OpenAI",
+  //     noOfSessions: 40,
+  //     noOfReviews: 20,
+  //     experienceYears: 11,
+  //     experienceMonths: 6,
+  //     creditScore: 96,
+  //   },
+  //   {
+  //     id: "mentor_005",
+  //     name: "Emily Wright",
+  //     rating: 4.5,
+  //     currentPost: "Blockchain Developer at IBM",
+  //     noOfSessions: 18,
+  //     noOfReviews: 7,
+  //     experienceYears: 9,
+  //     experienceMonths: 8,
+  //     creditScore: 94,
+  //   },
+  // ];
 
   return (
     <div
@@ -238,60 +433,106 @@ function App() {
 
           {/* Right Side (Mentor List) */}
           <div
-            className="col-md-6"
+            className="col-md-6 border-0 card-container"
             style={{
               border: "1px solid #ddd",
               height: "70vh", // Fixed height
               overflowY: "scroll", // Enable vertical scrolling
             }}
           >
-            {mentors.map((mentor, idx) => (
-              <div
-                className="card mb-3"
-                key={idx}
-                style={{
+            <div className="card-wrapper">
+              {mentors2.map((mentor, idx) => (
+                <div className="card mb-3" key={idx} style={{
                   borderBottom: "1px solid #eee",
                   paddingBottom: "10px",
                 }}
-              >
-                <div className="card-body d-flex align-items-start">
-                  {/* Avatar Placeholder */}
-                  <div
-                    className="me-3"
-                    style={{
+                >
+                  <div className="card-body d-flex align-items-start">
+                    {/* Avatar Placeholder */}
+                    <div className="me-3" style={{
                       width: "70px",
                       height: "70px",
                       borderRadius: "50%",
                       backgroundColor: "#ddd",
                     }}
-                  ></div>
+                    ></div>
 
-                  <div className="flex-grow-1">
-                    {/* Mentor Info */}
-                    <div className="d-flex justify-content-between align-items-center mb-2">
+                    <div className="flex-grow-1">
+                      {/* Mentor Info */}
+                      <div className="d-flex justify-content-between align-items-center mb-2">
+                        <div>
+                          <h5 className="card-title mb-0">{mentor.name}</h5>
+                          <p className="card-text m-0 text-muted">
+                            {mentor.role}
+                          </p>
+                        </div>
+                        <div className="text-warning">
+                          &#9733; {mentor.rating}
+                        </div>
+                      </div>
+                      {/* Skills and Languages */}
                       <div>
-                        <h5 className="card-title mb-0">{mentor.name}</h5>
-                        <p className="card-text m-0 text-muted">
-                          {mentor.role}
-                        </p>
+                        <span className="badge bg-secondary me-2">
+                          {mentor.skill}
+                        </span>
+                        <span className="badge bg-secondary">{mentor.lang}</span>
                       </div>
-                      <div className="text-warning">
-                        &#9733; {mentor.rating}
-                      </div>
-                    </div>
-                    {/* Skills and Languages */}
-                    <div>
-                      <span className="badge bg-secondary me-2">
-                        {mentor.skill}
-                      </span>
-                      <span className="badge bg-secondary">{mentor.lang}</span>
                     </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
         </div>
+
+        {/* organizations */}
+        <div className="row border-top-2 border-bottom-2">
+          <p className="fw-bold fs-4 text-primary text-center" style={{
+            textDecoration: "underline",
+            textDecorationColor: "var(--bs-primary)"
+          }}>Proven success with 20,000+ top organiations</p>
+          <div className="d-flex flex-wrap align-items-center justify-content-center">
+            {organizationsImages.map((src) => {
+              return <img src={src} alt="img" className="rounded-circle m-3" />
+            })}
+          </div>
+        </div>
+
+        {/* How it works */}
+        <div className="row mb-5">
+          <div className="d-flex justify-content-center align-items-center rounded">
+            <p className="fs-4 fw-bold text-primary" style={{
+              textDecoration: "underline",
+              textDecorationColor: "var(--bs-primary)"
+            }}>How it Works?</p>
+          </div>
+          <p className="text-center fw-light fs-6">Search, Schedule and get mentored from the industry and learn skills that can help you land a job in no time</p>
+          <div className="container">
+            <div className="row gap-3">
+              {howItWorks.map((item, index) => {
+                return <div className="col-md-4 rounded border p-3 mb-3 d-flex flex-column align-items-center shadow">
+                  <img src="https://via.placeholder.com/150" alt={`${item.title}`} className="p-2" />
+                  <p className="fw-bold fs-4 text text-center">Step-{index + 1} {item.title}</p>
+                  <p className="fw-light fs-6 text text-center">{item.content}</p>
+                </div>
+              })}
+            </div>
+          </div>
+        </div>
+
+        {/* Top mentors */}
+        <>
+          <p className="text-center fw-bold fs-3 text-primary" style={{
+            textDecoration: "underline",
+            textDecorationColor: "var(--bs-primary)"
+          }}>Discover the world's top mentors</p>
+
+          <div className="row d-flex overflow-auto flex-nowrap w-100 gap-3 mb-4" style={{ width: "100%" }}>
+            {mentors.map((mentor, index) => {
+              return <MentorCard className="me-3" key={index} mentor={mentor} width_={300} />
+            })}
+          </div>
+        </>
 
         {/* why choose us? */}
         <div className="row border border-2 rounded p-4 mb-5">
@@ -315,11 +556,63 @@ function App() {
         </div>
       </div>
 
+      {/* reviews */}
+      <div className="row bg-primary p-3">
+        <p className="fs-2 fw-bolder text-white text-center" style={{
+          textDecoration: "underline",
+          textDecorationColor: "var(--bs-warning)"
+        }}>People talk</p>
+        <div className="container">
+          <div className="row">
+            {reviews.map((review) => {
+              return <div className="col-lg-4 mb-3">
+                <div className="bg-white rounded-5 d-flex d-flex justify-content-center align-items-center p-3 h-100">
+                  <div><img src="https://via.placeholder.com/100" alt="img" className="rounded-circle" /></div>
+                  <div className="flex-grow-1 p-3">
+                    <p className="text-center">{review.content}</p>
+                    <p className="text-end">{review.writer}, {review.profession}</p>
+                  </div>
+                </div>
+              </div>
+            })}
+          </div>
+        </div>
+      </div>
+
+      {/* faqs */}
+      <div className="row m-5">
+        <div className="col-md-4 d-flex flex-column justify-content-center align-items-center mb-3">
+          <p className="fs-3 fw-bold text-primary">Frequently Asked Questions</p>
+          <div className="bg-info p-3 rounded">
+            <p className="text-center text-white">Unable to see information you seek?</p>
+            <p className="text-center text-primary">Feel free to get in touch with us!</p>
+          </div>
+        </div>
+        <div class="accordion col-md-8" id="accordion">
+          {
+            faqs.map((item, index) => {
+              return <div class="accordion-item" key={index}>
+                <h2 class="accordion-header">
+                  <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target={`#${index}`}aria-expanded="false" aria-controls={index}>
+                    {item.question}
+                  </button>
+                </h2>
+                <div id={index} class="accordion-collapse collapse" data-bs-parent="#accordion">
+                  <div class="accordion-body">
+                    {item.answer}
+                  </div>
+                </div>
+              </div>
+            })
+          }
+        </div>
+      </div>
+
       {/* footer */}
       <div className="bg-primary">
         <div className="container p-4 text-white">
           <div className="row">
-            <div className="col col-md-6">
+            <div className="col-md-6">
               <img
                 src="https://via.placeholder.com/50"
                 alt="User Avatar"
@@ -356,6 +649,17 @@ function App() {
                   }
                 </ul>
               </div>
+            </div>
+          </div>
+          <hr />
+          <div className="row">
+            <div className="col-md-6 mb-2">
+              Copyright 2024, All Rights Reserverd
+            </div>
+            <div className="col-md-6 d-flex justify-content-between fw-lighter">
+              <a href={``} className="text-decoration-none text-white">Privacy Policy</a>
+              <a href={``} className="text-decoration-none text-white">Refund Policy</a>
+              <a href={``} className="text-decoration-none text-white">Terms and Conditions</a>
             </div>
           </div>
         </div>

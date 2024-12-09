@@ -50,6 +50,11 @@ function createSession(sessionData) {
 function getAllTopics() {
   return axiosInstance.get("/session/topics");
 }
+function deleteSession(sessionId) {
+  return axiosInstance.delete(`/session/${sessionId}`);
+  
+}
+
 
 function updateBookingStatus(bookingId, status) {
   return axiosInstance.put(`/session/${bookingId}/status`, { status });
@@ -61,5 +66,6 @@ export {
   bookSession,
   createSession,
   getAllTopics,
+  deleteSession,
   updateBookingStatus,
 };

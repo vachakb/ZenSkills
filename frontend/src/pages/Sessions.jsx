@@ -107,15 +107,15 @@ const Sessions = () => {
   useEffect(() => {
     const fetchData = async () => {
       setIsLoading(true);
-        const { sessions, total } = await fetchSessions(activeTab, currentPage);
-    //   const responce = await axios.get("/api/sessions", {
-    //     params: {
-    //       currentPage,
-    //       completionStatus: activeTab,
-    //     },
-    //   });
-    //   setSessions(responce.sessions);
-    //   setTotalSessions(responce.totalPages);
+      const { sessions, total } = await fetchSessions(activeTab, currentPage);
+      //   const responce = await axios.get("/api/sessions", {
+      //     params: {
+      //       currentPage,
+      //       completionStatus: activeTab,
+      //     },
+      //   });
+      //   setSessions(responce.sessions);
+      //   setTotalSessions(responce.totalPages);
       setSessions(sessions);
       setTotalSessions(total);
       setIsLoading(false);
@@ -164,9 +164,8 @@ const Sessions = () => {
           </li>
           <li className="nav-item">
             <button
-              className={`nav-link ${
-                activeTab === "Completed" ? "active" : ""
-              }`}
+              className={`nav-link ${activeTab === "Completed" ? "active" : ""
+                }`}
               onClick={() => setActiveTab("Completed")}
             >
               Completed

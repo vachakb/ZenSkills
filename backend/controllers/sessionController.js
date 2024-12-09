@@ -285,11 +285,7 @@ exports.deleteSession = async (req, res) => {
 
     await prisma.timeSlot.deleteMany({
       where: {
-        sessions: {
-          some: {
-            id: id,
-          },
-        },
+        session_id: id, // Delete TimeSlots where session_id matches
       },
     });
 

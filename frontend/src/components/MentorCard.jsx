@@ -14,12 +14,12 @@ import "../styles/style.css";
 //   creditScore: 95,
 // };
 
-export default function MentorCard({ mentor }) {
+export default function MentorCard({ mentor, width_ }) {
   const navigate = useNavigate();
 
   return (
     <div
-      style={{ cursor: "pointer" }}
+      style={{ cursor: "pointer", width: width_!==null?width_:null}}
       className="card h-100 shadow-sm p-3 d-flex flex-column"
       onClick={() => {
         navigate("/mentee_exploring/" + mentor.id);

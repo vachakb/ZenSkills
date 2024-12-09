@@ -1,83 +1,118 @@
 import React from 'react';
 import { Container, Row, Col, Card, Button } from 'react-bootstrap';
+import { useNavigate } from 'react-router-dom';
+import classNames from "classnames";
+import { deleteSession } from '../apis/session';
+import { useState } from 'react';
+import { useEffect } from 'react';
 
-const MenteeSessions = () => {
-  const sessions = [
-    {
-      id: 1,
-      title: 'Product management Interview Prep',
-      date: '10 Sep 2024',
-      time: '3:45 PM',
-      status: 'Session in 5 mins',
-      joinable: true,
-    },
-    {
-      id: 2,
-      title: 'Mentorship Session',
-      date: '13 Sep 2024',
-      time: '5:30 PM',
-      status: 'Session in 3 days',
-      joinable: false,
-    },
-  ];
+const MenteeSessions = ({ sessions }) => {  // Destructuring sessions here
+  // To check if sessions are coming correctly
 
   const handleJoin = (sessionId) => {
     alert(`Joining session ID: ${sessionId}`);
   };
+  const [isDeleted, setIsDeleted] = useState(false);
+
+  const navigate = useNavigate();
+  const handleDelete = async (sessionId) => {
+    try {
+      // Call the deleteSession API function
+      await deleteSession(sessionId);
+
+      // After successful deletion, update the UI by removing the deleted session from the list
+      setIsDeleted(true);
+
+      // Optionally, show a success message or alert
+
+    } catch (error) {
+      // If there's an error, show an error message
+      console.error('Failed to delete the session:', error);
+      alert('Failed to delete the session.');
+    }
+  };
+  useEffect(() => {
+    // If a session was deleted, refresh the page
+    if (isDeleted) {
+      window.location.reload();
+      setIsDeleted(false);
+    }
+  }, [isDeleted]);
 
   return (
-    <Container className="mt-4 px-3 py-3"  style={{ border: "1px solid lightgrey", // Adds a light grey border
-        borderRadius: "10px", }}>
-      <Row className="align-items-center">
-        <Col>
-          <h5>SESSIONS</h5>
-        </Col>
-       
-      </Row>
-      <hr />
-      <h6 className='mt-1 mb-3 fs-6' style={{color:'grey'}}>Upcoming sessions</h6>
-      {sessions.map((session) => (
-        <Card key={session.id} className="mb-3 shadow-sm" style={{borderRadius:'10px'}}>
-          <Card.Body>
-            <Row>
-              <Col md={8}>
-                <h6 className="fw-bold">{session.title}</h6>
-                <p className="text-muted mb-1">
-                  {session.date} | {session.time}
-                </p>
-                
-              </Col>
-              <Col
-                md={4}
-                className="text-md-end d-flex flex-column align-items-md-end justify-content-between"
-              >
-                {session.joinable ? (
-                    
-                  <Button
-                    variant="outline-primary"
-                    size="sm"
-                    className="px-4"
-                    onClick={() => handleJoin(session.id)}
-                  >
-                    Join
-                  </Button>
-                ) : (
-                  <span className="badge bg-light text-dark py-2 px-3">
-                    {session.status}
-                  </span>
-                )}
-                {session.status.includes('mins') && (
-                  <div className="text-primary mt-2 d-flex align-items-center p-1 " style={{background:'lightyellow',borderRadius:'7px',fontSize:'0.9rem'}}>
-                   
-                    <small>{session.status}</small>
-                  </div>
-                )}
-              </Col>
-            </Row>
-          </Card.Body>
-        </Card>
-      ))}
-    </Container>
+    <Card style={{ borderRadius: "10px" }}>
+      <Card.Body
+        className={classNames({
+          "d-flex flex-column": true,
+          "gap-1": sessions.length > 0,
+        })}
+      >
+        <Card.Title className='mb-0'>
+          <div className='d-flex my-0' style={{ alignItems: "center" }}>
+            <h5>Available sessions</h5>
+            <Button
+              variant='primary'
+              size='4'
+              className="ms-auto my-auto"
+              style={{
+
+                borderRadius: "10px",
+              }}
+              onClick={() => navigate("/createsession_1")}
+
+            >
+              Create
+            </Button>
+          </div>
+
+
+
+        </Card.Title>
+        <hr />
+
+        {sessions.length > 0 ? (
+          sessions.map((session) => (
+            <Card style={{ backgroundColor: "#F1F1F1", borderRadius: "10px", marginTop: "0" }} key={session.id}>
+              <Card.Body className="d-flex">
+                <div className="d-flex flex-column gap-2">
+                  {session.cost > 0 ? (
+                    <div
+                      className="d-flex gap-2 align-items-center py-2 px-3 rounded-pill me-auto"
+                      style={{
+                        backgroundColor: "#F4D35E",
+                        height: "10px",
+                        width: "90px",
+                      }}
+                    >
+                      <GiTwoCoins />
+                      <span>{session.cost}</span>
+                    </div>
+                  ) : null}
+                  <h5 className="m-0">{session.name}</h5>
+                  <h6 className="m-0">
+                    {session.durationMinutes < 60
+                      ? `${session.durationMinutes} minutes`
+                      : `${Duration.fromObject({ minutes: session.durationMinutes }).shiftTo("hours").toObject().hours} hours`}
+                  </h6>
+                </div>
+                <Button
+                  className="ms-auto my-auto"
+                  style={{
+                    backgroundColor: "#037F7D",
+                    borderRadius: "10px",
+                  }}
+                  onClick={() => handleDelete(session.id)}
+                >
+                  Delete
+                </Button>
+              </Card.Body>
+            </Card>
+          ))
+        ) : (
+          <p className="m-0">No available sessions.</p>
+        )}
+      </Card.Body>
+    </Card>
   );
 };
 

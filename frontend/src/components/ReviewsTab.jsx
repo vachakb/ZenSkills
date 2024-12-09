@@ -37,7 +37,7 @@ function ReviewsTab({ mentorId }) {
 
   const onLoad = () => {
     getAllReviews(mentorId)
-      .then((res) => setReviews(res.data))
+      .then((res) => { setReviews(res.data.reviews); setHasReviewed(res.data.hasReviewed) })
       .catch((err) => console.error(err));
   };
 
@@ -48,7 +48,7 @@ function ReviewsTab({ mentorId }) {
   // Add new review to the list
   const handleAddReview = async (newReview) => {
     createReview(mentorId, newReview).then(res => {
-      setReviews([res.data, ...reviews]);
+      setReviews([res.data.review, ...reviews]);
       setHasReviewed(true);
     }).catch(err => console.error(err))
   };
@@ -79,9 +79,9 @@ function ReviewsTab({ mentorId }) {
   const averageRating =
     reviews.length > 0
       ? (
-          reviews.reduce((acc, review) => acc + review.rating, 0) /
-          reviews.length
-        ).toFixed(2)
+        reviews.reduce((acc, review) => acc + review.rating, 0) /
+        reviews.length
+      ).toFixed(2)
       : "0.00";
 
   return (
@@ -89,7 +89,9 @@ function ReviewsTab({ mentorId }) {
       {/* Average Rating Display */}
       <div
         className="d-flex flex-column align-items-center mb-4 py-3"
-        style={{ border: "1px solid black" }}
+        style={{
+          border: "1px solid black"
+        }}
       >
         <h2>{averageRating}</h2>
         <div className="d-flex align-items-center gap-1">
@@ -112,9 +114,8 @@ function ReviewsTab({ mentorId }) {
           <button
             key={star}
             onClick={() => handleTagClick(star)}
-            className={`btn btn-sm ${
-              selectedStar === star ? "btn-primary text-white" : "btn-secondary"
-            }`}
+            className={`btn btn-sm ${selectedStar === star ? "btn-primary text-white" : "btn-secondary"
+              }`}
             style={{
               display: "inline-flex",
               alignItems: "center",

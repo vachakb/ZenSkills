@@ -39,6 +39,9 @@ import CreateJobs from "./CreateJobs.jsx";
 import CreateWorkshop from "./CreateWorkshop.jsx";
 import LandingPage from "./LandingPage.jsx";
 import BookSession from "./BookSession.jsx";
+import Error from "./Error.jsx";
+import Community from "./Community.jsx";
+import Question from "./Question.jsx";
 
 const mentor = {
   id: "id",
@@ -135,6 +138,7 @@ const router = createBrowserRouter([
   {
     path: "/",
     element: <App />,
+    errorElement: <Error />,
     children: [
       {
         path: "/",
@@ -255,8 +259,18 @@ const router = createBrowserRouter([
         element: <CreateWorkshop />
       },
       {
+        path: "blank",
+        element: <BlankPage />
+      },
+      {
         path: "book_session/:availableSessionId",
         element: <BookSession />
+      }, {
+        path: "community",
+        element: <Community />
+      }, {
+        path: "community/:questionId",
+        element: <Question />
       }
     ],
   }, {

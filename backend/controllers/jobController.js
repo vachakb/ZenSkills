@@ -1,4 +1,6 @@
 const prisma = require("../models/prismaClient");
+const nodemailer = require("nodemailer");
+const { getJobApplicationEmailTemplate } = require("../misc/applyJobEmailTemplate");
 
 const getJobDetails = async (req, res) => {
   const { jobId } = req.params;
@@ -223,10 +225,100 @@ const deleteJob = async (req, res) => {
   }
 };
 
+const applyJob = async (req, res) => {
+  const { jobId } = req.params;
+  const { name, email, phone_number, cover_letter, resume_url } = req.body;
+
+  try {
+    // Fetch job details including mentor's user details
+    const job = await prisma.job.findUnique({
+      where: { id: jobId },
+      include: {
+        mentor: {
+          include: {
+            User: true,
+          },
+        },
+      },
+    });
+
+    const existingApplication = await prisma.jobApplication.findFirst({
+      where: {
+        job_id: jobId,
+        uid: req.user.id,
+      },
+      orderBy: {
+        application_date: "desc",
+      },
+    });
+
+    // Limit reapplication to 15 days
+    if (existingApplication) {
+      const now = new Date();
+      const lastAppliedDate = new Date(existingApplication.application_date);
+      const differenceInDays = Math.floor((now - lastAppliedDate) / (1000 * 60 * 60 * 24));
+
+      if (differenceInDays < 15) {
+        return res.status(400).json({
+          error: `You can only reapply for this job after ${15 - differenceInDays} day(s).`,
+        });
+      }
+    }
+
+
+    if (!job) {
+      return res.status(404).json({ error: "Job not found" });
+    }
+
+    if (!job.mentor || !job.mentor.User || !job.mentor.User.email) {
+      return res.status(404).json({ error: "Mentor's email not found" });
+    }
+
+    // Create job application
+    const application = await prisma.jobApplication.create({
+      data: {
+        job_id: jobId,
+        uid: req.user.id,
+        name,
+        phone_number,
+        email,
+        cover_letter,
+        resume_url,
+      },
+    });
+
+    // Send email to mentor
+    const transporter = nodemailer.createTransport({
+      service: "gmail",
+      auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS,
+      },
+    });
+
+    const mailOptions = {
+  from: process.env.EMAIL_USER,
+  to: job.mentor.User.email,
+  subject: `🌟 New Job Application Received for ${job.title} on ZenSkills`,
+  html: getJobApplicationEmailTemplate(job.title, job.company, { name, email, phone_number, cover_letter, resume_url }),
+};
+
+    
+
+    await transporter.sendMail(mailOptions);
+    console.log("Email sent to mentor");
+    res.status(200).json({ message: "Application submitted successfully" });
+  } catch (error) {
+    console.error("Error applying for job:", error);
+    res.status(500).json({ error: "Failed to apply for job" });
+  }
+};
+
 module.exports = {
   getJobDetails,
   getJobs,
   createJob,
   updateJob,
   deleteJob,
+  applyJob,
 };

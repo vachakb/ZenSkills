@@ -3,8 +3,18 @@ const prisma = require("../models/prismaClient");
 // Controller to fetch all workshops
 const getAllWorkshops = async (req, res) => {
   try {
-    const workshops = await prisma.workshops.findMany();
-    res.status(200).json(workshops);
+    const workshops = await prisma.workshops.findMany({
+      include: {
+        mentor: {
+          include: {
+            User: true,
+          },
+        },
+        workshop_image: true,
+      },
+    });
+
+    res.status(200).json({ workshops });
   } catch (error) {
     console.error("Error fetching workshops:", error);
     res.status(500).json({ error: "Error fetching workshops" });
@@ -58,7 +68,10 @@ const createWorkshop = async (req, res) => {
       deadline,
       visibility,
     } = req.body;
-    const user = await prisma.User.findUnique({include:{mentor:true},where:{id:userId}})
+    const user = await prisma.User.findUnique({
+      include: { mentor: true },
+      where: { id: userId },
+    });
 
     const newWorkshop = await prisma.workshops.create({
       data: {
@@ -66,8 +79,12 @@ const createWorkshop = async (req, res) => {
         description,
         date: new Date(date),
         duration,
-        workshop_image,
-        mentor: {connect:{id:user.mentor.id}},
+        workshop_image: {
+          connect: {
+            id: workshop_image,
+          },
+        },
+        mentor: { connect: { id: user.mentor.id } },
         max_participants,
         deadline: new Date(deadline),
         visibility,
@@ -100,8 +117,17 @@ const updateWorkshop = async (req, res) => {
     //   return res.status(403).json({ error: "You are not authorized to update this workshop" });
     // }
 
-    const { title, description, date, duration, workshop_image, max_participants, deadline, visibility } = req.body;
-    
+    const {
+      title,
+      description,
+      date,
+      duration,
+      workshop_image,
+      max_participants,
+      deadline,
+      visibility,
+    } = req.body;
+
     const updatedWorkshop = await prisma.workshops.update({
       where: { id },
       data: {
@@ -126,7 +152,7 @@ const updateWorkshop = async (req, res) => {
 const deleteWorkshop = async (req, res) => {
   try {
     const { id } = req.params;
-    
+
     // TODO - Uncomment for authentication check
     // const userId = req.user.id; // Assuming user ID is available in req.user.id
 
@@ -153,13 +179,12 @@ const deleteWorkshop = async (req, res) => {
   }
 };
 
-
 // Controller to mark attendance for a workshop
 const markAttendance = async (req, res) => {
   const { id } = req.params;
   const { userId } = req.body;
-  console.log(req.params)
-  console.log(userId)
+  console.log(req.params);
+  console.log(userId);
 
   //const userId = req.user.id;
 
@@ -217,7 +242,6 @@ const getWorkshopAttendance = async (req, res) => {
   }
 };
 
-
 // Controller to book a workshop
 const bookWorkshop = async (req, res) => {
   const { id: workshopId } = req.params;
@@ -244,7 +268,9 @@ const bookWorkshop = async (req, res) => {
     });
 
     if (existingBooking) {
-      return res.status(400).json({ error: "User has already booked this workshop" });
+      return res
+        .status(400)
+        .json({ error: "User has already booked this workshop" });
     }
 
     // Create a new booking
@@ -261,7 +287,6 @@ const bookWorkshop = async (req, res) => {
     res.status(500).json({ error: "Error booking workshop" });
   }
 };
-
 
 module.exports = {
   getAllWorkshops,
