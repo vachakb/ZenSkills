@@ -1,18 +1,27 @@
-/* Keyframes for scrolling */
-@keyframes scroll {
-    0% {
-      top: 0;
-    }
-    100% {
-      top: -100%; /* Move up by 100% of the content height */
-    }
+.card-container {
+  height: 300px; /* Set the height for the scrollable area */
+  overflow-y: hidden; /* Hide content that's not visible */
+  position: relative;
+}
+
+.card-wrapper {
+  display: flex;
+  flex-direction: column;
+  animation: scrollY 10s linear infinite; /* Animation for vertical scroll */
+}
+
+.card {
+  /* height: 150px; Adjust card height */
+  /* margin-bottom: 10px; Space between cards */
+  /* background-color: lightblue; */
+  /* border: 1px solid #ddd; */
+}
+
+@keyframes scrollY {
+  0% {
+    transform: translateY(0);
   }
-  
-  /* Smooth scroll for the items */
-  .mentor-list-items {
-    position: absolute;
-    display: flex;
-    flex-direction: column;
-    top: 0;
+  100% {
+    transform: translateY(-100%); /* Moves all cards upwards */
   }
-  
+}

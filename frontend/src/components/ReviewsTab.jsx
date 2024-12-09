@@ -37,7 +37,7 @@ function ReviewsTab({ mentorId }) {
 
   const onLoad = () => {
     getAllReviews(mentorId)
-      .then((res) => setReviews(res.data))
+      .then((res) => { setReviews(res.data.reviews); setHasReviewed(res.data.hasReviewed) })
       .catch((err) => console.error(err));
   };
 
@@ -48,7 +48,7 @@ function ReviewsTab({ mentorId }) {
   // Add new review to the list
   const handleAddReview = async (newReview) => {
     createReview(mentorId, newReview).then(res => {
-      setReviews([res.data, ...reviews]);
+      setReviews([res.data.review, ...reviews]);
       setHasReviewed(true);
     }).catch(err => console.error(err))
   };

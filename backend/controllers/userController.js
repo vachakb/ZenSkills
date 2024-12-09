@@ -1,4 +1,5 @@
 const prisma = require("../models/prismaClient");
+const path = require("path");
 
 // Get user profile
 exports.getUserProfile = async (req, res) => {
@@ -31,20 +32,17 @@ exports.getUserProfile = async (req, res) => {
   }
 };
 
-exports.deleteProfile = async(req,res) => {
-
+exports.deleteProfile = async (req, res) => {
   // TODO need to check middleware to store the user data
   const userId = req.user.id;
   const role = req.user.role;
   try {
-
-    if(role === "mentee"){
+    if (role === "mentee") {
       // Delete related mentee records
       await prisma.mentee.deleteMany({
         where: { user_id: userId },
-      });  
-    }
-    else{
+      });
+    } else {
       // Delete related mentor records
       await prisma.mentor.deleteMany({
         where: { user_id: userId },
@@ -60,4 +58,44 @@ exports.deleteProfile = async(req,res) => {
     console.error(err);
     res.status(500).json({ error: "Unable to delete profile." });
   }
-}
+};
+
+exports.uploadImage = async (req, res) => {
+  const image = await prisma.image.create({
+    omit: {
+      path: true,
+    },
+    data: {
+      filename: req.file.originalname,
+      path: req.file.path,
+      size: req.file.size,
+      mimeType: req.file.mimetype,
+    },
+  });
+
+  res.json({ image });
+};
+
+exports.getImage = async (req, res) => {
+  const { id } = req.params;
+
+  const image = await prisma.image.findUnique({
+    where: {
+      id,
+    },
+  });
+
+  if (!image) {
+    return res.sendStatus(404);
+  }
+
+  const startPath = path.join(__dirname, "..");
+  const fullPath = path.join(startPath, image.path);
+
+  res.sendFile(fullPath, {
+    headers: {
+      "Content-Disposition": "inline",
+      "Content-Type": image.mimeType,
+    },
+  });
+};

@@ -5,7 +5,11 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { getAllWorkshops } from "../apis/workshops";
 import { formatDateTime } from "../misc/formatDateTime";
-import { format } from "date-fns"; // Import date-fns for date formatting
+import { format } from "date-fns";
+import { FiPlusCircle } from "react-icons/fi";
+import { Button, Modal } from "react-bootstrap";
+import useProfile from "../hooks/useProfile";
+import { API_URL } from "../apis/commons";
 // TODO Make calls using axios
 
 const WorkshopsPage = ({ demoTags }) => {
@@ -142,15 +146,20 @@ const WorkshopsPage = ({ demoTags }) => {
     }
   }
 
+  const { profile } = useProfile();
+
+  const [selectedWorkshop, setSelectedWorkshop] = useState();
+  const [showWorkshopDetails, setShowWorkshopDetails] = useState(false);
+
   // Fetch workshops from the server
   const fetchWorkshops = async (page, query, status) => {
     try {
       const response = await getAllWorkshops();
       console.log("API Response:", response.data);
-      const filteredWorkshops = response.data.filter(
+      const filteredWorkshops = response.data.workshops.filter(
         (workshop) =>
           workshop.title.toLowerCase().includes(query.toLowerCase()) &&
-          (status === "" || workshop.status === status)
+          (status === "" || (status === "myworkshops" && workshop.mentor.User.id === profile.id) || workshop.status === status)
       );
       setWorkshops(filteredWorkshops);
       setTotalPages(Math.ceil(filteredWorkshops.length / itemsPerPage));
@@ -191,15 +200,43 @@ const WorkshopsPage = ({ demoTags }) => {
     console.log(selectedTags);
   }
 
-  function handleWorkshopClick(id) {
-    navigate(`${id}`);
+  function handleWorkshopClick(index) {
+    setSelectedWorkshop(index);
+    setShowWorkshopDetails(true);
+  }
+
+  function handleCloseDetails() {
+    setShowWorkshopDetails(false);
+    setSelectedWorkshop(undefined);
   }
 
   return (
+    <>
+      {selectedWorkshop !== undefined &&
+    <Modal show={showWorkshopDetails} onHide={handleCloseDetails} centered>
+      <Modal.Header closeButton>
+        <Modal.Title>
+          Workshop Details
+        </Modal.Title>
+      </Modal.Header>
+      <Modal.Body>
+        <h5>Title: {workshops[selectedWorkshop].title}</h5>
+        <h6>About: {workshops[selectedWorkshop].description}</h6>
+        <h6>Seats available: {workshops[selectedWorkshop].max_participants}</h6>
+        <h6>Date: {format(new Date(workshops[selectedWorkshop].date), "MMMM dd, yyyy")}</h6>
+        <h6>Time: {format(new Date(workshops[selectedWorkshop].date), "hh:mm a")}</h6>
+        <h6>Deadline: {format(new Date(workshops[selectedWorkshop].date), "MMMM dd, yyyy")}</h6>
+        <h6>Created by: {workshops[selectedWorkshop].mentor.User.name}</h6>
+      </Modal.Body>
+    </Modal>
+      }
     <div className="container my-4">
       {/* Header Section */}
       <div className="d-flex flex-column flex-md-row justify-content-between align-items-center mb-4">
-        <h1 className="fw-bold col-12 col-md-auto mb-3 mb-md-0">Workshops</h1>
+        <div className="d-flex align-items-center gap-2">
+          <h1 className="fw-bold col-12 col-md-auto mb-3 mb-md-0">Workshops</h1>
+          <Button onClick={() => navigate("/create_workshop")}>Create workshop</Button>
+        </div>
         <div className="row g-2 align-items-center">
           {/* Search Input */}
           <div className="col-12 col-md">
@@ -301,6 +338,14 @@ const WorkshopsPage = ({ demoTags }) => {
             Completed
           </button>
         </li>
+        <li className="nav-item">
+          <button
+            className={`nav-link ${activeTab === "myworkshops" ? "active" : ""}`}
+            onClick={() => setActiveTab("myworkshops")}
+          >
+            My workshops
+          </button>
+        </li>
         {/* <li className="nav-item">
           <button
             className={`nav-link ${activeTab === "all" ? "active" : ""}`}
@@ -313,25 +358,25 @@ const WorkshopsPage = ({ demoTags }) => {
 
       {/* Workshop Cards */}
       <div className="row">
-        {workshops.map((workshop) => (
+        {workshops.map((workshop, index) => (
           <div
+            style={{ cursor: "pointer" }}
             className="col-md-4 mb-4"
             key={workshop.id}
-            onClick={() => handleWorkshopClick(workshop.id)}
           >
             <div className="card shadow-sm">
               <img
-                src={workshop.workshop_image}
+                src={`${API_URL}/api/images/${workshop.workshop_image_id}`}
                 className="card-img-top"
                 alt={workshop.title}
               />
-              <div className="card-body">
-                <h5 className="card-title">{workshop.title}</h5>
-                <p className="card-text">
+              <div className="card-body d-flex flex-column gap-2">
+                <h5 className="card-title m-0">{workshop.title}</h5>
+                <p className="card-text m-0">
                   <strong>Date:</strong> {format(new Date(workshop.date), "MMMM dd, yyyy")} <br />
                   <strong>Time:</strong> {format(new Date(workshop.date), "hh:mm a")}
                 </p>
-                <div className="d-flex align-items-center mt-3">
+                <div className="d-flex align-items-center">
                   <img
                     src={workshop.organizer_profile_pic}
                     alt={workshop.organizer_name}
@@ -340,12 +385,17 @@ const WorkshopsPage = ({ demoTags }) => {
                   />
 
                   <div>
-                    <p className="mb-0 fw-bold">{workshop?.organizer_name}</p>
+                    <p className="m-0 fw-bold">{workshop.mentor.User.name}</p>
                     <small className="text-muted">
                       {workshop?.organizer_position}
                     </small>
                   </div>
                 </div>
+                <div className="ms-auto d-flex gap-2"><Button onClick={
+
+            () => handleWorkshopClick(index)
+
+                }>Details</Button><Button>Register</Button></div>
               </div>
             </div>
           </div>
@@ -373,6 +423,7 @@ const WorkshopsPage = ({ demoTags }) => {
         activeClassName={"active"}
       />
     </div>
+    </>
   );
 };
 
