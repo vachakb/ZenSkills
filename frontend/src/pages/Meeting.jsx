@@ -11,6 +11,7 @@ import { Button, Form } from "react-bootstrap";
 import ReactPlayer from "react-player";
 import { useParams } from "react-router-dom";
 import classNames from "classnames";
+import { createRoom, getToken } from "../apis/meeting";
 
 function Chat({ open, meetingId, localParticipantId }) {
   const { publish, messages } = usePubSub(meetingId);
@@ -466,12 +467,18 @@ function Meeting() {
 
   const [joined, setJoined] = useState(false);
 
-  const createMeeting = async () => {
-    const res = await axios.post("https://api.videosdk.live/v2/rooms", null, {
-      headers: { Authorization: import.meta.env.VITE_VIDEOSDK_TOKEN },
-    });
+  const [token, setToken] = useState();
 
-    setMeetingIdToUse(res.data.roomId);
+  const createMeeting = async () => {
+    try {
+     const tokenRes = await getToken();
+      setToken(tokenRes.data.token);
+      const roomRes = await createRoom(tokenRes.data.token);
+      setMeetingIdToUse(roomRes.data.roomId);
+      history.pushState(`meeting ${roomRes.data.roomId}`, "ZenSkills", `${window.location.href}/${roomRes.data.roomId}`)
+    } catch (err) {
+      console.error(err);
+    }
   };
 
   if (meetingIdToUse) {
@@ -483,7 +490,7 @@ function Meeting() {
           webcamEnabled: true,
           name: name,
         }}
-        token={import.meta.env.VITE_VIDEOSDK_TOKEN}
+        token={token}
       >
         {joined ? (
           <Room meetingId={meetingIdToUse} />
