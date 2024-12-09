@@ -39,6 +39,7 @@ import CreateJobs from "./CreateJobs.jsx";
 import CreateWorkshop from "./CreateWorkshop.jsx";
 import LandingPage from "./LandingPage.jsx";
 import BookSession from "./BookSession.jsx";
+import Error from "./Error.jsx";
 
 const mentor = {
   id: "id",
@@ -135,6 +136,7 @@ const router = createBrowserRouter([
   {
     path: "/",
     element: <App />,
+    errorElement: <Error />,
     children: [
       {
         path: "/",
