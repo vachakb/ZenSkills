@@ -1,4 +1,5 @@
 const { recommendMentors } = require("../services/recommendationService");
+const { generateRecommendations } = require("../services/recommendationService");
 
 const getRecommendations = async (req, res) => {
   try {

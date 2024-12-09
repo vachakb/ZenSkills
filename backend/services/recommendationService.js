@@ -76,4 +76,27 @@ const recommendMentors = async (menteeId) => {
 //   }
 // })();
 
-module.exports = { recommendMentors };
+const generateRecommendations = async (interests, topN) => {
+  const allTags = await fetchAllTags();
+  const interestTagVector = allTags.map((tag) =>
+    interests.includes(tag.tag_name) ? 1 : 0
+  );
+
+  const mentors = await fetchAllMentors();
+  const recommendations = mentors.map((mentor) => {
+    const mentorTagVector = allTags.map((tag) =>
+      mentor.expertise.some((t) => t.id === tag.id) ? 1 : 0
+    );
+    const similarity = calculateCosineSimilarity(
+      interestTagVector,
+      mentorTagVector
+    );
+    return { mentor, similarity };
+  });
+
+  // Sort by similarity in descending order and return top N
+  recommendations.sort((a, b) => b.similarity - a.similarity);
+
+  return recommendations.slice(0, topN);
+};
+module.exports = { recommendMentors , generateRecommendations};
