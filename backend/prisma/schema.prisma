@@ -243,8 +243,9 @@ model workshops {
   title          String     
   description    String     
   date           DateTime   
-  duration       Int        
-  workshop_image String?    
+  duration       Int
+  workshop_image_id String @unique
+  workshop_image Image   @relation(fields: [workshop_image_id], references: [id], onDelete: Cascade)
   created_at     DateTime  @default(now())       
   created_by     String     
   status         WorkshopStatus? @default(upcoming) 
@@ -380,4 +381,13 @@ model Attachment {
   size Int
   message_id String? @unique
   message Message? @relation(fields: [message_id], references: [id])
+}
+
+model Image {
+  id String @id @default(uuid())
+  filename String
+  path String
+  size Int
+  mimeType String
+  workshop workshops?
 }

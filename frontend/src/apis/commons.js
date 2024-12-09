@@ -14,4 +14,10 @@ const axiosInstance = axios.create({
   baseURL: API_URL + "/api",
 });
 
-export { API_URL, axiosInstance };
+function uploadImage(image) {
+  const formData = new FormData();
+  formData.append("file", image);
+  return axiosInstance.post("/image", formData);
+}
+
+export { API_URL, axiosInstance, uploadImage };
