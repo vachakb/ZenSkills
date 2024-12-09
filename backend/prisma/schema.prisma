@@ -381,3 +381,12 @@ model Attachment {
   message_id String? @unique
   message Message? @relation(fields: [message_id], references: [id])
 }
+
+model Image {
+  id String @id @default(uuid())
+  filename String
+  path String
+  size Int
+  mimeType String
+  workshop workshops?
+}
