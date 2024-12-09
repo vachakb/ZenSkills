@@ -19,7 +19,7 @@ const getReviewsByMentorId = async (req, res) => {
     });
 
     const formattedReviews = reviews.map((review) => ({
-      username: review.mentee.name,
+      username: review.mentee.User.name,
       date: review.created_at,
       rating: review.rating,
       reviewText: review.description,
