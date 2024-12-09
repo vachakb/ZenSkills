@@ -5,7 +5,7 @@ import ReviewInput from "./ReviewInput";
 import { FaStar } from "react-icons/fa";
 import ReactPaginate from "react-paginate";
 import { useEffect } from "react";
-import axios from "axios";
+import { createReview, getAllReviews } from "../apis/mentors";
 
 function ReviewsTab({ mentorId }) {
   // Initial review data
@@ -35,35 +35,22 @@ function ReviewsTab({ mentorId }) {
 
   const itemsPerPage = 5;
 
-  useEffect(() => {
-    // Fetch reviews from the server
-    const fetchReviews = async () => {
-      try {
-        // TODO replace with API URL
-        const response = await axios.get(
-          `http://localhost:5000/api/mentors/reviews/${mentorId}`
-        );
-        setReviews(response.data);
-      } catch (error) {
-        console.error("Failed to fetch reviews", error);
-      }
-    };
+  const onLoad = () => {
+    getAllReviews(mentorId)
+      .then((res) => setReviews(res.data))
+      .catch((err) => console.error(err));
+  };
 
-    fetchReviews();
-  }, [mentorId]);
+  useEffect(() => {
+    onLoad()
+  }, [])
 
   // Add new review to the list
   const handleAddReview = async (newReview) => {
-    try {
-      const response = await axios.post(
-        `http://localhost:5000/api/mentors/reviews/${mentorId}`,
-        newReview
-      );
-      setReviews([response.data, ...reviews]);
+    createReview(mentorId, newReview).then(res => {
+      setReviews([res.data, ...reviews]);
       setHasReviewed(true);
-    } catch (error) {
-      console.error("Failed to add review", error);
-    }
+    }).catch(err => console.error(err))
   };
 
   // Handle tag click

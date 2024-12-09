@@ -22,24 +22,31 @@ const getReviewsByMentorId = async (req, res) => {
   }
 };
 
-// Add a new review
-// TODO Mentee id will be taken from cookies or session
 const addReview = async (req, res) => {
   const { mentorId } = req.params;
-  const { menteeId, rating, description } = req.body;
+  const { rating, reviewText } = req.body;
+
   try {
-    // console.log("Review details:", { menteeId, rating, description });
     const newReview = await prisma.Review.create({
       data: {
-        mentor_id: mentorId,
-        mentee_id: menteeId,
+        mentor: {
+          connect: {
+            id: mentorId,
+          },
+        },
+        mentee: {
+          connect: {
+            user_id: req.user.id,
+          },
+        },
         rating,
-        description,
+        description: reviewText,
       },
     });
     console.log("Review added:", newReview);
     res.status(201).json(newReview);
   } catch (error) {
+    console.error(error);
     res.status(500).json({ error: "Failed to add review" });
   }
 };

@@ -22,4 +22,18 @@ function getMentorProfile(mentorId) {
   return axiosInstance.get(`/mentors/${mentorId}`);
 }
 
-export { getAllMentors, getAllMentorTags, getMentorProfile };
+function getAllReviews(mentorId) {
+  return axiosInstance.get(`/mentors/reviews/${mentorId}`);
+}
+
+function createReview(mentorId, body) {
+  return axiosInstance.post(`/mentors/reviews/${mentorId}`, body);
+}
+
+export {
+  getAllMentors,
+  getAllMentorTags,
+  getMentorProfile,
+  getAllReviews,
+  createReview,
+};
