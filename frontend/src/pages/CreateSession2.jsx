@@ -13,13 +13,13 @@ const SessionForm1 = () => {
   const prevForm = useLocation().state;
 
   const daysOfWeek = [
-    "SUNDAYS",
-    "MONDAYS",
-    "TUESDAYS",
-    "WEDNESDAYS",
-    "THURSDAYS",
-    "FRIDAYS",
-    "SATURDAYS",
+    "SUNDAY",
+    "MONDAY",
+    "TUESDAY",
+    "WEDNESDAY",
+    "THURSDAY",
+    "FRIDAY",
+    "SATURDAY",
   ];
 
   // Validation schema
@@ -41,8 +41,8 @@ const SessionForm1 = () => {
   const initialValues = {
     availability: daysOfWeek.map((day) => ({
       day,
-      enabled: day === "SUNDAYS", // Default to Sunday
-      slots: day === "SUNDAYS" ? [{ start: "09:00", end: "17:00" }] : [],
+      enabled: day === "SUNDAY", // Default to Sunday
+      slots: day === "SUNDAY" ? [{ start: "09:00", end: "17:00" }] : [],
     })),
   };
 
