@@ -37,7 +37,7 @@ function ReviewsTab({ mentorId }) {
 
   const onLoad = () => {
     getAllReviews(mentorId)
-      .then((res) => setReviews(res.data))
+      .then((res) => { setReviews(res.data.reviews); setHasReviewed(res.data.hasReviewed) })
       .catch((err) => console.error(err));
   };
 

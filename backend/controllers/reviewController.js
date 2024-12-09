@@ -7,16 +7,30 @@ const getReviewsByMentorId = async (req, res) => {
     const reviews = await prisma.Review.findMany({
       where: { mentor_id: mentorId },
       include: {
-        mentee: true,
+        mentee: {
+          include: {
+            User: true,
+          },
+        },
+      },
+      orderBy: {
+        created_at: "desc",
       },
     });
+
     const formattedReviews = reviews.map((review) => ({
       username: review.mentee.name,
       date: review.created_at,
       rating: review.rating,
       reviewText: review.description,
     }));
-    res.status(200).json(formattedReviews);
+
+    res.status(200).json({
+      reviews: formattedReviews,
+      hasReviewed: reviews.some(
+        (review) => review.mentee.User.id === req.user.id,
+      ),
+    });
   } catch (error) {
     res.status(500).json({ error: "Failed to fetch reviews" });
   }
