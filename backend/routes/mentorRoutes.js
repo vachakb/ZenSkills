@@ -1,6 +1,7 @@
 const express = require("express");
 const { getMentors, getMentorProfile,editProfile} = require("../controllers/mentorController");
 const { getReviewsByMentorId, addReview } = require("../controllers/reviewController");
+const { getRecommendations } = require("../controllers/recommendationController");
 
 
 const router = express.Router();
@@ -18,5 +19,7 @@ router.put("/:mentorId/edit", editProfile);
 // Endpoint to fetch reviews by mentor ID
 router.get("/reviews/:mentorId", getReviewsByMentorId);
 router.post("/reviews/:mentorId", addReview);
+
+router.post("/recommendations", getRecommendations);
 
 module.exports = router;
