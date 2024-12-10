@@ -39,8 +39,12 @@ function getSession(id) {
   return axiosInstance.get(`/session/${id}`);
 }
 
-function bookSession(sessionId, body) {
-  return axiosInstance.post(`/session/${sessionId}/book`, body);
+function getAllUserSessions() {
+  return axiosInstance.get("/session/user/list");
+}
+
+function bookSession(bookingId) {
+  return axiosInstance.post(`/session/${bookingId}/book`);
 }
 
 function createSession(sessionData) {
@@ -65,6 +69,7 @@ function updateBookingStatus(bookingId, status) {
 export {
   getAllAvailableSessions,
   getSession,
+  getAllUserSessions,
   bookSession,
   createSession,
   createTimeSlots,

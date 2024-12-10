@@ -6,6 +6,7 @@ import { deleteSession } from '../apis/session';
 import { useState } from 'react';
 import { useEffect } from 'react';
 import useProfile from '../hooks/useProfile';
+import { Duration } from 'luxon';
 
 const MenteeSessions = ({ sessions }) => {
   const profile = useProfile(); // Destructuring sessions here
@@ -52,7 +53,7 @@ const MenteeSessions = ({ sessions }) => {
       >
         <Card.Title className='mb-0'>
           <div className='d-flex my-0' style={{ alignItems: "center" }}>
-            <h5>Available sessions</h5>
+            <h5 className="m-0">Available sessions</h5>
 
             <Button
               variant='primary'

@@ -1,7 +1,12 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Card, Button, Badge } from 'react-bootstrap';
+import { DateTime } from "luxon";
 
-const SessionCard = ({ date, time, status, name, sessionTitle }) => {
+const SessionCard = ({ session }) => {
+  const status = useMemo(() => {
+      return session.status.charAt(0).toUpperCase() + session.status.slice(1);
+  }, [session]);
+
   const getStatusBadge = (status) => {
     switch (status) {
       case 'Confirmed':
@@ -22,12 +27,15 @@ const SessionCard = ({ date, time, status, name, sessionTitle }) => {
       <Card.Body className="d-flex align-items-center justify-content-between">
         {/* Session Info */}
         <div>
-          <Card.Title className="mb-1">{sessionTitle}</Card.Title>
+          <Card.Title className="mb-1">{session.session.name}</Card.Title>
           <Card.Text className="text-muted mb-2">
-            {date} at {time}
+            {DateTime.fromISO(session.date).toLocaleString(DateTime.DATE_FULL)} at {DateTime.fromISO(session.start_time).toLocaleString(DateTime.TIME_SIMPLE)}
           </Card.Text>
           <Card.Text className="mb-0">
-            <strong>{name}</strong>
+            {session.session.description}
+          </Card.Text>
+          <Card.Text>
+            With <b>{session.user.name}</b>
           </Card.Text>
         </div>
 
