@@ -46,6 +46,7 @@ import BlankPage from "./blank.jsx";
 import RegisterTimeSlots from "./RegisterTimeSlots.jsx";
 import AdminPage from "./Admin.jsx";
 
+
 const mentor = {
   id: "id",
   name: "mentor",
@@ -277,7 +278,15 @@ const router = createBrowserRouter([
       }, {
         path: "community/:questionId",
         element: <Question />
-      }
+      },
+      {
+        path: "landing_page",
+        element: <LandingPage />
+      },
+      {
+        path: "admin",
+        element: <AdminPage />
+      },
     ],
   }
 ]);

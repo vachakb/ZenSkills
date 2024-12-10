@@ -83,7 +83,7 @@ const CreateJobs = () => {
                     }
                 }}
             >
-                {({ handleSubmit, setFieldValue, values, errors, touched }) => (
+                {({ handleSubmit, setFieldValue, values, errors, touched, formikProps }) => (
                     <Form noValidate onSubmit={handleSubmit}>
                         <h2 className="form-title">Create new job opening</h2>
 
@@ -150,25 +150,24 @@ const CreateJobs = () => {
                             <label htmlFor="location" className="form-label">
                                 Location <span className="text-danger">*</span>
                             </label>
-                            <div className="mb-3">
-                                <label htmlFor="location" className="form-label">
-                                    Location <span className="text-danger">*</span>
-                                </label>
-                                <Select
-                                    name="location"
-                                    value={values.location}  // Ensure this is the correct prop for value
-                                    options={states}  // Ensure states is an array of { value, label }
-                                    placeholder="Select a location"
-                                    onChange={(option) => {
-                                        setFieldValue("location", option.value);  // Ensure you're passing the correct value
-                                        console.log("Selected Location:", option.value);  // Debugging
-                                    }}
-                                />
-                                <ErrorMessage name="location" component="div" className="text-danger" />
-                            </div>
 
+                            {/* Location */}
+
+
+                            <Select
+                                name="location"
+                                value={states.find((option) => option.value === values.location)} // Sync Formik's value
+                                options={states} // Dropdown options
+                                placeholder="Select a location"
+                                onChange={(option) => {
+                                    setFieldValue("location", option?.value || ""); // Update Formik state
+                                }}
+                                classNamePrefix="react-select"
+                            />
                             <ErrorMessage name="location" component="div" className="text-danger" />
                         </div>
+
+
 
                         {/* Job Types */}
                         <div className="mb-3">

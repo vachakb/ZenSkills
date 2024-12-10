@@ -29,7 +29,7 @@ const getFileSize = (size) => {
 
 function Conversation({ children, onClick }) {
   return (
-    <div style={{ cursor: "pointer" }} className="px-1" onClick={onClick}>
+    <div style={{ cursor: "pointer", backgroundColor: "lightgrey", width: "100%", height: "60px", borderRadius: "10px" }} className="px-3 mx-0 mx-2" onClick={onClick}>
       {children}
     </div>
   );
@@ -184,6 +184,7 @@ function Chat() {
                   <div
                     style={{
                       cursor: "pointer",
+
                     }}
                     className="d-flex border border-1 rounded px-4 py-2"
                     onClick={() => {
@@ -204,7 +205,7 @@ function Chat() {
               <Form.Control
                 type="text"
                 placeholder="Name..."
-                onChange={(ev) => {}}
+                onChange={(ev) => { }}
               />
             </div>
           )}
@@ -219,7 +220,7 @@ function Chat() {
         </Modal.Footer>
       </Modal>
       <div className="d-flex h-100">
-        <div className="d-flex flex-column border-end border-1 pe-4 me-4 gap-2">
+        <div className="d-flex flex-column border-end border-1 pe-4 me-4 gap-4"  >
           {conversations.map((conversation, index) => (
             <Conversation
               onClick={() => {
@@ -231,6 +232,7 @@ function Chat() {
                 setIsChatLoading(false);
               }}
               key={conversation.id}
+
             >
               {conversation.title}
             </Conversation>
@@ -256,8 +258,8 @@ function Chat() {
                   setIsChatAtBottom(
                     Math.abs(
                       ev.currentTarget.scrollHeight -
-                        (ev.currentTarget.scrollTop +
-                          ev.currentTarget.clientHeight),
+                      (ev.currentTarget.scrollTop +
+                        ev.currentTarget.clientHeight),
                     ) <= 1,
                   );
                 }}
@@ -273,7 +275,7 @@ function Chat() {
                     key={msg.id}
                   >
                     {messages[index - 1] &&
-                    messages[index - 1].sender.id !== msg.sender.id ? (
+                      messages[index - 1].sender.id !== msg.sender.id ? (
                       <h6
                         style={{
                           textAlign:
