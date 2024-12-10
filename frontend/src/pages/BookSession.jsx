@@ -2,14 +2,17 @@ import { useEffect, useMemo, useState } from "react";
 import { Button, Form, Spinner } from "react-bootstrap";
 import { useNavigate, useParams } from "react-router-dom";
 import { bookSession, getSession } from "../apis/session";
-import { Duration } from "luxon";
+import { DateTime, Duration } from "luxon";
 import { Formik } from "formik";
 import { LuClock3 } from "react-icons/lu";
 import useProfile from "../hooks/useProfile";
+import { weeksToDays } from "date-fns";
 
 function BookSession() {
-  const {profile} = useProfile();
-  
+  const { profile } = useProfile();
+
+const dayOfWeek = ["SUNDAY", "MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY"];
+
   const { availableSessionId } = useParams();
 
   const navigate = useNavigate();
@@ -38,7 +41,13 @@ function BookSession() {
 
   const onSubmit = () => {
     if (selectedDay !== undefined && selectedSlot !== undefined) {
-      bookSession(session.timeSlots[selectedDay][selectedSlot].id,profile.id)
+      const timeSlot =  session.timeSlots[selectedDay][selectedSlot];
+
+      bookSession(session.id, {
+        startTime: DateTime.fromFormat(timeSlot.from, "HH:mm").toJSDate(),
+        endTime: DateTime.fromFormat(timeSlot.to, "HH:mm").toJSDate(),
+          date: DateTime.now().set({ weekday: dayOfWeek.indexOf(selectedDay) }).toJSDate(),
+      })
         .then(() => navigate(`/mentee_exploring/${session.mentor_id}`))
         .catch((err) => console.error(err));
     }
