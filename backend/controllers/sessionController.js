@@ -131,6 +131,7 @@ exports.bookSession = async (req, res) => {
   const { sessionId } = req.params;
   const { startTime, endTime, date } = req.body;
   const userId = req.user.id;
+  // const userId = "3bd27950-9f7d-4d89-8a93-52da18639e10";
 
   try {
     // Check if the session exists
@@ -347,7 +348,7 @@ exports.createTimeSlots = async (req, res) => {
 
 exports.updateBookingStatus = async (req, res) => {
   const { bookingId } = req.params;
-  const { status } = req.body;
+  const { status, newStartTime, newEndTime, newDate } = req.body;
 
   try {
     // Check if the booking exists
@@ -435,6 +436,62 @@ exports.updateBookingStatus = async (req, res) => {
         where: { id: bookingId },
         data: { status },
       })
+    } else if (status === 'rescheduled') {
+      if (!newStartTime || !newEndTime || !newDate) {
+        return res.status(400).json({ error: "newStartTime, newEndTime, and newDate are required for rescheduling" });
+      }
+      
+      // Reschedule the meeting
+      const newStartDateTime = new Date(`${newDate}T${newStartTime}:00`);
+      const newEndDateTime = new Date(`${newDate}T${newEndTime}:00`);
+
+      // Update the event in Google Calendar
+      googleClient.setCredentials({ refresh_token: booking.session.mentor.User.googleRefreshToken });
+      const calendar = google.calendar({ version: 'v3', auth: googleClient });
+      if (booking.event_id) {
+        await calendar.events.update({
+          calendarId: 'primary',
+          eventId: booking.event_id,
+          resource: {
+            start: {
+              dateTime: newStartDateTime.toISOString(),
+              timeZone: "Asia/Kolkata",
+            },
+            end: {
+              dateTime: newEndDateTime.toISOString(),
+              timeZone: "Asia/Kolkata",
+            },
+          },
+        });
+      }
+
+      // Update the event in user's Google Calendar
+      googleClient.setCredentials({ refresh_token: booking.user.googleRefreshToken });
+      await calendar.events.update({
+        calendarId: 'primary',
+        eventId: booking.event_id,
+        resource: {
+          start: {
+            dateTime: newStartDateTime.toISOString(),
+            timeZone: "Asia/Kolkata",
+          },
+          end: {
+            dateTime: newEndDateTime.toISOString(),
+            timeZone: "Asia/Kolkata",
+          },
+        },
+      });
+
+      // Update the booking in the database
+      updatedBooking = await prisma.SessionBooking.update({
+        where: { id: bookingId },
+        data: {
+          start_time: newStartDateTime,
+          end_time: newEndDateTime,
+          date: new Date(newDate),
+          status,
+        },
+      });
     }
     res.status(200).json(updatedBooking);
   } catch (error) {
