@@ -70,10 +70,5 @@ export async function fetchJobs(
 
 // particular job
 export async function fetchJobDetails(jobId) {
-  try {
-    return await axiosInstance.get(`/jobs/${jobId}`);
-  } catch (error) {
-    console.error("Error fetching job details", error);
-    return null;
-  }
+  return await axiosInstance.get(`/jobs/${jobId}`);
 }

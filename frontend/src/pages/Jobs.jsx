@@ -6,104 +6,12 @@ import axios from "axios";
 import ReactPaginate from "react-paginate";
 import JobApplicationModal from "../components/JobApplicationModal";
 import { fetchJobs } from "../apis/explore";
+import { Spinner } from "react-bootstrap";
 
 const JobList = () => {
-  const jobs = [
-    {
-      id: 1,
-      title: "Cloud Engineer Intern",
-      jobTypes: ["Internship", "Remote Full-Time"],
-      salary: "10,000 INR - 15,000 INR",
-      company: "AWS",
-      location: "Bangalore, India",
-      applicants: "40+",
-    },
-    {
-      id: 2,
-      title: "Temporary Technical Support",
-      jobTypes: ["Temporary", "Contract"],
-      salary: "20,000 INR - 30,000 INR",
-      company: "Microsoft",
-      location: "Mumbai, India",
-      applicants: "5+",
-    },
-    {
-      id: 3,
-      title: "Backend Developer",
-      jobTypes: ["Remote Full-Time", "Contract-to-Hire"],
-      salary: "50,000 INR - 70,000 INR",
-      company: "Netflix",
-      location: "Remote",
-      applicants: "20+",
-    },
-    {
-      id: 4,
-      title: "Contract-to-Hire Project Manager",
-      jobTypes: ["Contract-to-Hire", "Hybrid"],
-      salary: "60,000 INR - 80,000 INR",
-      company: "TCS",
-      location: "Delhi, India",
-      applicants: "10+",
-    },
-    {
-      id: 5,
-      title: "Volunteer Web Developer",
-      jobTypes: ["Volunteer", "Freelance"],
-      salary: "Unpaid",
-      company: "NGO TechHelp",
-      location: "Remote",
-      applicants: "25+",
-    },
-    {
-      id: 6,
-      title: "Hybrid Software Tester",
-      jobTypes: ["Hybrid", "Part-Time"],
-      salary: "30,000 INR - 40,000 INR",
-      company: "HCL",
-      location: "Pune, India",
-      applicants: "8+",
-    },
-    {
-      id: 7,
-      title: "DevOps Engineer",
-      jobTypes: ["Full-Time", "Remote Full-Time"],
-      salary: "70,000 INR - 90,000 INR",
-      company: "DigitalOcean",
-      location: "Chennai, India",
-      applicants: "12+",
-    },
-    {
-      id: 8,
-      title: "Content Strategist",
-      jobTypes: ["Freelance", "Part-Time"],
-      salary: "20,000 INR - 30,000 INR",
-      company: "Medium",
-      location: "Remote",
-      applicants: "18+",
-    },
-    {
-      id: 9,
-      title: "Game Developer",
-      jobTypes: ["Full-Time", "Contract"],
-      salary: "70,000 INR - 1,00,000 INR",
-      company: "Ubisoft",
-      location: "Mumbai, India",
-      applicants: "12+",
-    },
-    {
-      id: 10,
-      title: "Data Scientist",
-      jobTypes: ["Full-Time", "Hybrid"],
-      salary: "80,000 INR - 1,20,000 INR",
-      company: "Google",
-      location: "Hyderabad, India",
-      applicants: "25+",
-    },
-  ];
-
   const [searchTerm, setSearchTerm] = useState("");
   const [locationInput, setLocationInput] = useState("");
-  const [filteredJobs, setFilteredJobs] = useState(jobs);
+  const [filteredJobs, setFilteredJobs] = useState([]);
 
   const [filterDropdownVisibility, setFilterDropdownVisibility] =
     useState(false);
@@ -114,24 +22,30 @@ const JobList = () => {
   const [totalPages, setTotalPages] = useState(0);
   const itemsPerPage = 10;
 
+  const [isLoading, setIsLoading] = useState(true);
+
   const [minSalary, setMinSalary] = useState("");
   const [maxSalary, setMaxSalary] = useState("");
 
   const handleMinSalaryChange = (e) => setMinSalary(e.target.value);
   const handleMaxSalaryChange = (e) => setMaxSalary(e.target.value);
 
-  useEffect(() => {
-    function fetchAllJobs() {
-      try {
-        const responce = fetchJobs(searchTerm, locationInput, selectedJobTypes, minSalary, maxSalary, currentPage, itemsPerPage)
+  const onLoad = async () => {
+    setIsLoading(true);
+     try {
+        const responce = await fetchJobs(searchTerm, locationInput, selectedJobTypes, minSalary, maxSalary, currentPage, itemsPerPage)
         setFilteredJobs(responce?.data?.jobs)
         setTotalPages(Math.ceil((responce?.data?.totalMentorsCount || 0) / itemsPerPage));
 
       } catch (error) {
         console.error(error)
+      } finally {
+        setIsLoading(false);
       }
     }
-    fetchAllJobs();
+
+  useEffect(() => {
+    onLoad();
   }, [])
 
   const handleSearch = () => {
@@ -168,7 +82,13 @@ const JobList = () => {
   }
 
 
-
+  if (isLoading) {
+    return (
+      <div className="d-flex h-100 w-100 justify-content-center align-items-center">
+        <Spinner />
+      </div>
+    );
+  }
 
   return (
     <div className="container my-3">
