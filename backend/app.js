@@ -26,7 +26,7 @@ app.use(
   cors({
     origin: "http://localhost:5173", // Frontend URL
     credentials: true,
-  }),
+  })
 );
 
 app.use(bodyParser.json());
@@ -44,7 +44,7 @@ app.use(
       dbRecordIdIsSessionId: true,
       dbRecordIdFunction: undefined,
     }),
-  }),
+  })
 );
 app.use(passport.authenticate("session"));
 
@@ -63,6 +63,7 @@ const chatRoutes = require("./routes/chatRoutes");
 app.use("/api/chat", chatRoutes);
 
 // Start server
+
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
