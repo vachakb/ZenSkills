@@ -3,7 +3,7 @@ const { google } = require("googleapis");
 const { googleClient } = require("./authController");
 
 exports.getAllAvailableSessions = async (req, res) => {
-  const { mentorId } = req.body;
+  const { mentorId } = req.params;
 
   try {
     const timeSlots = await prisma.TimeSlot.findMany({
@@ -15,11 +15,7 @@ exports.getAllAvailableSessions = async (req, res) => {
         SessionBooking: true,
       },
       where: {
-        mentor: {
-          User: {
-            id: mentorId,
-          },
-        },
+        mentor_id: mentorId,
       },
     });
 
@@ -42,6 +38,7 @@ exports.getSession = async (req, res) => {
           User: true,
         },
       },
+      SessionBooking: true,
     },
     where: {
       id: req.params.id,
@@ -49,7 +46,7 @@ exports.getSession = async (req, res) => {
   });
 
   session.timeSlots = await prisma.TimeSlot.findMany({
-    where: { mentor: { user_id: req.user.id } },
+    where: { mentor: { user_id: session.mentor.User.id } },
   });
 
   if (session) {
@@ -449,12 +446,10 @@ exports.updateBookingStatus = async (req, res) => {
       });
     } else if (status === "rescheduled") {
       if (!newStartTime || !newEndTime || !newDate) {
-        return res
-          .status(400)
-          .json({
-            error:
-              "newStartTime, newEndTime, and newDate are required for rescheduling",
-          });
+        return res.status(400).json({
+          error:
+            "newStartTime, newEndTime, and newDate are required for rescheduling",
+        });
       }
 
       // Reschedule the meeting

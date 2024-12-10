@@ -120,7 +120,7 @@ function MenteeExploring() {
     try {
       const resMentorProfile = await getMentorProfile(mentorId);
       setProfile({ ...resMentorProfile.data.profile, isMentor: true });
-      const resAvailableSessions = await getAllAvailableSessions();
+      const resAvailableSessions = await getAllAvailableSessions(mentorId);
 
       setSessions(resAvailableSessions.data.sessions);
 

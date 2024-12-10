@@ -31,16 +31,16 @@ import { axiosInstance } from "./commons";
  * @property {object} mentor
  */
 
-function getAllAvailableSessions() {
-  return axiosInstance.get("/session");
+function getAllAvailableSessions(userId) {
+  return axiosInstance.get(`/session/list/${userId}`);
 }
 
 function getSession(id) {
   return axiosInstance.get(`/session/${id}`);
 }
 
-function bookSession(sessionId) {
-  return axiosInstance.post(`/session/${sessionId}/book`);
+function bookSession(sessionId, body) {
+  return axiosInstance.post(`/session/${sessionId}/book`, body);
 }
 
 function createSession(sessionData) {

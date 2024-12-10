@@ -15,15 +15,15 @@ const {
 
 const router = express.Router();
 
-router.get("/", getAllAvailableSessions);
+router.get("/:id", getSession);
+
+router.get("/list/:mentorId", getAllAvailableSessions);
 
 router.post("/", createSession);
 
 router.post("/:sessionId/book", bookSession);
 
 router.get("/topics", getAllTopics);
-
-router.get("/:id", getSession);
 
 router.put("/:id", updateSession);
 
