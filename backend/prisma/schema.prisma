@@ -46,7 +46,7 @@ model mentee {
   company         String?           @db.VarChar(255)
   user_id         String            @unique
   User            User?             @relation(fields: [user_id], references: [id], onDelete: Cascade)
-  interests       tags[]
+  interests        tags[]           @relation("MenteeTags")
   education       MenteeEducation[]
   Review          Review[]          @relation(map: "review_mentee_fk")
 }
@@ -62,7 +62,7 @@ model mentor {
   mentor_job_title           String             @db.VarChar(50)
   user_id String @unique
   User             User?              @relation(fields: [user_id], references: [id], onDelete: Cascade)
-  expertise           tags[]
+  expertise                  tags[]             @relation("MentorTags")
   number_of_sessions         Int                @default(0)
   credit_score               Float              @default(75)    
   education                  MentorEducation[]
@@ -86,8 +86,8 @@ model tags {
   parent_tag_id   String?
   parent          tags?     @relation("TagHierarchy", fields: [parent_tag_id], references: [tag_id])
   children        tags[]    @relation("TagHierarchy")
-  mentees mentee[]
-  mentors mentor[]
+  mentees        mentee[]   @relation("MenteeTags")
+  mentors        mentor[]   @relation("MentorTags")
 }
 
 model tempuser {
