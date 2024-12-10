@@ -42,6 +42,7 @@ import BookSession from "./BookSession.jsx";
 import Error from "./Error.jsx";
 import Community from "./Community.jsx";
 import Question from "./Question.jsx";
+import BlankPage from "./blank.jsx";
 
 const mentor = {
   id: "id",
@@ -142,7 +143,7 @@ const router = createBrowserRouter([
     children: [
       {
         path: "/",
-        element: <Dashboard />,
+        element: <LandingPage />,
       },
       {
         path: "upcoming",
@@ -273,10 +274,7 @@ const router = createBrowserRouter([
         element: <Question />
       }
     ],
-  }, {
-    path: "landing-page",
-    element: <LandingPage />
-  }
+  },
 ]);
 
 createRoot(document.getElementById("root")).render(
