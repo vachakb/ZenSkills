@@ -19,6 +19,7 @@ const prisma = require("./models/prismaClient");
 const passport = require("passport");
 
 const workshopRoutes = require("./routes/workshopRoutes");
+const communityRoutes = require("./routes/communityRoutes");
 
 const app = express();
 
@@ -61,6 +62,7 @@ app.use("/api/meetings", meetingRoutes);
 require("express-ws")(app);
 const chatRoutes = require("./routes/chatRoutes");
 app.use("/api/chat", chatRoutes);
+app.use("/api/community", communityRoutes);
 
 // Start server
 const PORT = process.env.PORT || 5000;

@@ -36,6 +36,8 @@ model User {
   SessionBooking  SessionBooking[]
 
   @@unique(name: "account_id", [email, role])
+  Community CommunityQuestion[]
+  CommunityAnswer CommunityAnswer[]
 }
 
 
@@ -403,4 +405,25 @@ model SessionBooking {
   @@unique([session_id, user_id])
   @@index([session_id])
   @@index([user_id])
+}
+
+model CommunityQuestion {
+  id    String @id @default(uuid())
+  question  String
+  created_at    DateTime @default(now())
+  answers     Int
+  q_user_id     String
+  user        User @relation(fields: [q_user_id], references: [id]) 
+
+  CommunityAnswer CommunityAnswer[]
+}
+
+model CommunityAnswer {
+  id    String @id @default(uuid())
+  answer  String
+  created_at    DateTime @default(now())
+  communityQuestion_id     String
+  a_user_id     String
+  user        User @relation(fields: [a_user_id], references: [id]) 
+  community        CommunityQuestion @relation(fields: [communityQuestion_id], references: [id]) 
 }
