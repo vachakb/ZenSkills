@@ -43,6 +43,8 @@ import Error from "./Error.jsx";
 import Community from "./Community.jsx";
 import Question from "./Question.jsx";
 import BlankPage from "./blank.jsx";
+import AdminPage from "./Admin.jsx";
+
 
 const mentor = {
   id: "id",
@@ -144,6 +146,9 @@ const router = createBrowserRouter([
       {
         path: "/",
         element: <LandingPage />,
+      },{
+        path: "admin",
+        element: <AdminPage/>
       },
       {
         path: "upcoming",
@@ -274,7 +279,7 @@ const router = createBrowserRouter([
         element: <Question />
       }
     ],
-  },
+  }
 ]);
 
 createRoot(document.getElementById("root")).render(

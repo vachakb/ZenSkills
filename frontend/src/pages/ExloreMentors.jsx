@@ -62,7 +62,6 @@ export default function ExploreMentor({mentors_}) {
               return
           }
     }
-
       setSelectedTags([...selectedTags, tag]);
   }
 

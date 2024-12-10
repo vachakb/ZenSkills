@@ -100,7 +100,7 @@ const JobList = () => {
       applicants: "25+",
     },
   ];
-  
+
   const [searchTerm, setSearchTerm] = useState("");
   const [locationInput, setLocationInput] = useState("");
   const [filteredJobs, setFilteredJobs] = useState(jobs);
@@ -120,14 +120,14 @@ const JobList = () => {
   const handleMinSalaryChange = (e) => setMinSalary(e.target.value);
   const handleMaxSalaryChange = (e) => setMaxSalary(e.target.value);
 
-  useEffect(()=>{
-    function fetchAllJobs(){
-      try{
+  useEffect(() => {
+    function fetchAllJobs() {
+      try {
         const responce = fetchJobs(searchTerm, locationInput, selectedJobTypes, minSalary, maxSalary, currentPage, itemsPerPage)
         setFilteredJobs(responce?.data?.jobs)
-        setTotalPages(Math.ceil((responce?.data?.totalMentorsCount || 0)/ itemsPerPage));
-  
-      }catch(error){
+        setTotalPages(Math.ceil((responce?.data?.totalMentorsCount || 0) / itemsPerPage));
+
+      } catch (error) {
         console.error(error)
       }
     }
@@ -135,12 +135,12 @@ const JobList = () => {
   }, [])
 
   const handleSearch = () => {
-    try{
+    try {
       const responce = fetchJobs(searchTerm, locationInput, selectedJobTypes, minSalary, maxSalary, currentPage, itemsPerPage)
       setFilteredJobs(responce?.data?.jobs)
-      setTotalPages(Math.ceil((responce?.data?.totalMentorsCount || 0)/ itemsPerPage));
+      setTotalPages(Math.ceil((responce?.data?.totalMentorsCount || 0) / itemsPerPage));
 
-    }catch(error){
+    } catch (error) {
       console.error(error)
     }
   };
@@ -167,8 +167,8 @@ const JobList = () => {
     console.log(selectedJobTypes);
   }
 
-  
-  
+
+
 
   return (
     <div className="container my-3">
@@ -230,13 +230,13 @@ const JobList = () => {
               {selectedJobTypes.length +
                 (minSalary !== "" || maxSalary !== "") !== 0
                 && (
-                <span>
-                  (
-                  {selectedJobTypes.length +
-                    (minSalary !== "" || maxSalary !== "")}
-                  )
-                </span>
-              )}
+                  <span>
+                    (
+                    {selectedJobTypes.length +
+                      (minSalary !== "" || maxSalary !== "")}
+                    )
+                  </span>
+                )}
             </button>
           </div>
         </div>
@@ -315,11 +315,11 @@ const JobList = () => {
             {/* wrong salary input */}
             {(isNaN(Number(minSalary)) ||
               isNaN(Number(maxSalary)) ||
-              (minSalary!=="" && maxSalary!=="" && Number(minSalary) > Number(maxSalary))) && (
-              <div className="col-auto text-danger">
-                <span>Wrong Salary input</span>
-              </div>
-            )}
+              (minSalary !== "" && maxSalary !== "" && Number(minSalary) > Number(maxSalary))) && (
+                <div className="col-auto text-danger">
+                  <span>Wrong Salary input</span>
+                </div>
+              )}
           </div>
 
           {/* {allTags.map((tag) => {
@@ -342,10 +342,10 @@ const JobList = () => {
 
       {/* Job Cards */}
       <div className="row">
-        {filteredJobs.length > 0 ? (
+        {filteredJobs != null ? (
           filteredJobs.map((job) => (
             <div key={job.id} className="col-lg-4 col-md-6">
-              <JobCard {...job} key={job.id}/>
+              <JobCard {...job} key={job.id} />
             </div>
           ))
         ) : (
