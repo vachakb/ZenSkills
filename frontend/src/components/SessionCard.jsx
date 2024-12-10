@@ -3,7 +3,7 @@ import { Card, Button, Badge } from "react-bootstrap";
 import { DateTime } from "luxon";
 import { updateBookingStatus } from "../apis/session";
 
-const SessionCard = ({ session, profile }) => {
+const SessionCard = ({ session, profile, onAction }) => {
   const status = useMemo(() => {
     return session.status.charAt(0).toUpperCase() + session.status.slice(1);
   }, [session]);
@@ -29,6 +29,7 @@ const SessionCard = ({ session, profile }) => {
 
   const updateSessionStatus = (status) => {
     updateBookingStatus(session.id, status);
+    onAction();
   };
 
   const buttons = useMemo(() => {
