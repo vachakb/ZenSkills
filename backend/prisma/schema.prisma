@@ -391,6 +391,7 @@ enum BookingStatus {
   rejected
   rescheduled
   cancelled
+  completed
 }
 
 model SessionBooking {

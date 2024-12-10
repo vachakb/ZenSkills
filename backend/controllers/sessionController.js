@@ -694,15 +694,22 @@ exports.updateTimeSlots = async (req, res) => {
 exports.getAllUserSessions = async (req, res) => {
   const { status } = req.query;
 
+  const where = {
+    user_id: req.user.id,
+  };
+
+  if (status) {
+    where.status = {
+      in: status.split(","),
+    };
+  }
+
   const bookings = await prisma.SessionBooking.findMany({
     include: {
       session: true,
       user: true,
     },
-    where: {
-      user_id: req.user.id,
-      status,
-    },
+    where: where,
   });
 
   res.json({ bookings });
