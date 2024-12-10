@@ -1,7 +1,7 @@
 import { Outlet, useLocation } from "react-router-dom"; // Import only useLocation
 import Header from "../components/Header";
 import SideBar from "../components/SideBar";
-import { useLayoutEffect, useRef, useState } from "react";
+import { useLayoutEffect, useMemo, useRef, useState } from "react";
 import classNames from "classnames";
 import Dashboard from "./Dashboard";
 
@@ -16,7 +16,6 @@ const excludedRoutes = [
   { path: "/meeting" },
   { path: "/meeting/" },
   { path: "/meeting/:meetingId" },
-  // { path: "/" },
 ];
 
 function App() {
@@ -46,9 +45,13 @@ function App() {
   }, [location]);
 
   // Check if the current route matches any excluded route
-  const isExcluded = excludedRoutes.some((route) =>
-    location.pathname.match(route.path),
-  );
+  const isExcluded = useMemo(() => {
+    if (location.pathname === "/") {
+      return true;
+    }
+
+    return excludedRoutes.some((route) => location.pathname.match(route.path));
+  }, [location.pathname]);
 
   const [showSideBar, setShowSideBar] = useState(false);
 
