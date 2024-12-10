@@ -3,7 +3,7 @@ import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import { Dropdown, Button, Card } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
-import { getAllTopics } from "../apis/session";
+import { createSession, getAllTopics } from "../apis/session";
 
 const SessionForm = () => {
   const navigate = useNavigate();
@@ -63,8 +63,8 @@ const SessionForm = () => {
             selectedTopics: [],
           }}
           validationSchema={validationSchema}
-          onSubmit={(values) => {
-            navigate("/createsession_2", { state: values })
+          onSubmit={(data) => {
+            createSession(data).then(() => navigate("/user_profile"));
           }}
         >
           {({ setFieldValue }) => (
@@ -197,7 +197,7 @@ const SessionForm = () => {
 
               <div className="d-flex justify-content-between mt-4">
                 <Button className="ms-auto" variant="primary" type="submit">
-                  Next
+                  Save
                 </Button>
               </div>
             </Form>

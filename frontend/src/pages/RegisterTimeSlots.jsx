@@ -1,13 +1,12 @@
-import React from "react";
-import { Form, Button, Col, Row, Card, InputGroup } from "react-bootstrap";
-import { Formik, FieldArray } from "formik";
-import * as Yup from "yup";
-import { useLocation, useNavigate } from "react-router-dom";
-import { createSession } from "../apis/session";
+import { Col, Container, Row, Form, Button, Spinner, Card, InputGroup } from "react-bootstrap";
+import Authcard from "../components/Authcard";
+import { useNavigate } from "react-router-dom";
+import useProfile from "../hooks/useProfile";
+import { FieldArray, Formik } from "formik";
+import * as yup from "yup";
+import { createTimeSlots } from "../apis/session";
 
-
-
-const SessionForm1 = () => {
+function RegisterTimeSlots() {
   const navigate = useNavigate();
 
   const daysOfWeek = [
@@ -21,14 +20,14 @@ const SessionForm1 = () => {
   ];
 
   // Validation schema
-  const validationSchema = Yup.object({
-    availability: Yup.array().of(
-      Yup.object({
-        day: Yup.string().required(),
-        slots: Yup.array().of(
-          Yup.object({
-            start: Yup.string().required("Start time is required"),
-            end: Yup.string().required("End time is required"),
+  const validationSchema = yup.object({
+    availability: yup.array().of(
+      yup.object({
+        day: yup.string().required(),
+        slots: yup.array().of(
+          yup.object({
+            start: yup.string().required("Start time is required"),
+            end: yup.string().required("End time is required"),
           })
         ),
       })
@@ -45,29 +44,17 @@ const SessionForm1 = () => {
   };
 
   return (
-    <div className="session-form-container mx-2" style={{ border: '1px solid black', width: '97%' }}>
-      <Formik
-        initialValues={initialValues}
-        validationSchema={validationSchema}
-        onSubmit={(data) => {
-          createTimeSlots(data).then(() => navigate("/user_profile"));
-        }}
-      >
-        {({ values, handleSubmit, handleChange }) => (
-          <Form onSubmit={handleSubmit}>
+    <Container className="d-flex vh-100 p-0" fluid>
+      <Authcard />
+      <Col className="d-flex justify-content-center align-items-center">
+
+          <Row>
+                          <Formik validationSchema={validationSchema} initialValues={initialValues} onSubmit={(data) => {
+                              createTimeSlots(data).then(() => navigate("/mentor_welcome")).catch(err => console.error(err));
+                          }}>
+          {({ values, handleSubmit, handleChange }) => (
+                   <Form onSubmit={handleSubmit}>
             {/* Title and Card Header */}
-            <h2 className="form-title">Create new 1:1 session</h2>
-            <Card className="session-card mb-4">
-              <Card.Body>
-                <Card.Title>Tell us about your session</Card.Title>
-                <Card.Text>
-                  Names, duration, public/private
-                  <Button variant="link" className="edit-button">
-                    <i className="bi bi-pencil-fill"></i>
-                  </Button>
-                </Card.Text>
-              </Card.Body>
-            </Card>
 
             {/* Availability Section */}
             <div className="availability-section">
@@ -77,9 +64,11 @@ const SessionForm1 = () => {
               </p>
               <hr />
 
-              <FieldArray name="availability">
-                {({ push, remove }) =>
-                  values.availability.map((day, dayIndex) => (
+              <FieldArray as="div" name="availability">
+                {({ push, remove }) => (
+
+                     <div style={{ height: "500px", overflow: "auto"}}>
+                    {values.availability.map((day, dayIndex) => (
                     <div key={day.day} className="day-container mb-3 p-3" style={{ border: '1px solid grey' }}>
 
                       {/* Day toggle switch */}
@@ -177,8 +166,8 @@ const SessionForm1 = () => {
                     </div>
 
 
-                  ))
-                }
+                  ))}</div>
+                )}
 
               </FieldArray>
 
@@ -187,18 +176,16 @@ const SessionForm1 = () => {
 
             {/* Footer Buttons */}
             <div className="form-footer">
-              <Button type="button" variant="outline-primary" className="back-button" onClick={() => navigate("/createsession_1")}>
-                Back
-              </Button>
-              <Button type="submit" variant="primary" className="next-button">
-                Next
+              <Button type="submit" variant="primary" className="ms-auto next-button">
+                Continue
               </Button>
             </div>
           </Form>
         )}
-      </Formik>
-    </div>
+                          </Formik>
+          </Row>
+      </Col>
+    </Container>
   );
-};
-
-export default SessionForm1;
+}
+export default RegisterTimeSlots;
