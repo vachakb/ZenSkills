@@ -19,10 +19,10 @@ const CreateJobs = () => {
         company_name: Yup.string().required("Company name is required"),
         company_details: Yup.string().required("Company details are required"),
         job_type1: Yup.string()
-            .oneOf(["Full Time", "Part Time"], "Please select a valid option")
+            .oneOf(["FullTime", "PartTime"], "Please select a valid option")
             .required("This field is required"),
         job_type2: Yup.string()
-            .oneOf(["On site", "Remote"], "Please select a valid option")
+            .oneOf(["Onsite", "Remote"], "Please select a valid option")
             .required("This field is required"),
         job_type3: Yup.array()
             .of(Yup.string().oneOf(["Internship", "Government", "Freelance", "Contract"]))
@@ -58,16 +58,13 @@ const CreateJobs = () => {
                 onSubmit={async (values) => {
                     console.log(values);
                     try {
-                        const job_type = [
-                            values.job_type1,
-                            values.job_type2,
-                            ...values.job_type3,
-                        ];
-
                         const payload = {
                             ...values,
-                            job_type,
+                            work_schedule: values.job_type1,
+                            work_location: values.job_type2,
+                            employment_categories: values.job_type3,
                             deadline: values.deadline ? new Date(values.deadline).toISOString() : null,
+                            salary: values.salary.toString()
                         };
 
                         delete payload.job_type1;
@@ -174,7 +171,7 @@ const CreateJobs = () => {
                                     <Field
                                         type="radio"
                                         name="job_type1"
-                                        value="Full Time"
+                                        value="FullTime"
                                         className="form-check-input me-1"
                                     />
                                     Full Time
@@ -183,7 +180,7 @@ const CreateJobs = () => {
                                     <Field
                                         type="radio"
                                         name="job_type1"
-                                        value="Part Time"
+                                        value="PartTime"
                                         className="form-check-input me-1"
                                     />
                                     Part Time
@@ -201,7 +198,7 @@ const CreateJobs = () => {
                                     <Field
                                         type="radio"
                                         name="job_type2"
-                                        value="On site"
+                                        value="Onsite"
                                         className="form-check-input me-1"
                                     />
                                     On site

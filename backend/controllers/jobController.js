@@ -1,6 +1,8 @@
 const prisma = require("../models/prismaClient");
 const nodemailer = require("nodemailer");
-const { getJobApplicationEmailTemplate } = require("../misc/applyJobEmailTemplate");
+const {
+  getJobApplicationEmailTemplate,
+} = require("../misc/applyJobEmailTemplate");
 
 const getJobDetails = async (req, res) => {
   const { jobId } = req.params;
@@ -75,12 +77,24 @@ const getJobDetails = async (req, res) => {
 };
 
 const getJobs = async (req, res) => {
-  const { search, location, jobTypes, minSalary, maxSalary, page=1, limit=10} = req.query;
+  const {
+    search,
+    location,
+    jobTypes,
+    minSalary,
+    maxSalary,
+    page = 1,
+    limit = 10,
+  } = req.query;
 
   const filters = {
     ...(search && { title: { contains: search, mode: "insensitive" } }),
     ...(location && { location: { contains: location, mode: "insensitive" } }),
-    ...(jobTypes && { job_type: { in: Array.isArray(jobTypes) ? jobTypes : jobTypes.split(",") } }),
+    ...(jobTypes && {
+      job_type: {
+        in: Array.isArray(jobTypes) ? jobTypes : jobTypes.split(","),
+      },
+    }),
     ...(minSalary && { salary: { gte: minSalary } }),
     ...(maxSalary && { salary: { lte: maxSalary } }),
   };
@@ -117,9 +131,22 @@ const getJobs = async (req, res) => {
 
 const createJob = async (req, res) => {
   try {
-    const { title, description, company_name, company_details, location, job_type, qualifications, benefits, app_details, deadline, salary } = req.body;
-    const {userId}=req.user.id;
-    console.log(userId);
+    const {
+      title,
+      description,
+      company_name,
+      company_details,
+      location,
+      work_schedule,
+      work_location,
+      employment_categories,
+      qualifications,
+      benefits,
+      app_details,
+      deadline,
+      salary,
+    } = req.body;
+
     const newJob = await prisma.job.create({
       data: {
         title,
@@ -127,11 +154,17 @@ const createJob = async (req, res) => {
         company_name,
         company_details,
         location,
-        job_type,
+        work_schedule,
+        work_location,
+        employment_categories,
         qualifications,
         benefits,
         app_details,
-        posted_by:userId,
+        mentor: {
+          connect: {
+            user_id: req.user.id,
+          },
+        },
         deadline: new Date(deadline),
         salary,
       },
@@ -139,6 +172,7 @@ const createJob = async (req, res) => {
 
     res.status(201).json(newJob);
   } catch (error) {
+    console.error(error);
     res.status(500).json({ error: "Failed to create job" });
   }
 };
@@ -153,7 +187,7 @@ const updateJob = async (req, res) => {
     // const job = await prisma.job.findUnique({
     //   where: { id: jobId },
     //   include: {
-    //     mentor: true, 
+    //     mentor: true,
     //   },
     // });
 
@@ -165,7 +199,20 @@ const updateJob = async (req, res) => {
     //   return res.status(403).json({ error: "You do not have permission to update this job" });
     // }
 
-    const { title, description, company_name, company_details, location, job_type, qualifications, benefits, app_details, posted_by, deadline, salary } = req.body;
+    const {
+      title,
+      description,
+      company_name,
+      company_details,
+      location,
+      job_type,
+      qualifications,
+      benefits,
+      app_details,
+      posted_by,
+      deadline,
+      salary,
+    } = req.body;
 
     const updatedJob = await prisma.job.update({
       where: { id: jobId },
@@ -197,16 +244,15 @@ const deleteJob = async (req, res) => {
     const { jobId } = req.params;
 
     // TODO - Uncomment for authentication check
-    // const userId = req.user.id; 
+    // const userId = req.user.id;
 
     // const job = await prisma.job.findUnique({
     //   where: { id: jobId },
     //   include: {
-    //     mentor: true, 
+    //     mentor: true,
     //   },
     // });
 
-  
     // if (!job) {
     //   return res.status(404).json({ error: "Job not found" });
     // }
@@ -257,7 +303,9 @@ const applyJob = async (req, res) => {
     if (existingApplication) {
       const now = new Date();
       const lastAppliedDate = new Date(existingApplication.application_date);
-      const differenceInDays = Math.floor((now - lastAppliedDate) / (1000 * 60 * 60 * 24));
+      const differenceInDays = Math.floor(
+        (now - lastAppliedDate) / (1000 * 60 * 60 * 24),
+      );
 
       if (differenceInDays < 15) {
         return res.status(400).json({
@@ -265,7 +313,6 @@ const applyJob = async (req, res) => {
         });
       }
     }
-
 
     if (!job) {
       return res.status(404).json({ error: "Job not found" });
@@ -298,13 +345,17 @@ const applyJob = async (req, res) => {
     });
 
     const mailOptions = {
-  from: process.env.EMAIL_USER,
-  to: job.mentor.User.email,
-  subject: `🌟 New Job Application Received for ${job.title} on ZenSkills`,
-  html: getJobApplicationEmailTemplate(job.title, job.company, { name, email, phone_number, cover_letter, resume_url }),
-};
-
-    
+      from: process.env.EMAIL_USER,
+      to: job.mentor.User.email,
+      subject: `🌟 New Job Application Received for ${job.title} on ZenSkills`,
+      html: getJobApplicationEmailTemplate(job.title, job.company, {
+        name,
+        email,
+        phone_number,
+        cover_letter,
+        resume_url,
+      }),
+    };
 
     await transporter.sendMail(mailOptions);
     console.log("Email sent to mentor");
