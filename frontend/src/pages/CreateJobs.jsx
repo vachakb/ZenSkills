@@ -1,40 +1,41 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { Formik, Form, Field, ErrorMessage } from "formik";
+import Select from "../components/Select";
 import * as Yup from "yup";
-import { Dropdown, Button, Card } from "react-bootstrap";
-import { useLocation, useNavigate } from "react-router-dom";
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
-import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
-import { heIL } from "@mui/x-date-pickers/locales";
-import { MdHeight } from "react-icons/md";
+import { Button } from "react-bootstrap";
+import { useNavigate } from "react-router-dom";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
+import { createJob } from "../apis/job";
+import states from "../misc/states";
 
 const CreateJobs = () => {
+    const navigate = useNavigate();
+
     const validationSchema = Yup.object({
         title: Yup.string().required("Job title is required"),
         description: Yup.string().required("Job description is required"),
         company_name: Yup.string().required("Company name is required"),
         company_details: Yup.string().required("Company details are required"),
-        job_type1: Yup
-            .string()
-            .oneOf(["Full Time", "Part Time"], "This is a required field")
-            .required("This is a required field"),
-        job_type2: Yup
-            .string()
-            .oneOf(["On site", "Remote"], "This is a required field")
-            .required("This is a required field"),
+        job_type1: Yup.string()
+            .oneOf(["Full Time", "Part Time"], "Please select a valid option")
+            .required("This field is required"),
+        job_type2: Yup.string()
+            .oneOf(["On site", "Remote"], "Please select a valid option")
+            .required("This field is required"),
         job_type3: Yup.array()
             .of(Yup.string().oneOf(["Internship", "Government", "Freelance", "Contract"]))
-            .min(1, "Please select at least one job type")
-            .required("This is a required field"),
-
+            .min(1, "Please select at least one option")
+            .required("This field is required"),
+        location: Yup.string().required("Please select a location"),
         qualifications: Yup.string().required("Please enter qualifications"),
         benefits: Yup.string().required("Please enter benefits"),
         app_details: Yup.string().required("Please enter application details"),
         deadline: Yup.date().required("Please enter a deadline"),
         salary: Yup.number().required("Salary is required"),
     });
+
     return (
         <div style={{ maxWidth: "90%" }} className="border p-3 rounded mx-auto">
             <Formik
@@ -43,23 +44,51 @@ const CreateJobs = () => {
                     description: "",
                     company_name: "",
                     company_details: "",
+                    location: "",
                     job_type1: "",
                     job_type2: "",
-                    job_type3: "",
+                    job_type3: [],
                     qualifications: "",
                     benefits: "",
                     app_details: "",
-                    deadline: "",
+                    deadline: null,
                     salary: "",
-
                 }}
                 validationSchema={validationSchema}
+                onSubmit={async (values) => {
+                    console.log(values);
+                    try {
+                        const job_type = [
+                            values.job_type1,
+                            values.job_type2,
+                            ...values.job_type3,
+                        ];
+
+                        const payload = {
+                            ...values,
+                            job_type,
+                            deadline: values.deadline ? new Date(values.deadline).toISOString() : null,
+                        };
+
+                        delete payload.job_type1;
+                        delete payload.job_type2;
+                        delete payload.job_type3;
+
+                        console.log("Final Payload:", payload);
+
+                        await createJob(payload);
+                        navigate("/jobs");
+                    } catch (err) {
+                        console.error("Submission Error:", err);
+                    }
+                }}
             >
-                {({ setFieldValue }) => (
-                    <Form>
-                        {/* Title and Card Header */}
+                {({ handleSubmit, setFieldValue, values, errors, touched }) => (
+                    <Form noValidate onSubmit={handleSubmit}>
                         <h2 className="form-title">Create new job opening</h2>
-                        <div className="mb-3 mt-3">
+
+                        {/* Job Title */}
+                        <div className="mb-3">
                             <label htmlFor="title" className="form-label">
                                 Job title <span className="text-danger">*</span>
                             </label>
@@ -70,16 +99,13 @@ const CreateJobs = () => {
                                 className="form-control"
                                 placeholder="Enter job title here"
                             />
-                            <ErrorMessage
-                                name="title"
-                                component="div"
-                                className="text-danger"
-                            />
+                            <ErrorMessage name="title" component="div" className="text-danger" />
                         </div>
+
+                        {/* Job Description */}
                         <div className="mb-3">
                             <label htmlFor="description" className="form-label">
-                                Job description{" "}
-                                <span className="text-danger">*</span>
+                                Job description <span className="text-danger">*</span>
                             </label>
                             <Field
                                 as="textarea"
@@ -88,13 +114,24 @@ const CreateJobs = () => {
                                 className="form-control"
                                 placeholder="Type description here..."
                             />
-                            <ErrorMessage
-                                name="description"
-                                component="div"
-                                className="text-danger"
-                            />
+                            <ErrorMessage name="description" component="div" className="text-danger" />
                         </div>
-                        <div className="mb-3 mt-3">
+                        <div className="mb-3">
+                            <label htmlFor="company_details" className="form-label">
+                                Company Details <span className="text-danger">*</span>
+                            </label>
+                            <Field
+                                as="textarea"
+                                id="company_details"
+                                name="company_details"
+                                className="form-control"
+                                placeholder="Type company details here..."
+                            />
+                            <ErrorMessage name="company_details" component="div" className="text-danger" />
+                        </div>
+
+                        {/* Company Name */}
+                        <div className="mb-3">
                             <label htmlFor="company_name" className="form-label">
                                 Company name <span className="text-danger">*</span>
                             </label>
@@ -105,155 +142,119 @@ const CreateJobs = () => {
                                 className="form-control"
                                 placeholder="Enter company name here"
                             />
-                            <ErrorMessage
-                                name="company_name"
-                                component="div"
-                                className="text-danger"
-                            />
+                            <ErrorMessage name="company_name" component="div" className="text-danger" />
                         </div>
+
+                        {/* Location */}
                         <div className="mb-3">
-                            <label htmlFor="company_details" className="form-label">
-                                Company details{" "}
-                                <span className="text-danger">*</span>
+                            <label htmlFor="location" className="form-label">
+                                Location <span className="text-danger">*</span>
                             </label>
-                            <Field
-                                as="textarea"
-                                id="company_details"
-                                name="company_details"
-                                className="form-control"
-                                placeholder="Type company description here..."
-                            />
-                            <ErrorMessage
-                                name="company_details"
-                                component="div"
-                                className="text-danger"
-                            />
-                            <hr />
+                            <div className="mb-3">
+                                <label htmlFor="location" className="form-label">
+                                    Location <span className="text-danger">*</span>
+                                </label>
+                                <Select
+                                    name="location"
+                                    value={values.location}  // Ensure this is the correct prop for value
+                                    options={states}  // Ensure states is an array of { value, label }
+                                    placeholder="Select a location"
+                                    onChange={(option) => {
+                                        setFieldValue("location", option.value);  // Ensure you're passing the correct value
+                                        console.log("Selected Location:", option.value);  // Debugging
+                                    }}
+                                />
+                                <ErrorMessage name="location" component="div" className="text-danger" />
+                            </div>
+
+                            <ErrorMessage name="location" component="div" className="text-danger" />
                         </div>
+
+                        {/* Job Types */}
                         <div className="mb-3">
                             <label className="form-label">
                                 Job Type 1 <span className="text-danger">*</span>
                             </label>
-                            <div role="group" aria-labelledby="job_type1" className="form-check">
-                                <Field
-                                    type="radio"
-                                    name="job_type1"
-                                    value="Full Time"
-                                    id="job_type1_fulltime"
-                                    className="form-check-input"
-                                />
-                                <label htmlFor="job_type1_fulltime" className="form-check-label">
+                            <div>
+                                <label className="form-check-label me-3">
+                                    <Field
+                                        type="radio"
+                                        name="job_type1"
+                                        value="Full Time"
+                                        className="form-check-input me-1"
+                                    />
                                     Full Time
                                 </label>
-                            </div>
-                            <div className="form-check">
-                                <Field
-                                    type="radio"
-                                    name="job_type1"
-                                    value="Part Time"
-                                    id="job_type1_parttime"
-                                    className="form-check-input"
-                                />
-                                <label htmlFor="job_type1_parttime" className="form-check-label">
+                                <label className="form-check-label">
+                                    <Field
+                                        type="radio"
+                                        name="job_type1"
+                                        value="Part Time"
+                                        className="form-check-input me-1"
+                                    />
                                     Part Time
                                 </label>
-
                             </div>
-
                             <ErrorMessage name="job_type1" component="div" className="text-danger" />
-                            <hr />
                         </div>
 
                         <div className="mb-3">
                             <label className="form-label">
                                 Job Type 2 <span className="text-danger">*</span>
                             </label>
-                            <div role="group" aria-labelledby="job_type2" className="form-check">
-                                <Field
-                                    type="radio"
-                                    name="job_type2"
-                                    value="On site"
-                                    id="job_type2_onsite"
-                                    className="form-check-input"
-                                />
-                                <label htmlFor="job_type2_onsite" className="form-check-label">
+                            <div>
+                                <label className="form-check-label me-3">
+                                    <Field
+                                        type="radio"
+                                        name="job_type2"
+                                        value="On site"
+                                        className="form-check-input me-1"
+                                    />
                                     On site
                                 </label>
-                            </div>
-                            <div className="form-check">
-                                <Field
-                                    type="radio"
-                                    name="job_type2"
-                                    value="Remote"
-                                    id="job_type2_remote"
-                                    className="form-check-input"
-                                />
-                                <label htmlFor="job_type2_remote" className="form-check-label">
+                                <label className="form-check-label">
+                                    <Field
+                                        type="radio"
+                                        name="job_type2"
+                                        value="Remote"
+                                        className="form-check-input me-1"
+                                    />
                                     Remote
                                 </label>
                             </div>
                             <ErrorMessage name="job_type2" component="div" className="text-danger" />
-                            <hr />
                         </div>
+
                         <div className="mb-3">
                             <label className="form-label">
                                 Job Type 3 <span className="text-danger">*</span>
                             </label>
-                            <div className="form-check">
-                                <Field
-                                    type="checkbox"
-                                    name="job_type3"
-                                    value="Internship"
-                                    id="job_type3_internship"
-                                    className="form-check-input"
-                                />
-                                <label htmlFor="job_type3_internship" className="form-check-label">
-                                    Internship
-                                </label>
-                            </div>
-                            <div className="form-check">
-                                <Field
-                                    type="checkbox"
-                                    name="job_type3"
-                                    value="Government"
-                                    id="job_type3_government"
-                                    className="form-check-input"
-                                />
-                                <label htmlFor="job_type3_government" className="form-check-label">
-                                    Government
-                                </label>
-                            </div>
-                            <div className="form-check">
-                                <Field
-                                    type="checkbox"
-                                    name="job_type3"
-                                    value="Freelance"
-                                    id="job_type3_freelance"
-                                    className="form-check-input"
-                                />
-                                <label htmlFor="job_type3_freelance" className="form-check-label">
-                                    Freelance
-                                </label>
-                            </div>
-                            <div className="form-check">
-                                <Field
-                                    type="checkbox"
-                                    name="job_type3"
-                                    value="Contract"
-                                    id="job_type3_contract"
-                                    className="form-check-input"
-                                />
-                                <label htmlFor="job_type3_contract" className="form-check-label">
-                                    Contract
-                                </label>
+                            <div>
+                                {["Internship", "Government", "Freelance", "Contract"].map((type) => (
+                                    <label className="form-check-label me-3" key={type}>
+                                        <input
+                                            type="checkbox"
+                                            name="job_type3"
+                                            value={type}
+                                            className="form-check-input me-1"
+                                            checked={values.job_type3.includes(type)}
+                                            onChange={(e) => {
+                                                const { checked } = e.target;
+                                                const updatedArray = checked
+                                                    ? [...values.job_type3, type]
+                                                    : values.job_type3.filter((item) => item !== type);
+                                                setFieldValue("job_type3", updatedArray);
+                                            }}
+                                        />
+                                        {type}
+                                    </label>
+                                ))}
                             </div>
                             <ErrorMessage name="job_type3" component="div" className="text-danger" />
-                            <hr />
                         </div>
                         <div className="mb-3">
                             <label htmlFor="qualifications" className="form-label">
-                                Qualifications{" "}
-                                <span className="text-danger">*</span>
+                                Qualifications <span className="text-danger">*</span>
                             </label>
                             <Field
                                 as="textarea"
@@ -262,16 +263,11 @@ const CreateJobs = () => {
                                 className="form-control"
                                 placeholder="Enter qualifications"
                             />
-                            <ErrorMessage
-                                name="qualifications"
-                                component="div"
-                                className="text-danger"
-                            />
+                            <ErrorMessage name="qualifications" component="div" className="text-danger" />
                         </div>
                         <div className="mb-3">
                             <label htmlFor="benefits" className="form-label">
-                                Benefits{" "}
-                                <span className="text-danger">*</span>
+                                Benefits <span className="text-danger">*</span>
                             </label>
                             <Field
                                 as="textarea"
@@ -280,30 +276,22 @@ const CreateJobs = () => {
                                 className="form-control"
                                 placeholder="Enter benefits"
                             />
-                            <ErrorMessage
-                                name="benefits"
-                                component="div"
-                                className="text-danger"
-                            />
+                            <ErrorMessage name="benefits" component="div" className="text-danger" />
                         </div>
                         <div className="mb-3">
                             <label htmlFor="app_details" className="form-label">
-                                Application details{" "}
-                                <span className="text-danger">*</span>
+                                Application Details <span className="text-danger">*</span>
                             </label>
                             <Field
                                 as="textarea"
                                 id="app_details"
                                 name="app_details"
                                 className="form-control"
-                                placeholder="Specify the content that should be attached with the job application"
+                                placeholder="Enter application details"
                             />
-                            <ErrorMessage
-                                name="app_details"
-                                component="div"
-                                className="text-danger"
-                            />
+                            <ErrorMessage name="description" component="div" className="text-danger" />
                         </div>
+                        {/* Deadline */}
                         <LocalizationProvider dateAdapter={AdapterDayjs}>
                             <div className="mb-3">
                                 <label htmlFor="deadline" className="form-label">
@@ -324,7 +312,7 @@ const CreateJobs = () => {
                                                             id="deadline"
                                                             className="form-control"
                                                             placeholder="Select deadline"
-                                                            style={{ height: "20px" }}
+
                                                         />
                                                         {form.errors.deadline && form.touched.deadline && (
                                                             <div className="text-danger">{form.errors.deadline}</div>
@@ -338,46 +326,37 @@ const CreateJobs = () => {
                             </div>
                         </LocalizationProvider>
 
+
+                        {/* Salary */}
                         <div className="mb-3">
                             <label htmlFor="salary" className="form-label">
-                                Salary{" "}
-                                <span className="text-danger">*</span>
+                                Salary <span className="text-danger">*</span>
                             </label>
                             <Field
                                 type="number"
                                 id="salary"
                                 name="salary"
                                 className="form-control"
-                                placeholder="Enter salary (0 if unpaid work)"
+                                placeholder="Enter salary (0 if unpaid)"
                             />
-                            <ErrorMessage
-                                name="salary"
-                                component="div"
-                                className="text-danger"
-                            />
+                            <ErrorMessage name="salary" component="div" className="text-danger" />
                         </div>
 
+                        {/* Submit Button */}
                         <div className="d-flex justify-content-between mt-4">
                             <Button className="ms-auto" variant="primary" type="submit">
-                                Next
+                                Submit
                             </Button>
                         </div>
+
+                        {/* Debugging */}
+                        <pre>{JSON.stringify(values, null, 2)}</pre>
+                        <pre>{JSON.stringify(errors, null, 2)}</pre>
                     </Form>
                 )}
             </Formik>
-        </div >
+        </div>
+    );
+};
 
-
-
-
-
-
-        /*<LocalizationProvider dateAdapter={AdapterDayjs}>
-<DemoContainer components={['DateTimePicker']}>
-<DateTimePicker label="Basic date time picker" />
-</DemoContainer>
-</LocalizationProvider>*/
-
-    )
-}
 export default CreateJobs;

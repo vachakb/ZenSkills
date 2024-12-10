@@ -117,8 +117,9 @@ const getJobs = async (req, res) => {
 
 const createJob = async (req, res) => {
   try {
-    const { title, description, company_name, company_details, location, job_type, qualifications, benefits, app_details, posted_by, deadline, salary } = req.body;
-
+    const { title, description, company_name, company_details, location, job_type, qualifications, benefits, app_details, deadline, salary } = req.body;
+    const {userId}=req.user.id;
+    console.log(userId);
     const newJob = await prisma.job.create({
       data: {
         title,
@@ -130,7 +131,7 @@ const createJob = async (req, res) => {
         qualifications,
         benefits,
         app_details,
-        posted_by,
+        posted_by:userId,
         deadline: new Date(deadline),
         salary,
       },

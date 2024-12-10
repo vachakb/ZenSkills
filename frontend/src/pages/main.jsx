@@ -42,7 +42,7 @@ import BookSession from "./BookSession.jsx";
 import Error from "./Error.jsx";
 import Community from "./Community.jsx";
 import Question from "./Question.jsx";
-
+import BlankPage from "./blank.jsx";
 const mentor = {
   id: "id",
   name: "mentor",
