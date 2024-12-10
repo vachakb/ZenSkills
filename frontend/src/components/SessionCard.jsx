@@ -35,7 +35,7 @@ const SessionCard = ({ session }) => {
             {session.session.description}
           </Card.Text>
           <Card.Text>
-            With <b>{session.user.name}</b>
+            With <b>{session.session.mentor.User.name}</b>
           </Card.Text>
         </div>
 
