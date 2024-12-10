@@ -5,6 +5,7 @@ import demoMentorImage from "../assets/mentorImage.png";
 import { GiRoundStar } from "react-icons/gi";
 import { FieldArray } from "formik";
 import { getAllTags } from "../apis/user";
+import { editProfile } from "../apis/mentees";
 
 const ProfileCard = ({ profile, isCurrentUser = false, isEditing = false, formikProps = undefined }) => {
   const handleShareClick = () => {
@@ -30,6 +31,20 @@ const ProfileCard = ({ profile, isCurrentUser = false, isEditing = false, formik
       getAllTags()
         .then((res) => setTags(res.data.tags))
         .catch((err) => console.error(err));
+    }
+  };
+  const handleSubmit = async () => {
+    const menteeId = profile.id;
+
+    try {
+      // Assuming formikProps contains values
+
+      const response = await editProfile(menteeId, formikProps.values);
+      alert("Profile updated successfully!"); // Show success message
+      console.log("Edit Profile Response:", response); // For debugging
+    } catch (error) {
+      console.error("Error updating profile:", error);
+      alert("Failed to update profile. Please try again."); // Show error message
     }
   };
 
@@ -240,7 +255,7 @@ const ProfileCard = ({ profile, isCurrentUser = false, isEditing = false, formik
           </Card.Body>
           {isEditing && (
             <div className="d-flex justify-content-end mt-3">
-              <Button variant="success" type="submit">
+              <Button variant="success" type="submit" onClick={handleSubmit}>
                 Save
               </Button>
             </div>

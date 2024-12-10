@@ -42,7 +42,7 @@ import BookSession from "./BookSession.jsx";
 import Error from "./Error.jsx";
 import Community from "./Community.jsx";
 import Question from "./Question.jsx";
-import BlankPage from "./blank.jsx";
+
 
 
 const mentor = {
@@ -260,10 +260,7 @@ const router = createBrowserRouter([
         path: "create_workshop",
         element: <CreateWorkshop />
       },
-      {
-        path: "blank",
-        element: <BlankPage />
-      },
+
       {
         path: "book_session/:availableSessionId",
         element: <BookSession />
