@@ -31,20 +31,24 @@ import { axiosInstance } from "./commons";
  * @property {object} mentor
  */
 
-function getAllAvailableSessions() {
-  return axiosInstance.get("/session");
+function getAllAvailableSessions(userId) {
+  return axiosInstance.get(`/session/list/${userId}`);
 }
 
 function getSession(id) {
   return axiosInstance.get(`/session/${id}`);
 }
 
-function bookSession(sessionId) {
-  return axiosInstance.post(`/session/${sessionId}/book`);
+function bookSession(sessionId, body) {
+  return axiosInstance.post(`/session/${sessionId}/book`, body);
 }
 
 function createSession(sessionData) {
   return axiosInstance.post("/session", sessionData);
+}
+
+function createTimeSlots(sessionData) {
+  return axiosInstance.post("/session/time-slots", sessionData);
 }
 
 function getAllTopics() {
@@ -52,9 +56,7 @@ function getAllTopics() {
 }
 function deleteSession(sessionId) {
   return axiosInstance.delete(`/session/${sessionId}`);
-  
 }
-
 
 function updateBookingStatus(bookingId, status) {
   return axiosInstance.put(`/session/${bookingId}/status`, { status });
@@ -65,6 +67,7 @@ export {
   getSession,
   bookSession,
   createSession,
+  createTimeSlots,
   getAllTopics,
   deleteSession,
   updateBookingStatus,
