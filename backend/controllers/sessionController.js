@@ -184,7 +184,6 @@ exports.createSession = async (req, res) => {
 
 exports.bookSession = async (req, res) => {
   const { bookingId } = req.params;
-  const userId = req.user.id;
 
   try {
     await prisma.SessionBooking.update({
@@ -194,7 +193,7 @@ exports.bookSession = async (req, res) => {
       data: {
         user: {
           connect: {
-            id: userId,
+            id: req.user.id,
           },
         },
       },
