@@ -43,6 +43,7 @@ import Error from "./Error.jsx";
 import Community from "./Community.jsx";
 import Question from "./Question.jsx";
 import BlankPage from "./blank.jsx";
+import RegisterTimeSlots from "./RegisterTimeSlots.jsx";
 
 const mentor = {
   id: "id",
@@ -170,6 +171,10 @@ const router = createBrowserRouter([
         element: <RegisterBio />,
       },
       {
+        path: "register/4",
+        element: <RegisterTimeSlots />,
+      },
+      {
         path: "mentee_welcome",
         element: <MenteeWelcome mentors_={mentors} events_={events} />,
       },
@@ -260,10 +265,6 @@ const router = createBrowserRouter([
         element: <CreateWorkshop />
       },
       {
-        path: "blank",
-        element: <BlankPage />
-      },
-      {
         path: "book_session/:availableSessionId",
         element: <BookSession />
       }, {
@@ -278,8 +279,9 @@ const router = createBrowserRouter([
 ]);
 
 createRoot(document.getElementById("root")).render(
-  <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}
-  >
-    <RouterProvider router={router} />
-  </GoogleOAuthProvider>
+  <StrictMode>
+    <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}>
+      <RouterProvider router={router} />
+    </GoogleOAuthProvider>
+  </StrictMode>
 );

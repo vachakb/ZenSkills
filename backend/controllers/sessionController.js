@@ -6,22 +6,28 @@ exports.getAllAvailableSessions = async (req, res) => {
   const { mentorId } = req.body;
 
   try {
+    const timeSlots = await prisma.TimeSlot.findMany({
+      where: { mentor_id: mentorId },
+    });
+
     const sessions = await prisma.MentorSession.findMany({
+      include: {
+        SessionBooking: true,
+      },
       where: {
         mentor: {
           User: {
             id: mentorId,
           },
         },
-        timeSlots: {
-          some: {
-            mentee: null,
-          },
-        },
       },
     });
 
-    return res.json({ sessions });
+    return res.json({
+      sessions: sessions.filter(
+        (session) => session.SessionBooking.length < timeSlots.length,
+      ),
+    });
   } catch (err) {
     console.error(err);
     return res.sendStatus(500);
@@ -31,11 +37,6 @@ exports.getAllAvailableSessions = async (req, res) => {
 exports.getSession = async (req, res) => {
   const session = await prisma.MentorSession.findUnique({
     include: {
-      timeSlots: {
-        where: {
-          mentee: null,
-        },
-      },
       mentor: {
         include: {
           User: true,
@@ -45,6 +46,10 @@ exports.getSession = async (req, res) => {
     where: {
       id: req.params.id,
     },
+  });
+
+  session.timeSlots = await prisma.TimeSlot.findMany({
+    where: { mentor: { user_id: req.user.id } },
   });
 
   if (session) {
@@ -160,7 +165,9 @@ exports.bookSession = async (req, res) => {
     });
 
     if (existingBooking) {
-      return res.status(400).json({ error: "User has already booked this session" });
+      return res
+        .status(400)
+        .json({ error: "User has already booked this session" });
     }
 
     // Fetch user details from the database
@@ -301,21 +308,14 @@ exports.deleteSession = async (req, res) => {
 };
 
 exports.createTimeSlots = async (req, res) => {
-  const { sessionId } = req.params;
   const { availability } = req.body;
 
   try {
-    // Check if the session exists
-    const session = await prisma.MentorSession.findUnique({
-      where: { id: sessionId },
-      include: {
-        mentor: true,
-      }
+    const mentor = await prisma.mentor.findUnique({
+      where: {
+        user_id: req.user.id,
+      },
     });
-
-    if (!session) {
-      return res.status(404).json({ error: "Session not found" });
-    }
 
     const timeSlots = [];
 
@@ -329,7 +329,7 @@ exports.createTimeSlots = async (req, res) => {
           day: timeSlot.day,
           from: slot.start,
           to: slot.end,
-          mentor_id: session.mentor_id,
+          mentor_id: mentor.id,
         });
       }
     }
@@ -373,15 +373,23 @@ exports.updateBookingStatus = async (req, res) => {
 
     let updatedBooking;
 
-    if (status === 'accepted') {
+    if (status === "accepted") {
       // Convert start_time and end_time to DateTime objects
       const startTime = new Date(booking.start_time);
       const endTime = new Date(booking.end_time);
       const bookingDate = new Date(booking.date);
 
       // Ensure the event is added on the specified date
-      startTime.setFullYear(bookingDate.getFullYear(), bookingDate.getMonth(), bookingDate.getDate());
-      endTime.setFullYear(bookingDate.getFullYear(), bookingDate.getMonth(), bookingDate.getDate());
+      startTime.setFullYear(
+        bookingDate.getFullYear(),
+        bookingDate.getMonth(),
+        bookingDate.getDate(),
+      );
+      endTime.setFullYear(
+        bookingDate.getFullYear(),
+        bookingDate.getMonth(),
+        bookingDate.getDate(),
+      );
 
       // Add event to Google Calendar for both user and mentor
       const event = {
@@ -402,13 +410,14 @@ exports.updateBookingStatus = async (req, res) => {
       };
 
       // Add event to mentor's Google Calendar
-      googleClient.setCredentials({ refresh_token: booking.session.mentor.User.googleRefreshToken });
-      const calendar = google.calendar({ version: 'v3', auth: googleClient });
+      googleClient.setCredentials({
+        refresh_token: booking.session.mentor.User.googleRefreshToken,
+      });
+      const calendar = google.calendar({ version: "v3", auth: googleClient });
       const mentorEvent = await calendar.events.insert({
-        calendarId: 'primary',
+        calendarId: "primary",
         resource: event,
       });
-      
 
       // Store event IDs for future reference
       updatedBooking = await prisma.SessionBooking.update({
@@ -418,23 +427,25 @@ exports.updateBookingStatus = async (req, res) => {
           event_id: mentorEvent.data.id,
         },
       });
-    } else if (status === 'rejected') {
+    } else if (status === "rejected") {
       updatedBooking = await prisma.SessionBooking.update({
         where: { id: bookingId },
         data: { status },
-      })
-    } else if(status === 'cancelled' && booking.status === 'accepted'){
+      });
+    } else if (status === "cancelled" && booking.status === "accepted") {
       // Delete event from mentor's Google Calendar
-      googleClient.setCredentials({ refresh_token: booking.session.mentor.User.googleRefreshToken });
-      const calendar = google.calendar({ version: 'v3', auth: googleClient });
+      googleClient.setCredentials({
+        refresh_token: booking.session.mentor.User.googleRefreshToken,
+      });
+      const calendar = google.calendar({ version: "v3", auth: googleClient });
       await calendar.events.delete({
-        calendarId: 'primary',
+        calendarId: "primary",
         eventId: booking.event_id,
       });
       updatedBooking = await prisma.SessionBooking.update({
         where: { id: bookingId },
         data: { status },
-      })
+      });
     }
     res.status(200).json(updatedBooking);
   } catch (error) {
@@ -465,14 +476,15 @@ exports.getAvailableTimeSlots = async (req, res) => {
     }
 
     // Fetch the mentor's time slots
-    const dayOfWeek = new Date(date).toLocaleString('en-US', { weekday: 'long' }).toUpperCase();
+    const dayOfWeek = new Date(date)
+      .toLocaleString("en-US", { weekday: "long" })
+      .toUpperCase();
     // const dayOfWeek = "MONDAY";
     console.log(`Fetching time slots for day: ${dayOfWeek}`);
     const timeSlots = await prisma.TimeSlot.findMany({
       where: { mentor_id: session.mentor_id, day: dayOfWeek },
     });
     console.log(`Time slots found: ${JSON.stringify(timeSlots)}`);
-
 
     const availableTimeSlots = [];
 
@@ -488,25 +500,29 @@ exports.getAvailableTimeSlots = async (req, res) => {
         const slotEnd = new Date(currentTime.getTime() + duration);
 
         // Check for conflicts in the mentor's Google Calendar
-        googleClient.setCredentials({ refresh_token: session.mentor.User.googleRefreshToken });
-        const calendar = google.calendar({ version: 'v3', auth: googleClient });
+        googleClient.setCredentials({
+          refresh_token: session.mentor.User.googleRefreshToken,
+        });
+        const calendar = google.calendar({ version: "v3", auth: googleClient });
         const events = await calendar.events.list({
-          calendarId: 'primary',
+          calendarId: "primary",
           timeMin: slotStart.toISOString(),
           timeMax: slotEnd.toISOString(),
           singleEvents: true,
-          orderBy: 'startTime',
-          timeZone: 'Asia/Kolkata',
+          orderBy: "startTime",
+          timeZone: "Asia/Kolkata",
         });
-        console.log(`Checking events from ${slotStart.toISOString()} to ${slotEnd.toISOString()}`);
+        console.log(
+          `Checking events from ${slotStart.toISOString()} to ${slotEnd.toISOString()}`,
+        );
         console.log(`Events found: ${JSON.stringify(events.data.items)}`);
 
         if (events.data.items.length === 0) {
           availableTimeSlots.push({
             day: timeSlot.day,
             date: date,
-            from: slotStart.toISOString().split('T')[1].substring(0, 5),
-            to: slotEnd.toISOString().split('T')[1].substring(0, 5),
+            from: slotStart.toISOString().split("T")[1].substring(0, 5),
+            to: slotEnd.toISOString().split("T")[1].substring(0, 5),
           });
         }
         currentTime = new Date(currentTime.getTime() + duration);
@@ -547,7 +563,7 @@ exports.updateTimeSlots = async (req, res) => {
 
     // Create a set of existing time slots for easy lookup
     const existingTimeSlotsSet = new Set(
-      existingTimeSlots.map((ts) => `${ts.day}-${ts.from}-${ts.to}`)
+      existingTimeSlots.map((ts) => `${ts.day}-${ts.from}-${ts.to}`),
     );
 
     // Identify time slots to create and delete
@@ -574,8 +590,8 @@ exports.updateTimeSlots = async (req, res) => {
           (slot) =>
             timeSlot.day === existingSlot.day &&
             slot.start === existingSlot.from &&
-            slot.end === existingSlot.to
-        )
+            slot.end === existingSlot.to,
+        ),
       );
       if (!isSlotInAvailability) {
         timeSlotsToDelete.push(existingSlot.id);

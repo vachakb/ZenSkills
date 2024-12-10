@@ -70,13 +70,9 @@ function RegisterBio() {
                 })
                   .then(() => {
                     if (!isMentor) {
-                      navigate("/mentee_welcome", {
-                        state: { ...prevForm, ...data },
-                      });
+                      navigate("/mentee_welcome");
                     } else {
-                      navigate("/mentor_welcome", {
-                        state: { ...prevForm, ...data },
-                      });
+                      navigate("/register/4");
                     }
                   })
                   .catch((err) => {

@@ -47,14 +47,16 @@ function createSession(sessionData) {
   return axiosInstance.post("/session", sessionData);
 }
 
+function createTimeSlots(sessionData) {
+  return axiosInstance.post("/session/time-slots", sessionData);
+}
+
 function getAllTopics() {
   return axiosInstance.get("/session/topics");
 }
 function deleteSession(sessionId) {
   return axiosInstance.delete(`/session/${sessionId}`);
-  
 }
-
 
 function updateBookingStatus(bookingId, status) {
   return axiosInstance.put(`/session/${bookingId}/status`, { status });
@@ -65,6 +67,7 @@ export {
   getSession,
   bookSession,
   createSession,
+  createTimeSlots,
   getAllTopics,
   deleteSession,
   updateBookingStatus,

@@ -10,8 +10,6 @@ import { createSession } from "../apis/session";
 const SessionForm1 = () => {
   const navigate = useNavigate();
 
-  const prevForm = useLocation().state;
-
   const daysOfWeek = [
     "SUNDAY",
     "MONDAY",
@@ -51,8 +49,8 @@ const SessionForm1 = () => {
       <Formik
         initialValues={initialValues}
         validationSchema={validationSchema}
-        onSubmit={(values) => {
-          createSession({ ...values, ...prevForm }).then(() => navigate("/user_profile"));
+        onSubmit={(data) => {
+          createTimeSlots(data).then(() => navigate("/user_profile"));
         }}
       >
         {({ values, handleSubmit, handleChange }) => (

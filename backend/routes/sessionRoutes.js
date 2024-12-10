@@ -29,12 +29,11 @@ router.put("/:id", updateSession);
 
 router.delete("/:id", deleteSession);
 
-
 // Endpoint to update booking status
 router.put("/:bookingId/status", updateBookingStatus);
 
 // Endpoint to create time slots
-router.post("/:sessionId/time-slots", createTimeSlots);
+router.post("/time-slots", createTimeSlots);
 
 // Endpoint to get available time slots
 router.get("/:sessionId/available-timeslots", getAvailableTimeSlots);
