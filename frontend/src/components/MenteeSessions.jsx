@@ -5,8 +5,10 @@ import classNames from "classnames";
 import { deleteSession } from '../apis/session';
 import { useState } from 'react';
 import { useEffect } from 'react';
+import useProfile from '../hooks/useProfile';
 
-const MenteeSessions = ({ sessions }) => {  // Destructuring sessions here
+const MenteeSessions = ({ sessions }) => {
+  const profile = useProfile(); // Destructuring sessions here
   // To check if sessions are coming correctly
 
   const handleJoin = (sessionId) => {
@@ -38,6 +40,7 @@ const MenteeSessions = ({ sessions }) => {  // Destructuring sessions here
       setIsDeleted(false);
     }
   }, [isDeleted]);
+  console.log(profile);
 
   return (
     <Card style={{ borderRadius: "10px" }}>
@@ -50,19 +53,18 @@ const MenteeSessions = ({ sessions }) => {  // Destructuring sessions here
         <Card.Title className='mb-0'>
           <div className='d-flex my-0' style={{ alignItems: "center" }}>
             <h5>Available sessions</h5>
+
             <Button
               variant='primary'
               size='4'
               className="ms-auto my-auto"
-              style={{
-
-                borderRadius: "10px",
-              }}
+              style={{ borderRadius: "10px" }}
               onClick={() => navigate("/createsession_1")}
-
             >
               Create
             </Button>
+
+
           </div>
 
 

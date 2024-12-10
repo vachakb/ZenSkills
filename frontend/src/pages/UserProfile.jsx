@@ -141,7 +141,7 @@ function UserProfile() {
               <div className="d-flex flex-column" style={{ gap: "30px", marginTop: "30px" }}>
                 <Statistics />
 
-                <MenteeSessions sessions={sessions} /> {/* Display the fetched sessions */}
+                {profile.isMentor && <MenteeSessions sessions={sessions} />}{/* Display the fetched sessions */}
                 <Achievements />
               </div>
             </div>
