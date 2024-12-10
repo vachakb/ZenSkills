@@ -14,7 +14,6 @@ import { uploadImage } from "../apis/commons";
 
 const CreateWorkshop = () => {
     const navigate = useNavigate();
-
     const validationSchema = Yup.object({
         title: Yup.string().required("Job title is required"),
         description: Yup.string().required("Job description is required"),

@@ -46,7 +46,7 @@ function SideBar(props) {
 
         {/* Explore link - Conditional for mentees */}
         <Nav.Link
-          href={"/explore"}
+          href="/explore"
           className="d-flex flex-column align-items-center mb-2"
           style={{ color: "white", fontSize: "10px" }}
         >

@@ -3,7 +3,7 @@ import { axiosInstance } from "./commons";
 /**
  * @typedef {object} TimeSlot
  * @property {string} id
- * @property {("SUNDAYS"|"MONDAYS"|"TUESDAYS"|"WEDNESDAYS"|"THURSDAYS"|"FRIDAYS"|"SATURDAYS")} day
+ * @property {("SUNDAYS"|"MONDAY"|"TUESDAY"|"WEDNESDAY"|"THURSDAY"|"FRIDAY"|"SATURDAY")} day
  * @property {string} from
  * @property {string} to
  * @property {string} session_id
@@ -39,8 +39,8 @@ function getSession(id) {
   return axiosInstance.get(`/session/${id}`);
 }
 
-function bookSession(timeSlotId) {
-  return axiosInstance.post(`/session/${timeSlotId}`);
+function bookSession(sessionId) {
+  return axiosInstance.post(`/session/${sessionId}/book`);
 }
 
 function createSession(sessionData) {
@@ -50,6 +50,15 @@ function createSession(sessionData) {
 function getAllTopics() {
   return axiosInstance.get("/session/topics");
 }
+function deleteSession(sessionId) {
+  return axiosInstance.delete(`/session/${sessionId}`);
+  
+}
+
+
+function updateBookingStatus(bookingId, status) {
+  return axiosInstance.put(`/session/${bookingId}/status`, { status });
+}
 
 export {
   getAllAvailableSessions,
@@ -57,4 +66,6 @@ export {
   bookSession,
   createSession,
   getAllTopics,
+  deleteSession,
+  updateBookingStatus,
 };

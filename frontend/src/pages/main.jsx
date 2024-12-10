@@ -259,14 +259,18 @@ const router = createBrowserRouter([
         element: <CreateWorkshop />
       },
       {
+        path: "blank",
+        element: <BlankPage />
+      },
+      {
         path: "book_session/:availableSessionId",
         element: <BookSession />
-      },{
+      }, {
         path: "community",
-        element: <Community/>
-      },{
+        element: <Community />
+      }, {
         path: "community/:questionId",
-        element: <Question/>
+        element: <Question />
       }
     ],
   }, {

@@ -13,13 +13,13 @@ const SessionForm1 = () => {
   const prevForm = useLocation().state;
 
   const daysOfWeek = [
-    "SUNDAYS",
-    "MONDAYS",
-    "TUESDAYS",
-    "WEDNESDAYS",
-    "THURSDAYS",
-    "FRIDAYS",
-    "SATURDAYS",
+    "SUNDAY",
+    "MONDAY",
+    "TUESDAY",
+    "WEDNESDAY",
+    "THURSDAY",
+    "FRIDAY",
+    "SATURDAY",
   ];
 
   // Validation schema
@@ -41,18 +41,18 @@ const SessionForm1 = () => {
   const initialValues = {
     availability: daysOfWeek.map((day) => ({
       day,
-      enabled: day === "SUNDAYS", // Default to Sunday
-      slots: day === "SUNDAYS" ? [{ start: "09:00", end: "17:00" }] : [],
+      enabled: day === "SUNDAY", // Default to Sunday
+      slots: day === "SUNDAY" ? [{ start: "09:00", end: "17:00" }] : [],
     })),
   };
 
   return (
-    <div className="session-form-container mx-2" style={{border:'1px solid black', width:'97%'}}>
+    <div className="session-form-container mx-2" style={{ border: '1px solid black', width: '97%' }}>
       <Formik
         initialValues={initialValues}
         validationSchema={validationSchema}
         onSubmit={(values) => {
-          createSession({ ...values, ...prevForm }).then(() => navigate("/mentor_welcome"));
+          createSession({ ...values, ...prevForm }).then(() => navigate("/user_profile"));
         }}
       >
         {({ values, handleSubmit, handleChange }) => (
@@ -77,43 +77,43 @@ const SessionForm1 = () => {
               <p className="section-description">
                 Define your availability for this session. You will receive bookings in your local timezone.
               </p>
-              <hr/>
+              <hr />
 
               <FieldArray name="availability">
                 {({ push, remove }) =>
                   values.availability.map((day, dayIndex) => (
-                    <div key={day.day} className="day-container mb-3 p-3" style={{border:'1px solid grey'}}>
-                        
+                    <div key={day.day} className="day-container mb-3 p-3" style={{ border: '1px solid grey' }}>
+
                       {/* Day toggle switch */}
                       <Form.Check
-  type="switch"
-  id={`availability-${day.day}`}
-  label={day.day}
-  checked={day.enabled}
-  onChange={() => {
-    // Toggle the "enabled" state for the current day
-    const updatedAvailability = [...values.availability];
-    updatedAvailability[dayIndex].enabled = !day.enabled;
+                        type="switch"
+                        id={`availability-${day.day}`}
+                        label={day.day}
+                        checked={day.enabled}
+                        onChange={() => {
+                          // Toggle the "enabled" state for the current day
+                          const updatedAvailability = [...values.availability];
+                          updatedAvailability[dayIndex].enabled = !day.enabled;
 
-    // If enabling, initialize slots with a default value
-    if (updatedAvailability[dayIndex].enabled) {
-      if (updatedAvailability[dayIndex].slots.length === 0) {
-        updatedAvailability[dayIndex].slots = [{ start: "", end: "" }];
-      }
-    } else {
-      // If disabling, clear the slots
-      updatedAvailability[dayIndex].slots = [];
-    }
+                          // If enabling, initialize slots with a default value
+                          if (updatedAvailability[dayIndex].enabled) {
+                            if (updatedAvailability[dayIndex].slots.length === 0) {
+                              updatedAvailability[dayIndex].slots = [{ start: "", end: "" }];
+                            }
+                          } else {
+                            // If disabling, clear the slots
+                            updatedAvailability[dayIndex].slots = [];
+                          }
 
-    // Update the values directly
-    handleChange({
-      target: {
-        name: "availability",
-        value: updatedAvailability,
-      },
-    });
-  }}
-/>
+                          // Update the values directly
+                          handleChange({
+                            target: {
+                              name: "availability",
+                              value: updatedAvailability,
+                            },
+                          });
+                        }}
+                      />
 
 
                       {/* Time Slots */}
@@ -134,11 +134,11 @@ const SessionForm1 = () => {
                                         value={slot.start}
                                         onChange={handleChange}
                                       />
-                                      
+
                                     </InputGroup>
-                                    
+
                                   </Col>
-                                 
+
                                   <Col md={5}>
                                     <InputGroup>
                                       <Form.Control
@@ -148,9 +148,9 @@ const SessionForm1 = () => {
                                         onChange={handleChange}
                                       />
                                     </InputGroup>
-                                    
+
                                   </Col>
-                                
+
                                   <Col md={2}>
                                     <Button
                                       variant="danger"
@@ -173,19 +173,19 @@ const SessionForm1 = () => {
                             </>
                           )}
                         </FieldArray>
-                        
+
                       )}
-                    
+
                     </div>
-                    
-                    
+
+
                   ))
                 }
-               
+
               </FieldArray>
-              
+
             </div>
-            <hr/>
+            <hr />
 
             {/* Footer Buttons */}
             <div className="form-footer">

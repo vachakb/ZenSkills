@@ -133,6 +133,18 @@ const WorkshopsPage = ({ demoTags }) => {
     useState(false);
 
   const navigate = useNavigate();
+  const [imageSrc, setImageSrc] = useState("");
+
+  const handleFileChange = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        setImageSrc(e.target.result);
+      };
+      reader.readAsDataURL(file);
+    }
+  }
 
   const { profile } = useProfile();
 
