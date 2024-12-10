@@ -700,7 +700,15 @@ exports.getAllUserSessions = async (req, res) => {
 
   const bookings = await prisma.SessionBooking.findMany({
     include: {
-      session: true,
+      session: {
+        include: {
+          mentor: {
+            include: {
+              User: true,
+            },
+          },
+        },
+      },
       user: true,
     },
     where: where,

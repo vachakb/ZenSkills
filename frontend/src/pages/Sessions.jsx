@@ -110,7 +110,7 @@ borderColor: statusFilters.includes(status)
           ) : (
             <div className="d-flex flex-column">
               {sessions.map((session) => (
-                <SessionCard session={session} key={session.id} />
+                <SessionCard session={session} profile={profile} key={session.id} />
               ))}
             </div>
           )}
