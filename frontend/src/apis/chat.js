@@ -1,7 +1,15 @@
 import { axiosInstance } from "./commons";
 
+function getAllAvailableChatUsers() {
+  return axiosInstance.get("/chat/users");
+}
+
 function getAllConversations() {
   return axiosInstance.get("/chat/conversations");
+}
+
+function createConversation(body) {
+  return axiosInstance.post("/chat/conversation", body);
 }
 
 function saveAttachment(file) {
@@ -14,4 +22,10 @@ function downloadAttachment(id) {
   return axiosInstance.get("/chat/attachment/" + id, { responseType: "blob" });
 }
 
-export { getAllConversations, saveAttachment, downloadAttachment };
+export {
+  getAllAvailableChatUsers,
+  getAllConversations,
+  createConversation,
+  saveAttachment,
+  downloadAttachment,
+};

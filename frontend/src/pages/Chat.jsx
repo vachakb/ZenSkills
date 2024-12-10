@@ -1,10 +1,16 @@
 import { useEffect, useRef, useState } from "react";
 import useProfile from "../hooks/useProfile";
 import useWebSocket from "react-use-websocket";
-import { getAllConversations, saveAttachment } from "../apis/chat";
-import { Button, Form, Spinner } from "react-bootstrap";
+import {
+  createConversation,
+  getAllAvailableChatUsers,
+  getAllConversations,
+  saveAttachment,
+} from "../apis/chat";
+import { Button, Form, Modal, Spinner } from "react-bootstrap";
 import classNames from "classnames";
 import { API_URL } from "../apis/commons";
+import { DateTime } from "luxon";
 
 const getFileSize = (size) => {
   const units = ["Bytes", "KB", "MB", "GB"];
@@ -112,6 +118,36 @@ function Chat() {
     saveAttachment(file).then((res) => setFileToUpload(res.data.attachment));
   };
 
+  const [showNewConversationModal, setShowNewConversationModal] =
+    useState(false);
+
+  const [availableChatUsers, setAvailableChatUsers] = useState([]);
+
+  const [isAvailableChatUsersLoading, setIsAvailableChatUsersLoading] =
+    useState(false);
+
+  const openNewConversationModal = () => {
+    setShowNewConversationModal(true);
+    setIsAvailableChatUsersLoading(true);
+    getAllAvailableChatUsers()
+      .then((res) => {
+        setAvailableChatUsers(res.data.users);
+        setIsAvailableChatUsersLoading(false);
+      })
+      .catch((err) => console.error(err));
+  };
+
+  const closeNewConversationModal = () => {
+    setShowNewConversationModal(false);
+  };
+
+  const startNewConversation = (user) => {
+    createConversation({ type: "PRIVATE", otherUsers: [user] }).then((res) => {
+      setConversations([res.data.conversation, ...conversations]);
+      setSelectedConversation(0);
+    });
+  };
+
   if (isProfileLoading || isConversationsLoading) {
     return (
       <div className="d-flex h-100 w-100 justify-content-center align-items-center">
@@ -121,182 +157,246 @@ function Chat() {
   }
 
   return (
-    <div className="d-flex h-100">
-      <div className="d-flex flex-column border-end border-1 pe-4 me-4 gap-2">
-        {conversations.map((conversation, index) => (
-          <Conversation
-            onClick={() => {
-              setSelectedConversation(index);
-              sendJsonMessage({
-                type: "RETRIEVE",
-                content: conversation.id,
-              });
-              setIsChatLoading(false);
-            }}
-            key={conversation.id}
+    <>
+      <Modal
+        size="xl"
+        show={showNewConversationModal}
+        onHide={closeNewConversationModal}
+        centered
+      >
+        <Modal.Header closeButton>
+          <Modal.Title>Start a new conversation</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          {isAvailableChatUsersLoading ? (
+            <Spinner />
+          ) : (
+            <div className="d-flex flex-column gap-2">
+              <div>
+                <Form.Check type="radio" label="Private" />
+                <Form.Check type="radio" label="Group" />
+              </div>
+              <div
+                style={{ height: "200px", overflowY: "auto" }}
+                className="d-flex flex-column gap-2 mb-2"
+              >
+                {availableChatUsers.map((user) => (
+                  <div
+                    style={{
+                      cursor: "pointer",
+                    }}
+                    className="d-flex border border-1 rounded px-4 py-2"
+                    onClick={() => {
+                      closeNewConversationModal();
+                      startNewConversation(user);
+                    }}
+                  >
+                    <span className="fw-bold fs-5">{user.name}</span>
+                    <span className="ms-auto fs-6">
+                      Joined on{" "}
+                      {DateTime.fromISO(user.created_at).toFormat(
+                        "dd/MM/yyyy HH:mm",
+                      )}
+                    </span>
+                  </div>
+                ))}
+              </div>
+              <Form.Control
+                type="text"
+                placeholder="Name..."
+                onChange={(ev) => {}}
+              />
+            </div>
+          )}
+        </Modal.Body>
+        <Modal.Footer>
+          <Button
+            variant="secondary"
+            onClick={() => closeNewConversationModal()}
           >
-            {conversation.title}
+            Cancel
+          </Button>
+        </Modal.Footer>
+      </Modal>
+      <div className="d-flex h-100">
+        <div className="d-flex flex-column border-end border-1 pe-4 me-4 gap-2">
+          {conversations.map((conversation, index) => (
+            <Conversation
+              onClick={() => {
+                setSelectedConversation(index);
+                sendJsonMessage({
+                  type: "RETRIEVE",
+                  content: conversation.id,
+                });
+                setIsChatLoading(false);
+              }}
+              key={conversation.id}
+            >
+              {conversation.title}
+            </Conversation>
+          ))}
+          <Conversation onClick={() => openNewConversationModal()}>
+            Start new conversation...
           </Conversation>
-        ))}
-        <Conversation onClick={() => {}}>
-          Start new conversation...
-        </Conversation>
-      </div>
-      {selectedConversation > -1 ? (
-        isChatLoading ? (
-          <div className="d-flex justify-content-center align-items-center flex-grow-1">
-            <p>Loading...</p>
-          </div>
-        ) : (
-          <div className="d-flex flex-column flex-grow-1">
-            <div>
-              <h5>{conversations[selectedConversation].title}</h5>
-            </div>
-            <div
-              className="d-flex flex-column flex-grow-1 p-2 gap-2 overflow-auto"
-              onScroll={(ev) => {
-                // https://stackoverflow.com/a/49573628
-                setIsChatAtBottom(
-                  Math.abs(
-                    ev.currentTarget.scrollHeight -
-                      (ev.currentTarget.scrollTop +
-                        ev.currentTarget.clientHeight),
-                  ) <= 1,
-                );
-              }}
-              ref={messagesContainer}
-            >
-              {messages.map((msg, index) => (
-                <div
-                  className={classNames({
-                    "d-flex flex-column gap-2": true,
-                    "ms-auto me-2": msg.sender.id === profile.id,
-                    "me-auto ms-2": msg.sender.id !== profile.id,
-                  })}
-                  key={msg.id}
-                >
-                  {messages[index - 1] &&
-                  messages[index - 1].sender.id !== msg.sender.id ? (
-                    <h6
-                      style={{
-                        textAlign:
-                          msg.sender.id === profile.id ? "right" : "left",
-                      }}
-                      className="m-0"
-                    >
-                      {msg.sender.name}
-                    </h6>
-                  ) : null}
-                  {msg.content && (
-                    <div
-                      style={{
-                        backgroundColor:
-                          msg.sender.id === profile.id ? "#E1D9F3" : "#F1F2F3",
-                        borderRadius: "20px",
-                        wordBreak: "break-word",
-                      }}
-                      className={classNames({
-                        "px-3 py-2 fs-6": true,
-                        "ms-auto": msg.sender.id === profile.id,
-                        "me-auto": msg.sender.id !== profile.id,
-                      })}
-                    >
-                      <span>{msg.content}</span>
-                    </div>
-                  )}
-                  {msg.attachment && (
-                    <a
-                      className="text-decoration-none"
-                      href={`${API_URL}/api/chat/attachment/${msg.attachment.id}`}
-                      download
-                    >
-                      <div
-                        style={{ cursor: "pointer" }}
-                        className="d-flex gap-2 px-3 py-1"
-                      >
-                        <img src="/document.svg" width="24px" />
-                        <div className="d-flex flex-column">
-                          <span>{msg.attachment.filename}</span>
-                          <span style={{ color: "#6695BC" }}>
-                            {getFileSize(msg.attachment.size)}
-                          </span>
-                        </div>
-                      </div>
-                    </a>
-                  )}
-                </div>
-              ))}
-            </div>
-            <div
-              className="d-flex justify-content-center gap-2 w-100"
-              onDragOver={(ev) => ev.preventDefault()}
-              onDragEnter={(ev) => ev.preventDefault()}
-              onDrop={(ev) => {
-                if (ev.dataTransfer.files.length > 0) {
-                  uploadFile(ev.dataTransfer.files[0]);
-                }
-
-                ev.preventDefault();
-              }}
-            >
-              <div className="d-flex border rounded flex-grow-1 px-2">
-                <Form.Control
-                  style={{ boxShadow: "none" }}
-                  className="border-0 me-2 focus-ring p-0"
-                  type="text"
-                  placeholder="Type here..."
-                  value={message}
-                  onChange={(ev) => setMessage(ev.currentTarget.value)}
-                  onKeyDown={(ev) => {
-                    if (ev.key === "Enter") {
-                      handleSubmitMessage();
-                    }
-                  }}
-                />
-                <input
-                  className="d-none"
-                  type="file"
-                  onChange={(ev) => {
-                    if (ev.target.files.length > 0) {
-                      uploadFile(ev.target.files[0]);
-                    }
-                  }}
-                  ref={filePicker}
-                />
-                <img
-                  style={{ width: "1rem", cursor: "pointer" }}
-                  className="ms-auto"
-                  src="/attachment.svg"
-                  onClick={() => filePicker.current.click()}
-                />
-              </div>
-              <Button onClick={handleSubmitMessage}>Send</Button>
-            </div>
-            {fileToUpload && (
-              <div className="d-flex gap-2 px-3 py-1">
-                <img src="/document.svg" width="24px" />
-                <div className="d-flex flex-column">
-                  <span>{fileToUpload.filename}</span>
-                  <span style={{ color: "#6695BC" }}>
-                    {getFileSize(fileToUpload.size)}
-                  </span>
-                </div>
-                <img
-                  style={{ cursor: "pointer" }}
-                  src="/close.svg"
-                  width="24px"
-                  onClick={() => setFileToUpload(undefined)}
-                />
-              </div>
-            )}
-          </div>
-        )
-      ) : (
-        <div className="d-flex justify-content-center align-items-center flex-grow-1">
-          <h4>Select a conversation or start a new one</h4>
         </div>
-      )}
-    </div>
+        {selectedConversation > -1 ? (
+          isChatLoading ? (
+            <div className="d-flex justify-content-center align-items-center flex-grow-1">
+              <p>Loading...</p>
+            </div>
+          ) : (
+            <div className="d-flex flex-column flex-grow-1">
+              <div>
+                <h5>{conversations[selectedConversation].title}</h5>
+              </div>
+              <div
+                className="d-flex flex-column flex-grow-1 p-2 gap-2 overflow-auto"
+                onScroll={(ev) => {
+                  // https://stackoverflow.com/a/49573628
+                  setIsChatAtBottom(
+                    Math.abs(
+                      ev.currentTarget.scrollHeight -
+                        (ev.currentTarget.scrollTop +
+                          ev.currentTarget.clientHeight),
+                    ) <= 1,
+                  );
+                }}
+                ref={messagesContainer}
+              >
+                {messages.map((msg, index) => (
+                  <div
+                    className={classNames({
+                      "d-flex flex-column gap-2": true,
+                      "ms-auto me-2": msg.sender.id === profile.id,
+                      "me-auto ms-2": msg.sender.id !== profile.id,
+                    })}
+                    key={msg.id}
+                  >
+                    {messages[index - 1] &&
+                    messages[index - 1].sender.id !== msg.sender.id ? (
+                      <h6
+                        style={{
+                          textAlign:
+                            msg.sender.id === profile.id ? "right" : "left",
+                        }}
+                        className="m-0"
+                      >
+                        {msg.sender.name}
+                      </h6>
+                    ) : null}
+                    {msg.content && (
+                      <div
+                        style={{
+                          backgroundColor:
+                            msg.sender.id === profile.id
+                              ? "#E1D9F3"
+                              : "#F1F2F3",
+                          borderRadius: "20px",
+                          wordBreak: "break-word",
+                        }}
+                        className={classNames({
+                          "px-3 py-2 fs-6": true,
+                          "ms-auto": msg.sender.id === profile.id,
+                          "me-auto": msg.sender.id !== profile.id,
+                        })}
+                      >
+                        <span>{msg.content}</span>
+                      </div>
+                    )}
+                    {msg.attachment && (
+                      <a
+                        className="text-decoration-none"
+                        href={`${API_URL}/api/chat/attachment/${msg.attachment.id}`}
+                        download
+                      >
+                        <div
+                          style={{ cursor: "pointer" }}
+                          className="d-flex gap-2 px-3 py-1"
+                        >
+                          <img src="/document.svg" width="24px" />
+                          <div className="d-flex flex-column">
+                            <span>{msg.attachment.filename}</span>
+                            <span style={{ color: "#6695BC" }}>
+                              {getFileSize(msg.attachment.size)}
+                            </span>
+                          </div>
+                        </div>
+                      </a>
+                    )}
+                  </div>
+                ))}
+              </div>
+              <div
+                className="d-flex justify-content-center gap-2 w-100"
+                onDragOver={(ev) => ev.preventDefault()}
+                onDragEnter={(ev) => ev.preventDefault()}
+                onDrop={(ev) => {
+                  if (ev.dataTransfer.files.length > 0) {
+                    uploadFile(ev.dataTransfer.files[0]);
+                  }
+
+                  ev.preventDefault();
+                }}
+              >
+                <div className="d-flex border rounded flex-grow-1 px-2">
+                  <Form.Control
+                    style={{ boxShadow: "none" }}
+                    className="border-0 me-2 focus-ring p-0"
+                    type="text"
+                    placeholder="Type here..."
+                    value={message}
+                    onChange={(ev) => setMessage(ev.currentTarget.value)}
+                    onKeyDown={(ev) => {
+                      if (ev.key === "Enter") {
+                        handleSubmitMessage();
+                      }
+                    }}
+                  />
+                  <input
+                    className="d-none"
+                    type="file"
+                    onChange={(ev) => {
+                      if (ev.target.files.length > 0) {
+                        uploadFile(ev.target.files[0]);
+                      }
+                    }}
+                    ref={filePicker}
+                  />
+                  <img
+                    style={{ width: "1rem", cursor: "pointer" }}
+                    className="ms-auto"
+                    src="/attachment.svg"
+                    onClick={() => filePicker.current.click()}
+                  />
+                </div>
+                <Button onClick={handleSubmitMessage}>Send</Button>
+              </div>
+              {fileToUpload && (
+                <div className="d-flex gap-2 px-3 py-1">
+                  <img src="/document.svg" width="24px" />
+                  <div className="d-flex flex-column">
+                    <span>{fileToUpload.filename}</span>
+                    <span style={{ color: "#6695BC" }}>
+                      {getFileSize(fileToUpload.size)}
+                    </span>
+                  </div>
+                  <img
+                    style={{ cursor: "pointer" }}
+                    src="/close.svg"
+                    width="24px"
+                    onClick={() => setFileToUpload(undefined)}
+                  />
+                </div>
+              )}
+            </div>
+          )
+        ) : (
+          <div className="d-flex justify-content-center align-items-center flex-grow-1">
+            <h4>Select a conversation or start a new one</h4>
+          </div>
+        )}
+      </div>
+    </>
   );
 }
 
