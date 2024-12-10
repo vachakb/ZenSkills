@@ -55,17 +55,12 @@ function UserProfile() {
 
 
 
-
       const mentorId = profile?.mentor.id;
 
 
 
-      const resMentorProfile = await getMentorProfile(mentorId);
 
-
-
-      const resAvailableSessions = await getAllAvailableSessions();
-      console.log(resAvailableSessions);
+      const resAvailableSessions = await getAllAvailableSessions(mentorId);
 
 
       setSessions(resAvailableSessions.data.sessions);

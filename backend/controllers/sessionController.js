@@ -1,29 +1,44 @@
 const prisma = require("../models/prismaClient");
 const { google } = require("googleapis");
 const { googleClient } = require("./authController");
+const { DateTime } = require("luxon");
+
+const dayOfWeek = [
+  "SUNDAY",
+  "MONDAY",
+  "TUESDAY",
+  "WEDNESDAY",
+  "THURSDAY",
+  "FRIDAY",
+  "SATURDAY",
+];
 
 exports.getAllAvailableSessions = async (req, res) => {
   const { mentorId } = req.params;
 
   try {
-    const timeSlots = await prisma.TimeSlot.findMany({
-      where: { mentor_id: mentorId },
-    });
-
     const sessions = await prisma.MentorSession.findMany({
       include: {
+        mentor: {
+          include: {
+            User: true,
+          },
+        },
         SessionBooking: true,
       },
       where: {
-        mentor_id: mentorId,
+        mentor: {
+          id: mentorId,
+        },
+        SessionBooking: {
+          some: {
+            user: null,
+          },
+        },
       },
     });
 
-    return res.json({
-      sessions: sessions.filter(
-        (session) => session.SessionBooking.length < timeSlots.length,
-      ),
-    });
+    return res.json({ sessions });
   } catch (err) {
     console.error(err);
     return res.sendStatus(500);
@@ -42,17 +57,25 @@ exports.getSession = async (req, res) => {
     },
     where: {
       id: req.params.id,
+      SessionBooking: {
+        some: {
+          user: null,
+        },
+      },
     },
-  });
-
-  session.timeSlots = await prisma.TimeSlot.findMany({
-    where: { mentor: { user_id: session.mentor.User.id } },
   });
 
   if (session) {
     const map = {};
 
-    session.timeSlots.forEach((timeSlot) => {
+    session.SessionBooking.forEach((booking) => {
+      const timeSlot = {
+        day: DateTime.fromJSDate(booking.date).weekdayLong,
+        from: DateTime.fromJSDate(booking.start_time).toFormat("hh:mm a"),
+        to: DateTime.fromJSDate(booking.end_time).toFormat("hh:mm a"),
+        bookingId: booking.id,
+      };
+
       const prevArray = map[timeSlot.day] ?? [];
       prevArray.push(timeSlot);
       map[timeSlot.day] = prevArray;
@@ -97,6 +120,16 @@ exports.createSession = async (req, res) => {
     //   }
     // }
 
+    const timeSlots = await prisma.TimeSlot.findMany({
+      where: {
+        mentor: {
+          User: {
+            id: req.user.id,
+          },
+        },
+      },
+    });
+
     await prisma.MentorSession.create({
       data: {
         name: sessionName,
@@ -104,6 +137,16 @@ exports.createSession = async (req, res) => {
         durationMinutes: sessionDuration,
         topics: {
           connect: selectedTopics.map((topic) => ({ id: topic.id })),
+        },
+        SessionBooking: {
+          create: timeSlots.map((timeSlot) => ({
+            status: "pending",
+            start_time: DateTime.fromFormat(timeSlot.from, "HH:mm").toJSDate(),
+            end_time: DateTime.fromFormat(timeSlot.to, "HH:mm").toJSDate(),
+            date: DateTime.now()
+              .set({ weekday: dayOfWeek.indexOf(timeSlot.day) })
+              .toJSDate(),
+          })),
         },
         // // TODO maybe try a different approach
         // timeSlots: {
@@ -130,71 +173,24 @@ exports.createSession = async (req, res) => {
 };
 
 exports.bookSession = async (req, res) => {
-  const { sessionId } = req.params;
-  const { startTime, endTime, date } = req.body;
+  const { bookingId } = req.params;
   const userId = req.user.id;
-  // const userId = "3bd27950-9f7d-4d89-8a93-52da18639e10";
 
   try {
-    // Check if the session exists
-    const session = await prisma.MentorSession.findUnique({
-      where: { id: sessionId },
-      include: {
-        mentor: {
-          include: {
-            User: true,
+    await prisma.SessionBooking.update({
+      where: {
+        id: bookingId,
+      },
+      data: {
+        user: {
+          connect: {
+            id: userId,
           },
         },
       },
     });
 
-    if (!session) {
-      return res.status(404).json({ error: "Session not found" });
-    }
-
-    // Check if the user has already booked the session
-    const existingBooking = await prisma.SessionBooking.findUnique({
-      where: {
-        session_id_user_id: {
-          session_id: sessionId,
-          user_id: userId,
-        },
-      },
-    });
-
-    if (existingBooking) {
-      return res
-        .status(400)
-        .json({ error: "User has already booked this session" });
-    }
-
-    // Fetch user details from the database
-    const user = await prisma.user.findUnique({
-      where: { id: userId },
-    });
-
-    if (!user) {
-      return res.status(404).json({ error: "User not found" });
-    }
-
-    // Convert start_time and end_time to DateTime objects
-    const startDateTime = new Date(startTime);
-    const endDateTime = new Date(endTime);
-    const bookingDate = new Date(date);
-
-    // Create a new booking
-    const newBooking = await prisma.SessionBooking.create({
-      data: {
-        session_id: sessionId,
-        user_id: userId,
-        status: "pending",
-        start_time: startDateTime,
-        end_time: endDateTime,
-        date: bookingDate,
-      },
-    });
-
-    res.status(201).json(newBooking);
+    res.status(200).json();
   } catch (error) {
     console.error("Error booking session:", error);
     res.status(500).json({ error: "Error booking session" });
@@ -678,4 +674,21 @@ exports.updateTimeSlots = async (req, res) => {
     console.error("Error updating time slots:", error);
     res.status(500).json({ error: "Error updating time slots" });
   }
+};
+
+exports.getAllUserSessions = async (req, res) => {
+  const { status } = req.query;
+
+  const bookings = await prisma.SessionBooking.findMany({
+    include: {
+      session: true,
+      user: true,
+    },
+    where: {
+      user_id: req.user.id,
+      status,
+    },
+  });
+
+  res.json({ bookings });
 };

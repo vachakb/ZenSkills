@@ -1,98 +1,10 @@
 import React, { useState, useEffect } from "react";
-import { Container, Nav, Tab, Spinner } from "react-bootstrap";
+import { Container, Nav, Tab, Spinner, Button } from "react-bootstrap";
 import ReactPaginate from "react-paginate";
 import SessionCard from "../components/SessionCard";
-
-// Example fetch function
-const fetchSessions = async (tab, page) => {
-  const pageSize = 3; // Number of items per page
-  const allUpcoming = [
-    {
-      date: "Friday, September 13",
-      time: "3:30PM",
-      status: "Confirmed",
-      name: "Vacha Buch",
-      sessionTitle: "React Workshop",
-    },
-    {
-      date: "Saturday, September 14",
-      time: "11:00AM",
-      status: "Pending",
-      name: "Varad Chaudhari",
-      sessionTitle: "JavaScript Basics",
-    },
-    {
-      date: "Monday, September 16",
-      time: "2:00PM",
-      status: "Confirmed",
-      name: "Ravi Patel",
-      sessionTitle: "Node.js Deep Dive",
-    },
-    {
-      date: "Wednesday, September 18",
-      time: "4:00PM",
-      status: "Confirmed",
-      name: "Anjali Mehta",
-      sessionTitle: "Bootstrap Fundamentals",
-    },
-    {
-      date: "Thursday, September 19",
-      time: "5:30PM",
-      status: "Pending",
-      name: "Priya Shah",
-      sessionTitle: "CSS Animations",
-    },
-  ];
-
-  const allHistory = [
-    {
-      date: "Friday, September 13",
-      time: "3:30PM",
-      status: "Completed",
-      name: "Henil Patel",
-      sessionTitle: "React Workshop",
-    },
-    {
-      date: "Saturday, September 14",
-      time: "11:00AM",
-      status: "Cancelled",
-      name: "Ayush Khubchandani",
-      sessionTitle: "JavaScript Basics",
-    },
-    {
-      date: "Monday, September 16",
-      time: "2:00PM",
-      status: "Completed",
-      name: "Meera Shah",
-      sessionTitle: "Node.js Deep Dive",
-    },
-    {
-      date: "Wednesday, September 18",
-      time: "4:00PM",
-      status: "Completed",
-      name: "Vishal Joshi",
-      sessionTitle: "Bootstrap Fundamentals",
-    },
-    {
-      date: "Thursday, September 19",
-      time: "5:30PM",
-      status: "Cancelled",
-      name: "Karan Shah",
-      sessionTitle: "CSS Animations",
-    },
-  ];
-
-  const sessions = tab === "Upcoming" ? allUpcoming : allHistory;
-  const offset = (page - 1) * pageSize;
-  const paginatedSessions = sessions.slice(offset, offset + pageSize);
-
-  return new Promise((resolve) => {
-    setTimeout(
-      () => resolve({ sessions: paginatedSessions, total: sessions.length }),
-      500
-    ); // Simulate API delay
-  });
-};
+import { getAllUserSessions } from "../apis/session";
+import { useNavigate } from "react-router-dom";
+import useProfile from "../hooks/useProfile";
 
 const Sessions = () => {
   const [activeTab, setActiveTab] = useState("Upcoming");
@@ -103,24 +15,19 @@ const Sessions = () => {
 
   const pageSize = 3; // Number of items per page
 
+  const { profile, isProfileLoading } = useProfile();
+
+  const navigate = useNavigate();
+
+  const onLoad = () => {
+    getAllUserSessions()
+      .then((res) => setSessions(res.data.bookings))
+      .catch((err) => console.error(err));
+  };
+
   // Fetch sessions when the active tab or page changes
   useEffect(() => {
-    const fetchData = async () => {
-      setIsLoading(true);
-      const { sessions, total } = await fetchSessions(activeTab, currentPage);
-      //   const responce = await axios.get("/api/sessions", {
-      //     params: {
-      //       currentPage,
-      //       completionStatus: activeTab,
-      //     },
-      //   });
-      //   setSessions(responce.sessions);
-      //   setTotalSessions(responce.totalPages);
-      setSessions(sessions);
-      setTotalSessions(total);
-      setIsLoading(false);
-    };
-    fetchData();
+    onLoad();
   }, [activeTab, currentPage]);
 
   // Handle pagination page change
@@ -128,10 +35,21 @@ const Sessions = () => {
     setCurrentPage(selectedPage.selected + 1);
   };
 
+  if (isProfileLoading) {
+    return (
+      <div className="d-flex h-100 w-100 justify-content-center align-items-center">
+        <Spinner />
+      </div>
+    );
+  }
+
   return (
     <Container>
       {/* Static heading */}
-      <h3 className="my-4">Sessions</h3>
+        <div className="d-flex align-items-center gap-2">
+          <h3 className="my-4">Sessions</h3>
+          { profile.isMentor && <Button onClick={() => navigate("/createsession_1")}>Create session</Button> }
+        </div>
       {/* <p className="text-muted">
         The Timings are based on your selected Time Zone Asia/Calcutta{" "}
         <a href="#">Update</a>
@@ -164,8 +82,9 @@ const Sessions = () => {
           </li>
           <li className="nav-item">
             <button
-              className={`nav-link ${activeTab === "Completed" ? "active" : ""
-                }`}
+              className={`nav-link ${
+                activeTab === "Completed" ? "active" : ""
+              }`}
               onClick={() => setActiveTab("Completed")}
             >
               Completed
@@ -182,7 +101,7 @@ const Sessions = () => {
           ) : (
             <>
               {sessions.map((session, index) => (
-                <SessionCard key={index} {...session} />
+                <SessionCard session={session} key={session.id} />
               ))}
             </>
           )}

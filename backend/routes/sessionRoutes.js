@@ -11,19 +11,22 @@ const {
   getAvailableTimeSlots,
   createTimeSlots,
   updateTimeSlots,
+  getAllUserSessions,
 } = require("../controllers/sessionController");
 
 const router = express.Router();
+
+router.get("/topics", getAllTopics);
 
 router.get("/:id", getSession);
 
 router.get("/list/:mentorId", getAllAvailableSessions);
 
+router.get("/user/list", getAllUserSessions);
+
 router.post("/", createSession);
 
-router.post("/:sessionId/book", bookSession);
-
-router.get("/topics", getAllTopics);
+router.post("/:bookingId/book", bookSession);
 
 router.put("/:id", updateSession);
 
