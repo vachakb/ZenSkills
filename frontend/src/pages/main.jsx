@@ -144,9 +144,6 @@ const router = createBrowserRouter([
     errorElement: <Error />,
     children: [
       {
-        path: "/",
-        element: <LandingPage />,
-      },{
         path: "admin",
         element: <AdminPage/>
       },
@@ -279,6 +276,9 @@ const router = createBrowserRouter([
         element: <Question />
       }
     ],
+  },{
+    path: "/landing-page",
+    element: <LandingPage />,
   }
 ]);
 
