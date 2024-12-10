@@ -30,11 +30,6 @@ exports.getAllAvailableSessions = async (req, res) => {
         mentor: {
           id: mentorId,
         },
-        SessionBooking: {
-          some: {
-            user: null,
-          },
-        },
       },
     });
 
