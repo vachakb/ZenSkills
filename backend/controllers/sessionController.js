@@ -57,11 +57,6 @@ exports.getSession = async (req, res) => {
     },
     where: {
       id: req.params.id,
-      SessionBooking: {
-        some: {
-          user: null,
-        },
-      },
     },
   });
 
@@ -73,6 +68,7 @@ exports.getSession = async (req, res) => {
         day: DateTime.fromJSDate(booking.date).weekdayLong,
         from: DateTime.fromJSDate(booking.start_time).toFormat("hh:mm a"),
         to: DateTime.fromJSDate(booking.end_time).toFormat("hh:mm a"),
+        available: !booking.user_id,
         bookingId: booking.id,
       };
 
@@ -139,19 +135,38 @@ exports.createSession = async (req, res) => {
           connect: selectedTopics.map((topic) => ({ id: topic.id })),
         },
         SessionBooking: {
-          create: timeSlots.map((timeSlot) => ({
-            status: "pending",
-            start_time: DateTime.fromFormat(timeSlot.from, "HH:mm").toJSDate(),
-            end_time: DateTime.fromFormat(timeSlot.to, "HH:mm").toJSDate(),
-            date: DateTime.now()
-              .set({ weekday: dayOfWeek.indexOf(timeSlot.day) })
-              .toJSDate(),
-          })),
+          create: timeSlots
+            .map((timeSlot) => {
+              const startTime = DateTime.fromFormat(timeSlot.from, "HH:mm");
+              const endTime = DateTime.fromFormat(timeSlot.to, "HH:mm");
+              const date = DateTime.now().set({
+                weekday: dayOfWeek.indexOf(timeSlot.day),
+              });
+
+              const bookings = [];
+              let currentTime = startTime;
+
+              while (currentTime < endTime) {
+                const bookingEndTime = currentTime.plus({
+                  minutes: sessionDuration,
+                });
+
+                if (bookingEndTime > endTime) break;
+
+                bookings.push({
+                  status: "pending",
+                  start_time: currentTime.toJSDate(),
+                  end_time: bookingEndTime.toJSDate(),
+                  date: date.toJSDate(),
+                });
+
+                currentTime = bookingEndTime;
+              }
+
+              return bookings;
+            })
+            .flat(),
         },
-        // // TODO maybe try a different approach
-        // timeSlots: {
-        //   create: timeSlots,
-        // },
         mentor_id: mentor.id,
       },
     });
