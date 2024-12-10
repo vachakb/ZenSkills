@@ -129,24 +129,26 @@ model Session {
 
 
 model Job {
-  id               String     @id @default(uuid())
-  title            String     @db.VarChar(255)
-  description      String
-  company_name     String     @db.VarChar(255)
-  company_details  String     @db.VarChar(255)
-  location         String     @db.VarChar(255)
-  job_type         JobType    
-  qualifications   String     
-  benefits         String     
-  app_details      String     
-  posted_by        String?     
-  mentor           mentor?    @relation(fields: [posted_by], references: [id], onDelete: Cascade)
-  created_at       DateTime   @default(now())
-  updated_at       DateTime   @updatedAt
-  deadline         DateTime
-  salary           String?    @default("10,000 INR - 15,000 INR")
-  status           JobStatus  @default(active) 
-  job_applications JobApplication[]
+  id                      String     @id @default(uuid())
+  title                   String     @db.VarChar(255)
+  description             String
+  company_name            String     @db.VarChar(255)
+  company_details         String     @db.VarChar(255)
+  location                String     @db.VarChar(255)
+  work_schedule           WorkSchedule
+  work_location           WorkLocation
+  employment_categories   EmploymentCategory[]
+  qualifications          String
+  benefits                String
+  app_details             String
+  posted_by               String?
+  mentor                  mentor?    @relation(fields: [posted_by], references: [id], onDelete: Cascade)
+  created_at              DateTime   @default(now())
+  updated_at              DateTime   @updatedAt
+  deadline                DateTime
+  salary                  String?    @default("10,000 INR - 15,000 INR")
+  status                  JobStatus  @default(active)
+  job_applications        JobApplication[]
 }
 
 model JobApplication {
@@ -163,17 +165,22 @@ model JobApplication {
   user             User       @relation(fields: [uid], references: [id], onDelete: Cascade)
 }
 
-enum JobType {
+enum WorkSchedule {
   FullTime
   PartTime
-  Internship
-  Freelance
-  Onsite
-  Government
-  Remote
-  Contract
 }
 
+enum WorkLocation {
+  Remote
+  Onsite
+}
+
+enum EmploymentCategory {
+  Internship
+  Government
+  Freelance
+  Contract
+}
 
 enum JobStatus {
   active

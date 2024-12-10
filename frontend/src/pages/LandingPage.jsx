@@ -97,7 +97,7 @@ function App() {
     },
   ];
 
-  const mentors2 = [
+  let mentors2 = [
     {
       name: "Alice Johnson",
       role: "Senior Developer",
@@ -169,6 +169,12 @@ function App() {
       lang: "French",
     },
   ];
+
+  // mentors2 = Array(100).fill(mentors2)
+  for(let i=0; i<10; i++){
+    mentors2 = [...mentors2, ...mentors2]
+  }
+  console.log(mentors2)
 
   const whyChooseUs = [
     {
@@ -377,7 +383,7 @@ function App() {
       <nav className="navbar navbar-expand-lg navbar-dark bg-primary px-4">
         <a
           className="navbar-brand text-white font-weight-bold font-italic"
-          href="#home"
+          href="home"
         >
           ZenSkills
         </a>
@@ -401,12 +407,12 @@ function App() {
             </li>
             <span className="text-white border border-1 mx-3"></span>
             <li className="nav-item">
-              <a className="nav-link text-white" href="#get-started">
+              <a className="nav-link text-white" href="register">
                 Get started
               </a>
             </li>
             <li className="nav-item">
-              <a className="nav-link text-white" href="#login">
+              <a className="nav-link text-white" href="login">
                 Login
               </a>
             </li>
@@ -495,14 +501,14 @@ function App() {
 
           {/* Right Side (Mentor List) */}
           <div
-            className="col-md-6 border-0 card-container"
+            className="col-md-6 border-0 card-container pointer-events-none no-scroll overflow-hidden"
             style={{
               border: "1px solid #ddd",
               height: "70vh", // Fixed height
               overflowY: "scroll", // Enable vertical scrolling
             }}
           >
-            <div className="card-wrapper">
+            <div className="card-wrapper no-scroll pointer-events-none overflow-hidden">
               {mentors2.map((mentor, idx) => (
                 <div
                   className="card mb-3"
