@@ -207,7 +207,7 @@ exports.updateSession = async (req, res) => {
     eventDescription,
     sessionDuration,
     selectedTopics,
-    availability,
+    // availability,
   } = req.body;
 
   try {
@@ -230,21 +230,21 @@ exports.updateSession = async (req, res) => {
       },
     });
 
-    const timeSlots = [];
+    // const timeSlots = [];
 
-    for (const timeSlot of availability) {
-      if (!timeSlot.enabled) {
-        continue;
-      }
+    // for (const timeSlot of availability) {
+    //   if (!timeSlot.enabled) {
+    //     continue;
+    //   }
 
-      for (const slot of timeSlot.slots) {
-        timeSlots.push({
-          day: timeSlot.day,
-          from: slot.start,
-          to: slot.end,
-        });
-      }
-    }
+    //   for (const slot of timeSlot.slots) {
+    //     timeSlots.push({
+    //       day: timeSlot.day,
+    //       from: slot.start,
+    //       to: slot.end,
+    //     });
+    //   }
+    // }
 
     const updatedSession = await prisma.MentorSession.update({
       where: { id },
@@ -255,10 +255,10 @@ exports.updateSession = async (req, res) => {
         topics: {
           set: selectedTopics.map((topic) => ({ id: topic.id })),
         },
-        timeSlots: {
-          deleteMany: {},
-          create: timeSlots,
-        },
+        // timeSlots: {
+        //   deleteMany: {},
+        //   create: timeSlots,
+        // },
         mentor_id: mentor.id,
       },
     });
@@ -283,11 +283,11 @@ exports.deleteSession = async (req, res) => {
       return res.sendStatus(403);
     }
 
-    await prisma.timeSlot.deleteMany({
-      where: {
-        session_id: id, // Delete TimeSlots where session_id matches
-      },
-    });
+    // await prisma.timeSlot.deleteMany({
+    //   where: {
+    //     session_id: id, // Delete TimeSlots where session_id matches
+    //   },
+    // });
 
     await prisma.MentorSession.delete({
       where: { id: id },
@@ -465,8 +465,8 @@ exports.getAvailableTimeSlots = async (req, res) => {
     }
 
     // Fetch the mentor's time slots
-    // const dayOfWeek = new Date(date).toLocaleString('en-US', { weekday: 'long' }).toUpperCase();
-    const dayOfWeek = "MONDAY";
+    const dayOfWeek = new Date(date).toLocaleString('en-US', { weekday: 'long' }).toUpperCase();
+    // const dayOfWeek = "MONDAY";
     console.log(`Fetching time slots for day: ${dayOfWeek}`);
     const timeSlots = await prisma.TimeSlot.findMany({
       where: { mentor_id: session.mentor_id, day: dayOfWeek },
@@ -517,5 +517,88 @@ exports.getAvailableTimeSlots = async (req, res) => {
   } catch (error) {
     console.error("Error fetching available time slots:", error);
     res.status(500).json({ error: "Error fetching available time slots" });
+  }
+};
+
+exports.updateTimeSlots = async (req, res) => {
+  const { mentorId } = req.params;
+  const { availability } = req.body;
+
+  try {
+    // Check if the mentor exists
+    const mentor = await prisma.mentor.findUnique({
+      where: { id: mentorId },
+      include: {
+        User: true,
+      },
+    });
+
+    if (!mentor) {
+      return res.status(404).json({ error: "Mentor not found" });
+    }
+
+    // Fetch existing time slots
+    const existingTimeSlots = await prisma.TimeSlot.findMany({
+      where: { mentor_id: mentorId },
+    });
+
+    const timeSlotsToCreate = [];
+    const timeSlotsToDelete = [];
+
+    // Create a set of existing time slots for easy lookup
+    const existingTimeSlotsSet = new Set(
+      existingTimeSlots.map((ts) => `${ts.day}-${ts.from}-${ts.to}`)
+    );
+
+    // Identify time slots to create and delete
+    for (const timeSlot of availability) {
+      for (const slot of timeSlot.slots) {
+        const slotKey = `${timeSlot.day}-${slot.start}-${slot.end}`;
+        if (!existingTimeSlotsSet.has(slotKey)) {
+          // Create new time slot
+          timeSlotsToCreate.push({
+            day: timeSlot.day,
+            from: slot.start,
+            to: slot.end,
+            mentor_id: mentorId,
+          });
+        }
+      }
+    }
+
+    // Identify time slots to delete
+    for (const existingSlot of existingTimeSlots) {
+      const slotKey = `${existingSlot.day}-${existingSlot.from}-${existingSlot.to}`;
+      const isSlotInAvailability = availability.some((timeSlot) =>
+        timeSlot.slots.some(
+          (slot) =>
+            timeSlot.day === existingSlot.day &&
+            slot.start === existingSlot.from &&
+            slot.end === existingSlot.to
+        )
+      );
+      if (!isSlotInAvailability) {
+        timeSlotsToDelete.push(existingSlot.id);
+      }
+    }
+
+    // Delete time slots
+    if (timeSlotsToDelete.length > 0) {
+      await prisma.TimeSlot.deleteMany({
+        where: { id: { in: timeSlotsToDelete } },
+      });
+    }
+
+    // Create new time slots
+    if (timeSlotsToCreate.length > 0) {
+      await prisma.TimeSlot.createMany({
+        data: timeSlotsToCreate,
+      });
+    }
+
+    res.status(200).json({ message: "Time slots updated successfully" });
+  } catch (error) {
+    console.error("Error updating time slots:", error);
+    res.status(500).json({ error: "Error updating time slots" });
   }
 };

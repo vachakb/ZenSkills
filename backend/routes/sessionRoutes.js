@@ -10,6 +10,7 @@ const {
   updateBookingStatus,
   getAvailableTimeSlots,
   createTimeSlots,
+  updateTimeSlots,
 } = require("../controllers/sessionController");
 
 const router = express.Router();
@@ -37,5 +38,8 @@ router.post("/:sessionId/time-slots", createTimeSlots);
 
 // Endpoint to get available time slots
 router.get("/:sessionId/available-timeslots", getAvailableTimeSlots);
+
+// Endpoint to update time slots
+router.put("/:mentorId/time-slots", updateTimeSlots); // Add this line
 
 module.exports = router;
