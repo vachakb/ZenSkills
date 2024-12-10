@@ -397,7 +397,8 @@ function Participant({ style, participantId, isMainParticipant }) {
       style={{
         backgroundColor: "#121212",
         maxWidth: "50%",
-          borderRadius: "12px"
+        borderRadius: "12px",
+        flexBasis: "25%",
       }}
       className="position-relative d-flex w-100 h-auto justify-content-center align-items-center"
       ref={container}
@@ -407,7 +408,7 @@ function Participant({ style, participantId, isMainParticipant }) {
         style={{
           display: webcamOn ? "block" : "none",
           aspectRatio: "16/9",
-          borderRadius: "12px"
+          borderRadius: "12px",
         }}
         className="h-auto w-100 overflow-hidden object-fit-cover"
         playsInline
@@ -427,9 +428,10 @@ function Participant({ style, participantId, isMainParticipant }) {
         <h4 className="text-white">No video</h4>
       </div>
       <div
-        style={{ backgroundColor: "#12121264",
+        style={{
+          backgroundColor: "#12121264",
 
-          borderRadius: "12px"
+          borderRadius: "12px",
         }}
         className="position-absolute p-2 bottom-0 start-0"
       >
@@ -523,6 +525,7 @@ function JoinMeeting({
           style={{
             display: videoTrack ? "block" : "none",
             aspectRatio: "16/9",
+            borderRadius: "12px",
           }}
           className="h-auto w-100 overflow-hidden object-fit-cover"
           playsInline
@@ -614,9 +617,15 @@ function Room({ meetingId }) {
       className="d-flex justify-content-center align-items-center vw-100 vh-100"
     >
       <div className="d-flex flex-column h-100 p-4 flex-grow-1">
-        <div className="d-flex justify-content-evenly align-items-center flex-grow-1 gap-4">
+        <div className="d-flex flex-wrap justify-content-evenly align-items-center flex-grow-1 gap-4">
           {[...participants.keys()].map((participantId) => (
-            <Participant participantId={participantId} isMainParticipant={mainParticipant && (participantId === mainParticipant.id)} key={participantId} />
+            <Participant
+              participantId={participantId}
+              isMainParticipant={
+                mainParticipant && participantId === mainParticipant.id
+              }
+              key={participantId}
+            />
           ))}
         </div>
         <Controls
