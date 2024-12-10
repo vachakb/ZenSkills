@@ -623,6 +623,7 @@ function App() {
                 }}
               />
               <span className="mx-3 fs-3"><span className="fw-bold">ZenSkills</span>®</span>
+              <p className="m-3">Made at CVM with ❤️</p>
             </div>
             <div className="col-md-3 fs-6 fw-lighter">
               <ul className="list-unstyled">
