@@ -16,6 +16,7 @@ const excludedRoutes = [
   { path: "/meeting" },
   { path: "/meeting/" },
   { path: "/meeting/:meetingId" },
+  { path: "/admin" }
 ];
 
 function App() {

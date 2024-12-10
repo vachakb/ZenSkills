@@ -25,3 +25,12 @@
     transform: translateY(-100%); /* Moves all cards upwards */
   }
 }
+
+.carousel-inner {
+  display: flex;
+  flex-direction: column;
+}
+
+.carousel-item {
+  transition: transform 0.6s ease-in-out;
+}

@@ -41,13 +41,9 @@ const dayOfWeek = ["SUNDAY", "MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRID
 
   const onSubmit = () => {
     if (selectedDay !== undefined && selectedSlot !== undefined) {
-      const timeSlot =  session.timeSlots[selectedDay][selectedSlot];
+      const timeSlot = session.timeSlots[selectedDay][selectedSlot];
 
-      bookSession(session.id, {
-        startTime: DateTime.fromFormat(timeSlot.from, "HH:mm").toJSDate(),
-        endTime: DateTime.fromFormat(timeSlot.to, "HH:mm").toJSDate(),
-          date: DateTime.now().set({ weekday: dayOfWeek.indexOf(selectedDay) }).toJSDate(),
-      })
+      bookSession(timeSlot.bookingId)
         .then(() => navigate(`/mentee_exploring/${session.mentor_id}`))
         .catch((err) => console.error(err));
     }

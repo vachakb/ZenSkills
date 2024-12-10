@@ -147,7 +147,7 @@ const router = createBrowserRouter([
       {
         path: "/",
         element: <LandingPage />,
-      }, {
+      },{
         path: "admin",
         element: <AdminPage />
       },
@@ -288,6 +288,9 @@ const router = createBrowserRouter([
         element: <AdminPage />
       },
     ],
+  },{
+    path: "/landing-page",
+    element: <LandingPage />,
   }
 ]);
 

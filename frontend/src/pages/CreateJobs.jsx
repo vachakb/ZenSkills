@@ -83,7 +83,7 @@ const CreateJobs = () => {
                     }
                 }}
             >
-                {({ handleSubmit, setFieldValue, values, errors, touched, formikProps }) => (
+                {({ handleChange, handleBlur, handleSubmit, setFieldValue, values, errors, touched }) => (
                     <Form noValidate onSubmit={handleSubmit}>
                         <h2 className="form-title">Create new job opening</h2>
 
@@ -147,23 +147,20 @@ const CreateJobs = () => {
 
                         {/* Location */}
                         <div className="mb-3">
-                            <label htmlFor="location" className="form-label">
-                                Location <span className="text-danger">*</span>
-                            </label>
+                            <div className="mb-3">
+                                <Select
+                                    name="location"
+                                    value={values.location}  // Ensure this is the correct prop for value
+                                    options={states}  // Ensure states is an array of { value, label }
+                                    placeholder="Select a location"
+                                    label="Location"
+                                    required
+                                    onChange={handleChange}
+                                    onBlur={handleBlur}
+                                />
+                                <ErrorMessage name="location" component="div" className="text-danger" />
+                            </div>
 
-                            {/* Location */}
-
-
-                            <Select
-                                name="location"
-                                value={states.find((option) => option.value === values.location)} // Sync Formik's value
-                                options={states} // Dropdown options
-                                placeholder="Select a location"
-                                onChange={(option) => {
-                                    setFieldValue("location", option?.value || ""); // Update Formik state
-                                }}
-                                classNamePrefix="react-select"
-                            />
                             <ErrorMessage name="location" component="div" className="text-danger" />
                         </div>
 
@@ -348,9 +345,6 @@ const CreateJobs = () => {
                             </Button>
                         </div>
 
-                        {/* Debugging */}
-                        <pre>{JSON.stringify(values, null, 2)}</pre>
-                        <pre>{JSON.stringify(errors, null, 2)}</pre>
                     </Form>
                 )}
             </Formik>
