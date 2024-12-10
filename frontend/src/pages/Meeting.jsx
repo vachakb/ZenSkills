@@ -1,16 +1,28 @@
 import {
+  createCameraVideoTrack,
   MeetingProvider,
   useFile,
+  useMediaDevice,
   useMeeting,
   useParticipant,
   usePubSub,
 } from "@videosdk.live/react-sdk";
-import axios from "axios";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { Button, Form } from "react-bootstrap";
 import ReactPlayer from "react-player";
 import { useParams } from "react-router-dom";
 import classNames from "classnames";
+import { createRoom, getToken } from "../apis/meeting";
+import {
+  PiVideoCameraFill,
+  PiVideoCameraSlashFill,
+  PiMicrophoneFill,
+  PiMicrophoneSlashFill,
+  PiMonitorFill,
+  PiChatFill,
+  PiChatSlashFill,
+  PiDoorOpenFill,
+} from "react-icons/pi";
 
 function Chat({ open, meetingId, localParticipantId }) {
   const { publish, messages } = usePubSub(meetingId);
@@ -200,7 +212,7 @@ function Chat({ open, meetingId, localParticipantId }) {
                   borderRadius: "20px",
                   cursor:
                     value.payload && value.payload.isFile ? "pointer" : "unset",
-                  wordBreak: "break-word"
+                  wordBreak: "break-word",
                 }}
                 className="px-3 py-2 fs-6"
                 onClick={
@@ -281,48 +293,53 @@ function Chat({ open, meetingId, localParticipantId }) {
 
 function ControlButton({ src, label, color, onClick }) {
   return (
-    <div className="d-flex flex-column align-items-center gap-2">
+    <div
+      className="d-flex flex-column align-items-center gap-2"
+      onClick={onClick}
+    >
       <div
         style={{
           backgroundColor: color,
           borderRadius: "12px",
           cursor: "pointer",
+          aspectRatio: "4/4",
         }}
-        className="p-2 rounded-lg"
+        className="text-center p-2"
       >
-        <img src={src} onClick={onClick} />
+        {src}
       </div>
       <h5 className="text-white">{label}</h5>
     </div>
   );
 }
 
-function Controls({ className, onToggleChat }) {
-  const { leave, toggleMic, toggleWebcam } = useMeeting();
+function Controls({ className, openChat, onToggleChat }) {
+  const { leave, toggleMic, toggleWebcam, localMicOn, localWebcamOn } =
+    useMeeting();
 
   return (
     <div className={classNames("d-flex gap-4", className)}>
       <ControlButton
-        src="/cam.svg"
+        src={localWebcamOn ? <PiVideoCameraFill /> : <PiVideoCameraSlashFill />}
         label="Cam"
         color="#E4E6E8"
         onClick={() => toggleWebcam()}
       />
       <ControlButton
-        src="/mic.svg"
+        src={localMicOn ? <PiMicrophoneFill /> : <PiMicrophoneSlashFill />}
         label="Mic"
         color="#E4E6E8"
         onClick={() => toggleMic()}
       />
-      <ControlButton src="/share.svg" label="Share" color="#E4E6E8" />
+      <ControlButton src={<PiMonitorFill />} label="Share" color="#E4E6E8" />
       <ControlButton
-        src="/chat.svg"
+        src={openChat ? <PiChatFill /> : <PiChatSlashFill />}
         label="Chat"
         color="#E4E6E8"
         onClick={onToggleChat}
       />
       <ControlButton
-        src="/leave.svg"
+        src={<PiDoorOpenFill />}
         label="Leave"
         color="#F04438"
         onClick={() => leave()}
@@ -331,11 +348,17 @@ function Controls({ className, onToggleChat }) {
   );
 }
 
-function Participant({ style, participantId }) {
+function Participant({ style, participantId, isMainParticipant }) {
   const micRef = useRef(null);
 
   const { webcamStream, micStream, webcamOn, micOn, isLocal, displayName } =
     useParticipant(participantId);
+
+  const container = useRef();
+
+  const videoPlayer = useRef();
+
+  const [containerHeight, setContainerHeight] = useState();
 
   const videoStream = useMemo(() => {
     if (webcamOn && webcamStream) {
@@ -363,32 +386,84 @@ function Participant({ style, participantId }) {
     }
   }, [micStream, micOn]);
 
+  useEffect(() => {
+    if (videoStream && videoPlayer.current) {
+      videoPlayer.current.srcObject = videoStream;
+    }
+  }, [videoStream]);
+
   return (
-    <div style={{ ...style, position: "relative" }}>
+    <div
+      style={{
+        backgroundColor: "#121212",
+        maxWidth: "50%",
+        borderRadius: "12px",
+        flexBasis: "25%",
+      }}
+      className="position-relative d-flex w-100 h-auto justify-content-center align-items-center"
+      ref={container}
+    >
       <audio ref={micRef} autoPlay playsInline muted={isLocal} />
-      {webcamOn && (
-        <ReactPlayer
-          style={{ position: "absolute", width: "100%", height: "100%" }}
-          playsInline
-          pip={false}
-          light={false}
-          controls={false}
-          muted={true}
-          playing={true}
-          url={videoStream}
-          width="100%"
-          height="100%"
-          onError={(err) => {
-            console.log(err, "participant video error");
-          }}
-        />
-      )}
+      <video
+        style={{
+          display: webcamOn ? "block" : "none",
+          aspectRatio: "16/9",
+          borderRadius: "12px",
+        }}
+        className="h-auto w-100 overflow-hidden object-fit-cover"
+        playsInline
+        muted
+        autoPlay
+        ref={videoPlayer}
+      />
+      <div
+        style={{
+          display: webcamOn ? "none" : "flex",
+          aspectRatio: "16/9",
+          backgroundColor: "#121212",
+          width: "640px",
+        }}
+        className="justify-content-center align-items-center"
+      >
+        <h4 className="text-white">No video</h4>
+      </div>
+      <div
+        style={{
+          backgroundColor: "#12121264",
+
+          borderRadius: "12px",
+        }}
+        className="position-absolute p-2 bottom-0 start-0"
+      >
+        <h5 className="m-0 text-white">{displayName}</h5>
+      </div>
     </div>
   );
 }
 
-function JoinMeeting({ meetingId, onJoined, name, onNameChange }) {
-  const { join, _ } = useMeeting();
+function JoinMeeting({
+  cameraEnabled,
+  setCameraEnabled,
+  micEnabled,
+  setMicEnabled,
+  meetingId,
+  onJoined,
+  name,
+  onNameChange,
+}) {
+  const { join } = useMeeting();
+
+  const [videoTrack, setVideoTrack] = useState();
+
+  const videoPlayer = useRef();
+
+  const { checkPermissions, requestPermission, getCameras } = useMediaDevice();
+
+  useEffect(() => {
+    if (videoTrack && videoPlayer.current) {
+      videoPlayer.current.srcObject = videoTrack;
+    }
+  }, [videoTrack]);
 
   const onSubmit = () => {
     if (name.length > 0) {
@@ -397,8 +472,111 @@ function JoinMeeting({ meetingId, onJoined, name, onNameChange }) {
     }
   };
 
+  const setupVideoTrack = async () => {
+    const cameras = await getCameras();
+
+    if (cameras.length > 0) {
+      const camera = cameras[0];
+
+      setVideoTrack(
+        await createCameraVideoTrack({
+          cameraId: camera.deviceId,
+          encoderConfig: "h540p_w960p",
+          optimizationMode: "motion",
+          multiStream: false,
+        }),
+      );
+
+      setCameraEnabled(true);
+    }
+  };
+
+  const setup = async () => {
+    const permissions = await checkPermissions("audio_video");
+
+    if (!permissions.get("video")) {
+      const videoPermission = await requestPermission("video");
+      if (videoPermission.get("video")) {
+        setupVideoTrack();
+      }
+    } else {
+      setupVideoTrack();
+    }
+
+    if (!permissions.get("audio")) {
+      const audioPermission = await requestPermission("audio");
+      if (audioPermission.get("audio")) {
+        setMicEnabled(true);
+      }
+    } else {
+      console.log("nice");
+      setMicEnabled(true);
+    }
+  };
+
+  useEffect(() => {
+    setup();
+  }, []);
+
   return (
-    <div className="d-flex justify-content-center align-items-center vw-100 vh-100">
+    <div className="d-flex justify-content-evenly align-items-center vh-100">
+      <div className="position-relative">
+        <video
+          style={{
+            display: videoTrack ? "block" : "none",
+            aspectRatio: "16/9",
+            borderRadius: "12px",
+          }}
+          className="h-auto w-100 overflow-hidden object-fit-cover"
+          playsInline
+          muted
+          autoPlay
+          ref={videoPlayer}
+        />
+        <div
+          style={{
+            display: videoTrack ? "none" : "flex",
+            aspectRatio: "16/9",
+            backgroundColor: "#121212",
+            width: "640px",
+          }}
+          className="justify-content-center align-items-center"
+        >
+          <h4 className="text-white">No video</h4>
+        </div>
+        <div
+          style={{ bottom: "0" }}
+          className="d-flex justify-content-center align-items-center gap-4 position-absolute w-100"
+        >
+          <ControlButton
+            src={
+              cameraEnabled ? <PiVideoCameraFill /> : <PiVideoCameraSlashFill />
+            }
+            label="Cam"
+            color="#E4E6E8"
+            onClick={() => {
+              if (videoTrack) {
+                videoTrack.getVideoTracks().forEach((track) => {
+                  track.stop();
+                  track.enabled = false;
+                  videoTrack.removeTrack(track);
+                });
+                setVideoTrack(undefined);
+                setCameraEnabled(false);
+              } else {
+                setupVideoTrack();
+                setCameraEnabled(true);
+              }
+            }}
+          />
+          <ControlButton
+            src={micEnabled ? <PiMicrophoneFill /> : <PiMicrophoneSlashFill />}
+            label="Mic"
+            color="#E4E6E8"
+            onClick={() => setMicEnabled(!micEnabled)}
+          />
+        </div>
+      </div>
       <div className="d-flex flex-column gap-2">
         <h3 className="m-0">Meeting ID: {meetingId}</h3>
         <div className="d-flex mx-auto gap-2">
@@ -421,9 +599,17 @@ function JoinMeeting({ meetingId, onJoined, name, onNameChange }) {
 }
 
 function Room({ meetingId }) {
-  const { _, participants, localParticipant } = useMeeting();
+  const { _, participants, localParticipant, mainParticipant } = useMeeting();
 
   const [openChat, setOpenChat] = useState(false);
+
+  if (!localParticipant) {
+    return (
+      <div className="d-flex justify-content-center align-items-center vw-100 vh-100">
+        <h3>The meeting ended.</h3>
+      </div>
+    );
+  }
 
   return (
     <div
@@ -431,22 +617,25 @@ function Room({ meetingId }) {
       className="d-flex justify-content-center align-items-center vw-100 vh-100"
     >
       <div className="d-flex flex-column h-100 p-4 flex-grow-1">
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(4, minmax(250px, 1fr))",
-          }}
-          className="flex-grow-1 gap-2"
-        >
+        <div className="d-flex flex-wrap justify-content-evenly align-items-center flex-grow-1 gap-4">
           {[...participants.keys()].map((participantId) => (
-            <Participant participantId={participantId} key={participantId} />
+            <Participant
+              participantId={participantId}
+              isMainParticipant={
+                mainParticipant && participantId === mainParticipant.id
+              }
+              key={participantId}
+            />
           ))}
         </div>
         <Controls
-          className="mt-4 mx-auto"
+          className="mt-auto mx-auto"
+          openChat={openChat}
           onToggleChat={() => setOpenChat(!openChat)}
         />
-        <h6 className="text-white text-center m-0 mt-2">Meeting ID: {meetingId}</h6>
+        <h6 className="text-white text-center m-0 mt-2">
+          Meeting ID: {meetingId}
+        </h6>
       </div>
       <Chat
         open={openChat}
@@ -460,30 +649,64 @@ function Room({ meetingId }) {
 function Meeting() {
   const { meetingId } = useParams();
 
-  const [meetingIdToUse, setMeetingIdToUse] = useState(meetingId);
+  const [meetingIdToUse, setMeetingIdToUse] = useState();
 
   const [name, setName] = useState("");
 
   const [joined, setJoined] = useState(false);
 
-  const createMeeting = async () => {
-    const res = await axios.post("https://api.videosdk.live/v2/rooms", null, {
-      headers: { Authorization: import.meta.env.VITE_VIDEOSDK_TOKEN },
-    });
+  const [token, setToken] = useState();
 
-    setMeetingIdToUse(res.data.roomId);
+  const [cameraEnabled, setCameraEnabled] = useState(false);
+
+  const [micEnabled, setMicEnabled] = useState(false);
+
+  const createMeeting = async () => {
+    try {
+      const roomRes = await createRoom(token);
+      setMeetingIdToUse(roomRes.data.roomId);
+
+      let currentUrl = window.location.href;
+
+      if (currentUrl.charAt(currentUrl.length - 1) === "/") {
+        currentUrl = currentUrl.substring(0, currentUrl.length - 1);
+      }
+
+      history.pushState(
+        `meeting ${roomRes.data.roomId}`,
+        "ZenSkills",
+        `${currentUrl}/${roomRes.data.roomId}`,
+      );
+    } catch (err) {
+      console.error(err);
+    }
   };
+
+  const generateToken = () => {
+    getToken(meetingId)
+      .then((res) => {
+        setToken(res.data.token);
+        setMeetingIdToUse(meetingId);
+      })
+      .catch((err) => console.error(err));
+  };
+
+  useEffect(() => {
+    if (!token) {
+      generateToken();
+    }
+  }, []);
 
   if (meetingIdToUse) {
     return (
       <MeetingProvider
         config={{
           meetingId: meetingIdToUse,
-          micEnabled: true,
-          webcamEnabled: true,
+          micEnabled: micEnabled,
+          webcamEnabled: cameraEnabled,
           name: name,
         }}
-        token={import.meta.env.VITE_VIDEOSDK_TOKEN}
+        token={token}
       >
         {joined ? (
           <Room meetingId={meetingIdToUse} />
@@ -493,6 +716,10 @@ function Meeting() {
             onJoined={() => setJoined(true)}
             name={name}
             onNameChange={setName}
+            cameraEnabled={cameraEnabled}
+            setCameraEnabled={setCameraEnabled}
+            micEnabled={micEnabled}
+            setMicEnabled={setMicEnabled}
           />
         )}
       </MeetingProvider>

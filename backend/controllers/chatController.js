@@ -2,6 +2,24 @@ const prisma = require("../models/prismaClient");
 
 const clientsConnected = new Map();
 
+exports.getAllAvailableChatUsers = async (req, res) => {
+  const users = await prisma.User.findMany({
+    where: {
+      conversations: {
+        none: {
+          users: {
+            some: {
+              id: req.user.id,
+            },
+          },
+        },
+      },
+    },
+  });
+
+  res.json({ users: users });
+};
+
 exports.getAllConversations = async (req, res) => {
   const conversations = await prisma.conversation.findMany({
     include: {
@@ -25,6 +43,34 @@ exports.getAllConversations = async (req, res) => {
       return value;
     }),
   });
+};
+
+exports.createConversation = async (req, res) => {
+  const { title, type, otherUsers } = req.body;
+
+  const conversation = await prisma.conversation.create({
+    include: {
+      users: true,
+    },
+    data: {
+      title,
+      type,
+      users: {
+        connect: [
+          ...otherUsers.map((user) => ({ id: user.id })),
+          { id: req.user.id },
+        ],
+      },
+    },
+  });
+
+  if (conversation.type === "PRIVATE") {
+    conversation.title = conversation.users.find(
+      (user) => user.id !== req.user.id,
+    ).name;
+  }
+
+  res.json({ conversation });
 };
 
 // TODO validation, file size check

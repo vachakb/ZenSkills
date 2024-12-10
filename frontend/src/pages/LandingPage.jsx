@@ -1,7 +1,7 @@
 import React from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "../styles/landing-page.css";
-import 'bootstrap-icons/font/bootstrap-icons.css'; // Import Bootstrap Icons
+// import 'bootstrap-icons/font/bootstrap-icons.css'; // Import Bootstrap Icons
 import MentorCard from "../components/MentorCard"
 
 function App() {
@@ -244,6 +244,43 @@ function App() {
     }
   ]
 
+  let organizationsImages = [
+    "https://via.placeholder.com/100"
+  ]
+  organizationsImages = Array(15).fill(organizationsImages).flat();
+
+  const reviews = [
+    {
+      writer: "Lokesh",
+      profession: "Marketing Mentor",
+      content: "We've seen a significant improvements in out online presence, thanks to your experience in digital maketing strategies. Your guidance on SEO and content strategy has been spot on!"
+    }, {
+      writer: "Rahul Verma",
+      profession: "Technology Mentor",
+      content: "Thank you for guiding us through the intricacies of software archutecture and cosding best practices. Your practical insights have truly elevated our team's development skills."
+    }, {
+      writer: "Lokesh",
+      profession: "Marketing Mentor",
+      content: "We've seen a significant improvements in out online presence, thanks to your experience in digital maketing strategies. Your guidance on SEO and content strategy has been spot on!"
+    }
+  ]
+
+  const faqs = [
+    {
+      question: "What is ZenSkills is all about?",
+      answer: "ZenSkills is an online web platform where startups/founders can search for mentors, get connected with them and engage on a mentoring session."
+    }, {
+      question: "How does ZenSkills platform work?",
+      answer: "answer 2"
+    }, {
+      question: "Will I get a refund, if session gets canceled?",
+      answer: "answer 3"
+    }, {
+      question: "Can you videoChat in this platform?",
+      answer: "answer 4"
+    }
+  ]
+
   // const mentorsCard = [
   //   {
   //     id: "mentor_001",
@@ -454,8 +491,10 @@ function App() {
             textDecoration: "underline",
             textDecorationColor: "var(--bs-primary)"
           }}>Proven success with 20,000+ top organiations</p>
-          <div className="flex flex-wrap align-items-center">
-            <img src="" alt="" />
+          <div className="d-flex flex-wrap align-items-center justify-content-center">
+            {organizationsImages.map((src) => {
+              return <img src={src} alt="img" className="rounded-circle m-3" />
+            })}
           </div>
         </div>
 
@@ -469,9 +508,9 @@ function App() {
           </div>
           <p className="text-center fw-light fs-6">Search, Schedule and get mentored from the industry and learn skills that can help you land a job in no time</p>
           <div className="container">
-            <div className="row gx-5 gy-5">
+            <div className="row gap-3">
               {howItWorks.map((item, index) => {
-                return <div className="col-md-4 rounded border p-3 d-flex flex-column align-items-center shadow">
+                return <div className="col-md-4 rounded border p-3 mb-3 d-flex flex-column align-items-center shadow">
                   <img src="https://via.placeholder.com/150" alt={`${item.title}`} className="p-2" />
                   <p className="fw-bold fs-4 text text-center">Step-{index + 1} {item.title}</p>
                   <p className="fw-light fs-6 text text-center">{item.content}</p>
@@ -514,6 +553,58 @@ function App() {
               })}
             </div>
           </div>
+        </div>
+      </div>
+
+      {/* reviews */}
+      <div className="row bg-primary p-3">
+        <p className="fs-2 fw-bolder text-white text-center" style={{
+          textDecoration: "underline",
+          textDecorationColor: "var(--bs-warning)"
+        }}>People talk</p>
+        <div className="container">
+          <div className="row">
+            {reviews.map((review) => {
+              return <div className="col-lg-4 mb-3">
+                <div className="bg-white rounded-5 d-flex d-flex justify-content-center align-items-center p-3 h-100">
+                  <div><img src="https://via.placeholder.com/100" alt="img" className="rounded-circle" /></div>
+                  <div className="flex-grow-1 p-3">
+                    <p className="text-center">{review.content}</p>
+                    <p className="text-end">{review.writer}, {review.profession}</p>
+                  </div>
+                </div>
+              </div>
+            })}
+          </div>
+        </div>
+      </div>
+
+      {/* faqs */}
+      <div className="row m-5">
+        <div className="col-md-4 d-flex flex-column justify-content-center align-items-center mb-3">
+          <p className="fs-3 fw-bold text-primary">Frequently Asked Questions</p>
+          <div className="bg-info p-3 rounded">
+            <p className="text-center text-white">Unable to see information you seek?</p>
+            <p className="text-center text-primary">Feel free to get in touch with us!</p>
+          </div>
+        </div>
+        <div class="accordion col-md-8" id="accordion">
+          {
+            faqs.map((item, index) => {
+              return <div class="accordion-item" key={index}>
+                <h2 class="accordion-header">
+                  <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target={`#${index}`}aria-expanded="false" aria-controls={index}>
+                    {item.question}
+                  </button>
+                </h2>
+                <div id={index} class="accordion-collapse collapse" data-bs-parent="#accordion">
+                  <div class="accordion-body">
+                    {item.answer}
+                  </div>
+                </div>
+              </div>
+            })
+          }
         </div>
       </div>
 

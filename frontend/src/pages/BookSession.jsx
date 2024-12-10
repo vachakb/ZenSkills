@@ -5,8 +5,11 @@ import { bookSession, getSession } from "../apis/session";
 import { Duration } from "luxon";
 import { Formik } from "formik";
 import { LuClock3 } from "react-icons/lu";
+import useProfile from "../hooks/useProfile";
 
 function BookSession() {
+  const {profile} = useProfile();
+  
   const { availableSessionId } = useParams();
 
   const navigate = useNavigate();
@@ -35,7 +38,7 @@ function BookSession() {
 
   const onSubmit = () => {
     if (selectedDay !== undefined && selectedSlot !== undefined) {
-      bookSession(session.timeSlots[selectedDay][selectedSlot].id)
+      bookSession(session.timeSlots[selectedDay][selectedSlot].id,profile.id)
         .then(() => navigate(`/mentee_exploring/${session.mentor_id}`))
         .catch((err) => console.error(err));
     }

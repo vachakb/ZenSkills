@@ -17,6 +17,8 @@ import { getMentorProfile } from "../apis/mentors";
 import { getAllAvailableSessions } from "../apis/session";
 
 
+
+
 const profile = {
   isMentor: true,
   name: "Mentor 1",
@@ -112,20 +114,23 @@ function MenteeExploring() {
     };
   };
 
-   const onLoad = async () => {
-     setIsLoading(true);
+  const onLoad = async () => {
+    setIsLoading(true);
 
-     try {
-       const resMentorProfile = await getMentorProfile(mentorId);
-       setProfile({ ...resMentorProfile.data.profile, isMentor: true });
-       const resAvailableSessions = await getAllAvailableSessions();
-       setSessions(resAvailableSessions.data.sessions);
-     } catch (err) {
-       console.error(err);
-     } finally {
-       setIsLoading(false);
-     }
-   };
+    try {
+      const resMentorProfile = await getMentorProfile(mentorId);
+      setProfile({ ...resMentorProfile.data.profile, isMentor: true });
+      const resAvailableSessions = await getAllAvailableSessions();
+
+      setSessions(resAvailableSessions.data.sessions);
+
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
 
   useEffect(() => {
     onLoad();
@@ -141,14 +146,10 @@ function MenteeExploring() {
 
   return (
     <div className="container-fluid">
-      <div className="row" style={{ display: "flex" }}>
+      <div className="row">
         {/* Main Content */}
         <div
-          className="col-lg"
-          style={{
-            flex: "1",
-            marginRight: "10px", // Spacing between main content and sidebar
-          }}
+          className=" col-lg-8 col-md-12 mb-4"
         >
           <ProfileCard profile={profile} />
           <div
@@ -173,29 +174,25 @@ function MenteeExploring() {
               ))}
             </ButtonGroup>
           </div>
-          <div className="mt-3">
+          <div className="mt-3" style={{ width: "100%" }}>
             {radioValue === "1" && <UserInfo profile={profile} />}
             {radioValue === "2" && <Milestones data={timelineData} />}
-            {radioValue === "3" && <ReviewsTab mentorId={mentorId}/>}
+            {radioValue === "3" && <ReviewsTab mentorId={mentorId} />}
             {radioValue === "4" && <ResourcesTab />}
           </div>
         </div>
 
         {/* Sidebar */}
         <div
-          className="col-lg-auto"
-          style={{
-            flex: "0 0 50%", // Sidebar width is 22% of the parent container
-            maxWidth: "500px", 
-            marginRight:"30px"// Optional max width for sidebar
-          }}
+          className="col-lg-4 col-md-12"
+
         >
           <div
             className="d-flex flex-column"
             style={{
               gap: "30px",
               marginTop: "30px",
-             
+
             }}
           >
             <Statistics />
@@ -203,7 +200,7 @@ function MenteeExploring() {
           </div>
         </div>
       </div>
-    </div>
+    </div >
   );
 }
 

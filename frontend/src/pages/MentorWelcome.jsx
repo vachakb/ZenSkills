@@ -184,10 +184,11 @@ export default function MentorWelcome({ events_ }) {
 
 
 
-        <div className="flex-grow-0 ms-auto" style={{ position: 'fixed', right: '15px' }}>
+        <div className="flex-grow-0 ms-auto" style={{ right: '15px' }}>
           <div className="mb-5">
             <Calendar profile={profile} />
           </div>
+
           <Card
             text="primary"
             bg="white"
@@ -247,7 +248,7 @@ export default function MentorWelcome({ events_ }) {
 
         </div>
       </div>
-    </Container>
+    </Container >
   );
 
 

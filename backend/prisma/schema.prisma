@@ -33,22 +33,22 @@ model User {
   messages Message[]
 
   WorkshopBooking WorkshopBooking[]
+  SessionBooking  SessionBooking[]
 
   @@unique(name: "account_id", [email, role])
 }
 
 
 model mentee {
-  id               String @id @default(uuid())
-  bio              String?
-  mentee_title     String             @db.VarChar(50) 
-  company          String?            @db.VarChar(255)
-  user_id String @unique
-  User             User?              @relation(fields: [user_id], references: [id], onDelete: Cascade)
-  interests tags[]
-  education MenteeEducation[]
-  Review          Review[]            @relation(map: "review_mentee_fk")
-  booked_sessions TimeSlot[]
+  id              String            @id @default(uuid())
+  bio             String?
+  mentee_title    String            @db.VarChar(50)
+  company         String?           @db.VarChar(255)
+  user_id         String            @unique
+  User            User?             @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  interests       tags[]
+  education       MenteeEducation[]
+  Review          Review[]          @relation(map: "review_mentee_fk")
 }
 
 model mentor {
@@ -72,11 +72,12 @@ model mentor {
 
   sessions MentorSession[]
 
-  meeting_sessions           meeting_sessions[]   
-  workshops                  workshops[]    
-  Review                     Review[]           @relation(map: "review_mentor_fk")
+  workshops        workshops[]
+  Review           Review[]           @relation(map: "review_mentor_fk")
 
   created_first_session Boolean @default(false)
+
+  TimeSlot TimeSlot[]
 }
 
 model tags {
@@ -224,27 +225,14 @@ model MenteeEducation {
 }
 
 
-model meeting_sessions {
-  id                 Int       @id @default(autoincrement())
-  session_name       String
-  event_description  String
-  session_duration   Int
-  selected_topics    String[]
-  availability       Json
-  session_start_time DateTime?
-  session_end_time   DateTime?
-  created_at         DateTime  @default(now())
-  created_by         String
-  mentor             mentor    @relation(fields: [created_by], references: [id], onDelete: Cascade)
-}
-
 model workshops {
   id             String   @id @default(uuid())  
   title          String     
   description    String     
   date           DateTime   
-  duration       Int        
-  workshop_image String?    
+  duration       Int
+  workshop_image_id String @unique
+  workshop_image Image   @relation(fields: [workshop_image_id], references: [id], onDelete: Cascade)
   created_at     DateTime  @default(now())       
   created_by     String     
   status         WorkshopStatus? @default(upcoming) 
@@ -302,14 +290,15 @@ model Review {
 }
 
 model MentorSession {
-      id String @id @default(uuid())
-  name String
-  description String
+  id              String               @id @default(uuid())
+  name            String
+  description     String
   durationMinutes Int
-  topics MentorSessionTopic[]
-  timeSlots TimeSlot[]
-  mentor_id   String
-  mentor          mentor              @relation(fields: [mentor_id], references: [id])
+  topics          MentorSessionTopic[]
+  mentor_id       String
+  mentor          mentor               @relation(fields: [mentor_id], references: [id])
+
+  SessionBooking SessionBooking[]
 }
 
 model MentorSessionTopic {
@@ -319,26 +308,24 @@ model MentorSessionTopic {
 }
 
 model TimeSlot {
-    id String @id @default(uuid())
-    day Day
-    // from DateTime @db.Time()
-    // to DateTime @db.Time()
-    from String
-    to String
-    session_id String
-    session MentorSession        @relation(fields: [session_id], references: [id])
-    mentee_id     String?
-    mentee        mentee?          @relation(fields: [mentee_id], references: [id])
+  id         String        @id @default(uuid())
+  day        Day
+  // from DateTime @db.Time()
+  // to DateTime @db.Time()
+  from       String
+  to         String
+  mentor_id  String
+  mentor     mentor       @relation(fields: [mentor_id], references:[id])
 }
 
 enum Day {
-  SUNDAYS
-  MONDAYS
-  TUESDAYS
-  WEDNESDAYS
-  THURSDAYS
-  FRIDAYS
-  SATURDAYS
+  SUNDAY
+  MONDAY
+  TUESDAY
+  WEDNESDAY
+  THURSDAY
+  FRIDAY
+  SATURDAY
 }
 
 model Conversation {
@@ -380,4 +367,40 @@ model Attachment {
   size Int
   message_id String? @unique
   message Message? @relation(fields: [message_id], references: [id])
+}
+
+model Image {
+  id String @id @default(uuid())
+  filename String
+  path String
+  size Int
+  mimeType String
+  workshop workshops?
+}
+
+enum BookingStatus {
+  pending
+  accepted
+  rejected
+  rescheduled
+  cancelled
+}
+
+model SessionBooking {
+  id              String        @id @default(uuid())
+  session_id      String
+  user_id         String
+  status          BookingStatus @default(pending)
+  start_time      DateTime
+  end_time        DateTime
+  date            DateTime
+  event_id String? // Add this line
+  created_at      DateTime      @default(now())
+
+  session MentorSession @relation(fields: [session_id], references: [id])
+  user    User          @relation(fields: [user_id], references: [id])
+
+  @@unique([session_id, user_id])
+  @@index([session_id])
+  @@index([user_id])
 }

@@ -39,6 +39,10 @@ import CreateJobs from "./CreateJobs.jsx";
 import CreateWorkshop from "./CreateWorkshop.jsx";
 import LandingPage from "./LandingPage.jsx";
 import BookSession from "./BookSession.jsx";
+import Error from "./Error.jsx";
+import Community from "./Community.jsx";
+import Question from "./Question.jsx";
+import BlankPage from "./blank.jsx";
 
 const mentor = {
   id: "id",
@@ -135,10 +139,11 @@ const router = createBrowserRouter([
   {
     path: "/",
     element: <App />,
+    errorElement: <Error />,
     children: [
       {
         path: "/",
-        element: <Dashboard />,
+        element: <LandingPage />,
       },
       {
         path: "upcoming",
@@ -255,14 +260,21 @@ const router = createBrowserRouter([
         element: <CreateWorkshop />
       },
       {
+        path: "blank",
+        element: <BlankPage />
+      },
+      {
         path: "book_session/:availableSessionId",
         element: <BookSession />
+      }, {
+        path: "community",
+        element: <Community />
+      }, {
+        path: "community/:questionId",
+        element: <Question />
       }
     ],
-  }, {
-    path: "landing-page",
-    element: <LandingPage />
-  }
+  },
 ]);
 
 createRoot(document.getElementById("root")).render(

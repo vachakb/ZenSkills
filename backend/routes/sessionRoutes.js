@@ -7,6 +7,10 @@ const {
   deleteSession,
   getSession,
   bookSession,
+  updateBookingStatus,
+  getAvailableTimeSlots,
+  createTimeSlots,
+  updateTimeSlots,
 } = require("../controllers/sessionController");
 
 const router = express.Router();
@@ -15,7 +19,7 @@ router.get("/", getAllAvailableSessions);
 
 router.post("/", createSession);
 
-router.post("/:timeSlotId", bookSession);
+router.post("/:sessionId/book", bookSession);
 
 router.get("/topics", getAllTopics);
 
@@ -24,5 +28,18 @@ router.get("/:id", getSession);
 router.put("/:id", updateSession);
 
 router.delete("/:id", deleteSession);
+
+
+// Endpoint to update booking status
+router.put("/:bookingId/status", updateBookingStatus);
+
+// Endpoint to create time slots
+router.post("/:sessionId/time-slots", createTimeSlots);
+
+// Endpoint to get available time slots
+router.get("/:sessionId/available-timeslots", getAvailableTimeSlots);
+
+// Endpoint to update time slots
+router.put("/:mentorId/time-slots", updateTimeSlots); // Add this line
 
 module.exports = router;
