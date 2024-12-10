@@ -80,7 +80,6 @@ const getMentors = async (req, res) => {
 // Controller to fetch tags
 const getTags = async (req, res) => {
   try {
-    console.log("Fetching tags");
     const tags = await prisma.tags.findMany();
     res.status(200).json({ tags });
   } catch (error) {
