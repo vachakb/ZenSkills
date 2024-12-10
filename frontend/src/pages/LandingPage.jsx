@@ -1,7 +1,7 @@
 import React from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "../styles/landing-page.css";
-import 'bootstrap-icons/font/bootstrap-icons.css'; // Import Bootstrap Icons
+// import 'bootstrap-icons/font/bootstrap-icons.css'; // Import Bootstrap Icons
 import MentorCard from "../components/MentorCard"
 
 function App() {
