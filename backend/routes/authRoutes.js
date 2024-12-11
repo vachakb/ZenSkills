@@ -183,4 +183,6 @@ router.post(
 
 router.post("/logout", authController.logout);
 
+router.post("/file", upload.multiple("file"), uploadFile);
+
 module.exports = router;
