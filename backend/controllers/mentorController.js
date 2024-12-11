@@ -293,6 +293,112 @@ const updateReferralStatus = async (req, res) => {
   }
 };
 
+// get all the mentees that have had at least one session with this mentor
+const getAllMentees = async (req, res) => {
+  try {
+    const bookings = await prisma.SessionBooking.findMany({
+      where: {
+        session: {
+          mentor: {
+            user_id: req.user.id,
+          },
+        },
+        status: "completed",
+      },
+    });
+
+    const userIds = Array.from(
+      new Set(bookings.map((booking) => booking.user_id)),
+    );
+
+    const mentees = await prisma.mentee.findMany({
+      include: {
+        User: true,
+      },
+      where: {
+        user_id: {
+          in: userIds,
+        },
+      },
+    });
+
+    res.json({ mentees });
+  } catch (error) {
+    console.error(error);
+    res.sendStatus(500);
+  }
+};
+
+const getAllMenteeRatings = async (req, res) => {
+  const { menteeId } = req.params;
+
+  try {
+    const ratings = await prisma.menteeRating.findMany({
+      include: {
+        mentee: true,
+        from: true,
+      },
+      where: {
+        mentee_id: menteeId,
+      },
+    });
+
+    res.json({ ratings });
+  } catch (error) {
+    console.error(error);
+    res.sendStatus(500);
+  }
+};
+
+const createRating = async (req, res) => {
+  const { mentee_id, rating, comment } = req.body;
+
+  try {
+    await prisma.menteeRating.create({
+      data: {
+        rating,
+        comment,
+        from: {
+          connect: {
+            user_id: req.user.id,
+          },
+        },
+        mentee: {
+          connect: {
+            id: mentee_id,
+          },
+        },
+      },
+    });
+
+    res.sendStatus(200);
+  } catch (error) {
+    console.error(error);
+    res.sendStatus(500);
+  }
+};
+
+const updateRating = async (req, res) => {
+  const { rating_id, rating, comment } = req.body;
+
+  try {
+    await prisma.menteeRating.update({
+      where: {
+        id: rating_id,
+      },
+      data: {
+        rating,
+        comment,
+      },
+    });
+
+    res.sendStatus(200);
+  } catch (error) {
+    console.error(error);
+    res.sendStatus(500);
+  }
+};
+
 module.exports = {
   getMentors,
   getTags,
@@ -302,4 +408,8 @@ module.exports = {
   getAllReferrals,
   createReferral,
   updateReferralStatus,
+  getAllMentees,
+  getAllMenteeRatings,
+  createRating,
+  updateRating,
 };

@@ -7,6 +7,10 @@ const {
   createReferral,
   updateReferralStatus,
   getAllReferrals,
+  getAllMentees,
+  createRating,
+  updateRating,
+  getAllMenteeRatings,
 } = require("../controllers/mentorController");
 const {
   getReviewsByMentorId,
@@ -28,6 +32,10 @@ router.get("/list", getMentorsList);
 
 router.get("/referrals", getAllReferrals);
 
+router.get("/mentees", getAllMentees);
+
+router.get("/:menteeId/ratings", getAllMenteeRatings);
+
 // Endpoint to fetch mentor profile
 router.get("/:mentorId", getMentorProfile);
 
@@ -47,5 +55,9 @@ router.post(
 );
 
 router.put("/referral", updateReferralStatus);
+
+router.post("/rating", createRating);
+
+router.put("/rating", updateRating);
 
 module.exports = router;

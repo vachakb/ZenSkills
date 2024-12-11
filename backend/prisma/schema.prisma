@@ -58,6 +58,7 @@ model mentee {
   education    MenteeEducation[]
   Review       Review[]          @relation(map: "review_mentee_fk")
   referrals Referral[]
+  ratings MenteeRating[]
 }
 
 model mentor {
@@ -91,6 +92,7 @@ model mentor {
 
   requestedReferrals Referral[]
 
+  menteeRatings MenteeRating[]
 }
 
 model tags {
@@ -476,6 +478,16 @@ model Referral {
 enum ReferralStatus {
   PENDING
   ACCEPTED
+}
+
+model MenteeRating {
+  id String @id @default(uuid())
+  rating Int
+  comment String
+  mentee_id String
+  mentee mentee @relation(fields: [mentee_id], references: [id], onDelete: Cascade)
+  from_id String
+  from mentor @relation(fields: [from_id], references: [id], onDelete: Cascade)
 }
 
 model CommunityQuestion {
