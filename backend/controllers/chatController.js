@@ -58,8 +58,11 @@ exports.createConversation = async (req, res) => {
 
   const conversation = await prisma.conversation.create({
     include: {
-      users: true,
-      profilePicture: true,
+      users: {
+        include: {
+          profilePicture: true,
+        },
+      },
     },
     data: {
       title,
