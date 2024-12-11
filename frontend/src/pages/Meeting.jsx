@@ -23,6 +23,7 @@ import {
   PiChatSlashFill,
   PiDoorOpenFill,
 } from "react-icons/pi";
+import { useNavigate } from "react-router-dom";
 
 function Chat({ open, meetingId, localParticipantId }) {
   const { publish, messages } = usePubSub(meetingId);
@@ -599,6 +600,7 @@ function JoinMeeting({
 }
 
 function Room({ meetingId }) {
+  const navigate = useNavigate();
   const { _, participants, localParticipant, mainParticipant } = useMeeting();
 
   const [openChat, setOpenChat] = useState(false);
@@ -609,7 +611,10 @@ function Room({ meetingId }) {
         <h3>The meeting ended.</h3>
       </div>
     );
+
+
   }
+
 
   return (
     <div

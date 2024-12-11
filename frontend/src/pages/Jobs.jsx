@@ -6,9 +6,15 @@ import axios from "axios";
 import ReactPaginate from "react-paginate";
 import JobApplicationModal from "../components/JobApplicationModal";
 import { fetchJobs } from "../apis/explore";
-import { Spinner } from "react-bootstrap";
+import { Spinner, Button } from "react-bootstrap";
+import useProfile from "../hooks/useProfile";
+import { useNavigate } from "react-router-dom";
+
 
 const JobList = () => {
+  const { profile, isProfileLoading } = useProfile();
+  const navigate = useNavigate();
+
   const [searchTerm, setSearchTerm] = useState("");
   const [locationInput, setLocationInput] = useState("");
   const [filteredJobs, setFilteredJobs] = useState([]);
@@ -32,17 +38,17 @@ const JobList = () => {
 
   const onLoad = async () => {
     setIsLoading(true);
-     try {
-        const responce = await fetchJobs(searchTerm, locationInput, selectedJobTypes, minSalary, maxSalary, currentPage, itemsPerPage)
-        setFilteredJobs(responce?.data?.jobs)
-        setTotalPages(Math.ceil((responce?.data?.totalMentorsCount || 0) / itemsPerPage));
+    try {
+      const responce = await fetchJobs(searchTerm, locationInput, selectedJobTypes, minSalary, maxSalary, currentPage, itemsPerPage)
+      setFilteredJobs(responce?.data?.jobs)
+      setTotalPages(Math.ceil((responce?.data?.totalMentorsCount || 0) / itemsPerPage));
 
-      } catch (error) {
-        console.error(error)
-      } finally {
-        setIsLoading(false);
-      }
+    } catch (error) {
+      console.error(error)
+    } finally {
+      setIsLoading(false);
     }
+  }
 
   useEffect(() => {
     onLoad();
@@ -93,6 +99,7 @@ const JobList = () => {
   return (
     <div className="container my-3">
       <h1 className="text-center mb-4">Explore Jobs</h1>
+      {profile.isMentor && <Button style={{ position: "absolute", right: "40px", bottom: "40px", fontSize: "2rem", borderRadius: "40px", height: "50px", paddingTop: "0px" }} onClick={() => navigate("/create_job")}>+</Button>}
 
       {/* Search and Filters */}
       <div className="mb-4">
