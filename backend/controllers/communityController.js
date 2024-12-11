@@ -82,11 +82,12 @@ exports.updateQuestion = async (req, res) => {
   }
 };
 
+
+
 exports.postAnswer = async (req, res) => {
   const { answer } = req.body;
   const { questionId } = req.params;
   const userId = req.user.id;
-  // const userId = "154fa164-043c-42b2-a0cf-3bbae453ba15";
   try {
     const newAnswer = await prisma.communityAnswer.create({
       data: {
@@ -136,5 +137,32 @@ exports.getQuestionById = async (req, res) => {
   } catch (error) {
     console.error("Error getting question by ID:", error);
     res.status(500).json({ error: "Error getting question by ID" });
+  }
+};
+
+exports.getAllAnswers = async (req, res) => {
+  try {
+    const { questionId } = req.params;
+
+    const answers = await prisma.CommunityAnswer.findMany({
+      where: { communityQuestion_id: questionId },
+      include: {
+        user: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+      },
+    });
+
+    if (!answers.length) {
+      return res.status(404).json({ error: "No answers found for this question" });
+    }
+
+    res.status(200).json(answers);
+  } catch (error) {
+    console.error("Error getting answers:", error);
+    res.status(500).json({ error: "Error getting answers" });
   }
 };
