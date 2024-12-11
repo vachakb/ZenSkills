@@ -240,14 +240,5 @@ exports.uploadDocuments = async (req, res) => {
     },
   });
 
-  await prisma.user.update({
-    where: {
-      id: req.user.id,
-    },
-    data: {
-      credentialsVerified: true,
-    },
-  });
-
   res.sendStatus(200);
 };
