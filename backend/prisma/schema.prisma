@@ -421,19 +421,26 @@ model SessionBooking {
 model MentorVerification {
   id                String   @id @default(uuid())
   mentor_id         String   @unique
-  government_id     String
-  government_id_type String
+  governmentId     String
+  government_id_type government_id_type
   work_email        String?
   linkedin_profile  String?
   additional_info   String?
   created_at        DateTime @default(now())
   updated_at        DateTime @updatedAt
   mentor            mentor   @relation(fields: [mentor_id], references: [id], onDelete: Cascade)
-
-  last_degree       String?
   degree_certificate String?
   additional_file           String?
 
   verified         Boolean?  @default(false)
   @@index([mentor_id])
+}
+
+enum government_id_type {
+  aadhar
+  pan
+  voter_id
+  passport
+  driving_license
+  other
 }
