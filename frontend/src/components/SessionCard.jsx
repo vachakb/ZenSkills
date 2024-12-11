@@ -6,6 +6,7 @@ import { createRoom, getToken } from "../apis/meeting";
 import { useNavigate } from "react-router-dom";
 
 const SessionCard = ({ session, profile, onAction }) => {
+
   const status = useMemo(() => {
     return session.status.charAt(0).toUpperCase() + session.status.slice(1);
   }, [session]);

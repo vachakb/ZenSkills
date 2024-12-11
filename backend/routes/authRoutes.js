@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const authController = require("../controllers/authController");
+
 const {
   registerUserProfile,
 } = require("../controllers/registerUserController");
@@ -12,6 +13,8 @@ const CustomStrategy = require("passport-custom").Strategy;
 const yup = require("yup");
 const { languages } = require("../misc/languages");
 const { states } = require("../misc/states");
+const multer = require("multer");
+const upload = multer({ dest: "uploads/file/" });
 
 passport.serializeUser((user, done) => {
   process.nextTick(() => {
@@ -183,6 +186,12 @@ router.post(
 
 router.post("/logout", authController.logout);
 
-router.post("/file", upload.multiple("file"), uploadFile);
+const documentsUpload = upload.fields([
+  { name: "government_id", maxCount: 1 },
+  { name: "degree_certificate", maxCount: 1 },
+  { name: "additional_file", maxCount: 1 },
+]);
+
+router.post("/file", documentsUpload, authController.uploadDocuments);
 
 module.exports = router;

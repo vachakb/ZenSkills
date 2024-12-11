@@ -54,4 +54,5 @@ export {
   getAllTags,
   getUserProfile,
   editUserProfile,
+  getUserInfo,
 };

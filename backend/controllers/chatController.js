@@ -5,6 +5,9 @@ const clientsConnected = new Map();
 // FIXME only count private chats when filtering
 exports.getAllAvailableChatUsers = async (req, res) => {
   const users = await prisma.User.findMany({
+    include: {
+      profilePicture: true,
+    },
     where: {
       conversations: {
         none: {
@@ -48,6 +51,10 @@ exports.getAllConversations = async (req, res) => {
         value.role = other?.role;
       }
 
+      if (value.type === "GROUP") {
+        value.title = value.users.map((user) => user.name).join(", ");
+      }
+
       return value;
     }),
   });
@@ -58,8 +65,11 @@ exports.createConversation = async (req, res) => {
 
   const conversation = await prisma.conversation.create({
     include: {
-      users: true,
-     
+      users: {
+        include: {
+          profilePicture: true,
+        },
+      },
     },
     data: {
       title,
@@ -74,9 +84,14 @@ exports.createConversation = async (req, res) => {
   });
 
   if (conversation.type === "PRIVATE") {
-    conversation.title = conversation.users.find(
-      (user) => user.id !== req.user.id,
-    )?.name;
+    const other = conversation.users.find((user) => user.id !== req.user.id);
+    conversation.title = other?.name;
+    conversation.profilePicture = other?.profilePicture;
+    conversation.role = other?.role;
+  }
+
+  if (conversation.type === "GROUP") {
+    conversation.title = conversation.users.map((user) => user.name).join(", ");
   }
 
   res.json({ conversation });
