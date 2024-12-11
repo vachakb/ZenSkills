@@ -83,11 +83,6 @@ model mentor {
   created_first_session Boolean @default(false)
 
   TimeSlot TimeSlot[]
-
-  documentId String? @unique
-  document file?  @relation(fields: [documentId], references: [id], onDelete: Cascade)
-
-
 }
 
 model tags {
@@ -420,7 +415,8 @@ model SessionBooking {
 model MentorVerification {
   id                String   @id @default(uuid())
   user_id           String   @unique
-  governmentId      String
+  government_id_document_id      String @unique
+  government_id Document @relation("government_id", fields: [government_id_document_id], references: [id], onDelete: Cascade)
   government_id_type government_id_type
   work_email        String?
   linkedin_profile  String?
@@ -428,10 +424,10 @@ model MentorVerification {
   created_at        DateTime @default(now())
   updated_at        DateTime @updatedAt
   user            User   @relation(fields: [user_id], references: [id], onDelete: Cascade)
-  degree_certificate String?
-  additional_file           String?
-
-  @@index([user_id])
+  degree_certificate_document_id String? @unique
+  degree_certificate Document? @relation("degree_certificate", fields: [degree_certificate_document_id], references: [id], onDelete: Cascade)
+  additional_file_document_id           String?  @unique
+  additional_file Document? @relation("additional_file", fields: [additional_file_document_id], references: [id], onDelete: Cascade)
 }
 
 enum government_id_type {
@@ -443,11 +439,13 @@ enum government_id_type {
   other
 }
 
-model file {
+model Document {
   id String @id @default(uuid())
   filename String
   path String
   size Int
   mimeType String
-  mentor mentor[]
+  government_id     MentorVerification? @relation("government_id")
+  degree_certificate MentorVerification? @relation("degree_certificate")
+  additional_file    MentorVerification? @relation("additional_file")
 }
