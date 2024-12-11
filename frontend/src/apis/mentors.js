@@ -30,10 +30,20 @@ function createReview(mentorId, body) {
   return axiosInstance.post(`/mentors/reviews/${mentorId}`, body);
 }
 
+function getMentorsList() {
+  return axiosInstance.get("/mentors/list");
+}
+
+function createReferral(body) {
+  return axiosInstance.post("/mentors/referral", body);
+}
+
 export {
   getAllMentors,
   getAllMentorTags,
   getMentorProfile,
   getAllReviews,
   createReview,
+  getMentorsList,
+  createReferral,
 };
