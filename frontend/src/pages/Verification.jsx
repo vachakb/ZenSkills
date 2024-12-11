@@ -58,7 +58,7 @@ function Verification() {
                             body.append("linkedin", data.linkedin);
                             body.append("government_id_type", governmentIdMap[data.govid]);
                             // same for all the fields
-                            uploadDocuments(body); // or however u called the endpoint in user.js
+                            uploadDocuments(body).then(() => navigate("/register/1")); // or however u called the endpoint in user.js
                         }}
                     >
                         {(formikProps) => (
