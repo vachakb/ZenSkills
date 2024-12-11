@@ -186,4 +186,25 @@ const editProfile = async (req, res) => {
   }
 };
 
-module.exports = { getMentors, getTags, getMentorProfile, editProfile };
+const getMentorsList = async (req, res) => {
+  try {
+    const mentors = await prisma.mentor.findMany({
+      include: {
+        User: true,
+      },
+    });
+
+    res.json({ mentors });
+  } catch (error) {
+    console.error("Error fetching all mentors:", error);
+    res.sendStatus(500);
+  }
+};
+
+module.exports = {
+  getMentors,
+  getTags,
+  getMentorProfile,
+  editProfile,
+  getMentorsList,
+};
