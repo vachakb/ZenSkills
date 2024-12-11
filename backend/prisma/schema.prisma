@@ -431,7 +431,6 @@ model MentorVerification {
   degree_certificate String?
   additional_file           String?
 
-  verified         Boolean?  @default(false)
   @@index([user_id])
 }
 
