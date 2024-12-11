@@ -171,7 +171,7 @@ function App() {
   ];
 
   // mentors2 = Array(100).fill(mentors2)
-  for (let i = 0; i < 10; i++) {
+  for (let i = 0; i < 8; i++) {
     mentors2 = [...mentors2, ...mentors2]
   }
   console.log(mentors2)
