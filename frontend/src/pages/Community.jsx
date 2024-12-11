@@ -6,6 +6,9 @@ import { fetchTags } from "../apis/explore";
 import { useNavigate } from "react-router-dom";
 import { axiosInstance } from "../apis/commons";
 
+
+const API_URL = "http://localhost:5000";
+
 export default function Community() {
   const navigate = useNavigate();
 
@@ -326,31 +329,31 @@ export default function Community() {
   }, []);
 
   async function getQuestions() {
-    // console.log("calling question")
-    // try{
-    //   console.log("ggh")
-    //   const responce = await axiosInstance.get("/community/questions", {
-    //     params:{
-    //       limit,
-    //       currentPage,
-    //       searchTerm
-    //     }
-    //   })
-    //   console.log("asking for questions")
-    //   console.log(responce)
-    //   setQuestions(await responce.data.question)
-    //   setTotalPages(responce.data.totalPages)
-    // }catch(error){
-    //   console.log("error extracting questions: ", error)
-    // }
-    questions = responce.data.questions;
-    totalPages = responce.data.totalPages;
+    console.log("calling question")
+    try {
+      console.log(limit, currentPage, searchTerm)
+      const responce = await axiosInstance.get(`${API_URL}/api/community/questions`, {
+        params: {
+          limit,
+          currentPage,
+          searchTerm
+        }
+      })
+      console.log("got questions")
+      console.log(responce)
+      setQuestions(responce.data.questions)
+      setTotalPages(responce.data.totalPages)
+    } catch (error) {
+      console.log("error extracting questions: ", error)
+    }
+    // questions = responce.data.questions;
+    // totalPages = responce.data.totalPages;
 
-    setQuestions(
-      allQuestions.slice(currentPage * limit, (currentPage + 1) * limit)
-    );
-    setTotalPages(Math.ceil(allQuestions.length / limit));
-    console.log(currentPage, questions, totalPages);
+    // setQuestions(
+    //   allQuestions.slice(currentPage * limit, (currentPage + 1) * limit)
+    // );
+    // setTotalPages(Math.ceil(allQuestions.length / limit));
+    // console.log(currentPage, questions, totalPages);
   }
 
   useEffect(() => {
@@ -375,12 +378,12 @@ export default function Community() {
   }
 
   async function handleQuestionSubmit() {
-    // post question
+    // post question`
     try {
-      const response = await axiosInstance.post('/community/questions', inputQuestion);
+      const response = await axiosInstance.post(`${API_URL}/api/community/questions`, inputQuestion);
       if (response.status === 201 || response.status === 200) {
         console.log('Request completed successfully:', response.data);
-        alert('Question "'+inputQuestion+'" submitted successfully!');
+        alert('Question "' + inputQuestion + '" submitted successfully!');
       } else {
         console.error('Unexpected status:', response.status);
       }
@@ -475,7 +478,7 @@ export default function Community() {
       {/* col col-sm-12 col-md-6 col-lg-4 col-xl-3 col-xxl-2 */}
       {/* questions */}
       <div className="row g-2">
-        {questions.map((question) => {
+        {questions?.map((question) => {
           return (
             <div className="col-12" onClick={() => {
               navigate("/community/" + question.id);
