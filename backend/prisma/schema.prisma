@@ -43,6 +43,8 @@ model User {
 
 
   @@unique(name: "account_id", [email, role])
+  CommunityQuestion CommunityQuestion[]
+  CommunityAnswer CommunityAnswer[]
 }
 
 model mentee {
@@ -451,4 +453,25 @@ model Document {
   government_id     MentorVerification? @relation("government_id")
   degree_certificate MentorVerification? @relation("degree_certificate")
   additional_file    MentorVerification? @relation("additional_file")
+}
+
+model CommunityQuestion {
+  id    String @id @default(uuid())
+  question  String
+  created_at    DateTime @default(now())
+  answers     Int
+  q_user_id     String
+  user        User @relation(fields: [q_user_id], references: [id]) 
+
+  CommunityAnswer CommunityAnswer[]
+}
+
+model CommunityAnswer {
+  id    String @id @default(uuid())
+  answer  String
+  created_at    DateTime @default(now())
+  communityQuestion_id     String
+  a_user_id     String
+  user        User @relation(fields: [a_user_id], references: [id]) 
+  community        CommunityQuestion @relation(fields: [communityQuestion_id], references: [id]) 
 }
