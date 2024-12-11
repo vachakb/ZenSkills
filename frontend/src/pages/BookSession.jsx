@@ -57,16 +57,6 @@ function BookSession() {
     );
   }
 
-  const generateNext14Days = () => {
-    const days = [];
-    const today = DateTime.local();
-    for (let i = 0; i < 14; i++) {
-      days.push(today.plus({ days: i }));
-    }
-    return days;
-  };
-
-  const next14Days = generateNext14Days();
 
   return (
     <div className="d-flex h-100 position-relative">
@@ -117,6 +107,7 @@ function BookSession() {
               }}
             >
               <h5>{key.substring(0, 3)}</h5>
+              //TODO - change the date to the next available date
               <h5>{DateTime.now().minus({ days: (DateTime.now().weekday - (dayOfWeek.indexOf(key) + 1)) }).startOf('day').toFormat("dd/MM")}</h5>
               <h5>{session.timeSlots[key].filter(timeSlot => timeSlot.available).length}</h5>
             </div>
