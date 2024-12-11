@@ -171,7 +171,7 @@ function App() {
   ];
 
   // mentors2 = Array(100).fill(mentors2)
-  for(let i=0; i<10; i++){
+  for (let i = 0; i < 10; i++) {
     mentors2 = [...mentors2, ...mentors2]
   }
   console.log(mentors2)
@@ -423,7 +423,7 @@ function App() {
       {/* Hero Section */}
       <div
         className="container align-items-center mt-5"
-        // style={{ minHeight: "calc(100vh - 56px)" }} // 56px is the default navbar height
+      // style={{ minHeight: "calc(100vh - 56px)" }} // 56px is the default navbar height
       >
         <div className="row w-100 mt-3 mb-5">
           {/* Left Side */}

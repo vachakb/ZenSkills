@@ -49,9 +49,13 @@ function Conversation({ children, onClick, profilePicture }) {
           height: "32px",
           objectFit: "contain",
         }}
+
       />
+
       <span>{children}</span>
+
     </div>
+
   );
 }
 
@@ -261,9 +265,13 @@ function Chat() {
 
             >
               {conversation.title}
+
             </Conversation>
+
           ))}
           <hr />
+
+
           <Button onClick={() => openNewConversationModal()}>
             Start new conversation...
           </Button>
@@ -449,7 +457,7 @@ function Chat() {
             <h4>Select a conversation or start a new one</h4>
           </div>
         )}
-      </div>
+      </div >
     </>
   );
 }
