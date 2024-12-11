@@ -75,6 +75,9 @@ function updateBookingStatus(bookingId, status) {
 function setSessionRoomId(bookingId, roomId) {
   return axiosInstance.put(`/session/${bookingId}/room`, { room_id: roomId });
 }
+function updateTimeSlots(mentorId,sessionData) {
+  return axiosInstance.put(`/session/${mentorId}/time-slots`, sessionData);
+}
 
 export {
   getAllAvailableSessions,
@@ -87,4 +90,5 @@ export {
   deleteSession,
   updateBookingStatus,
   setSessionRoomId,
+  updateTimeSlots
 };
