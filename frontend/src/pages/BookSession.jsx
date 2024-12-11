@@ -1,17 +1,13 @@
-import { useEffect, useMemo, useState } from "react";
-import { Button, Form, Spinner } from "react-bootstrap";
+import { useEffect, useState } from "react";
+import { Button, Spinner } from "react-bootstrap";
 import { useNavigate, useParams } from "react-router-dom";
 import { bookSession, getSession } from "../apis/session";
 import { DateTime, Duration } from "luxon";
-import { Formik } from "formik";
 import { LuClock3 } from "react-icons/lu";
 import useProfile from "../hooks/useProfile";
-import { weeksToDays } from "date-fns";
 
 function BookSession() {
-  const { profile } = useProfile();
-
-const dayOfWeek = ["SUNDAY", "MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY"];
+  const dayOfWeek = ["SUNDAY", "MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY"];
 
   const { availableSessionId } = useParams();
 
@@ -110,6 +106,7 @@ const dayOfWeek = ["SUNDAY", "MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRID
               }}
             >
               <h5>{key.substring(0, 3)}</h5>
+              <h5>{DateTime.now().minus({ days: (DateTime.now().weekday - (dayOfWeek.indexOf(key) + 1)) }).startOf('day').toFormat("dd/MM")}</h5>
               <h5>{session.timeSlots[key].filter(timeSlot => timeSlot.available).length}</h5>
             </div>
           ))}
