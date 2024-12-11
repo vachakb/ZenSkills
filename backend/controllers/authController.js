@@ -58,10 +58,10 @@ exports.login = new LocalStrategy(
 
       if (await argon2.verify(user.password, password)) {
         //for blocking the mentor logging until the mentor is verified
-        // if (role === 'mentor' && !user.credentialsVerified){
-        //   done(null, false);
-        //   return;
-        // }
+        if (role === "mentor" && !user.credentialsVerified) {
+          done(null, false);
+          return;
+        }
         done(null, user);
       } else {
         done(null, false);
