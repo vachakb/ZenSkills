@@ -4,6 +4,7 @@ import { Navigate } from "react-router-dom";
 import ReactPaginate from "react-paginate";
 import { fetchTags } from "../apis/explore";
 import { useNavigate } from "react-router-dom";
+import { axiosInstance } from "../apis/commons";
 
 export default function Community() {
   const navigate = useNavigate();
@@ -325,11 +326,25 @@ export default function Community() {
   }, []);
 
   async function getQuestions() {
-    // call api for questions/blogs
-
-    //   const responce = await fetchQuestions(currentPage, limit, searchTerm);
-    //   questions = responce.data.questions;
-    //   totalPages = responce.data.totalPages;
+    // console.log("calling question")
+    // try{
+    //   console.log("ggh")
+    //   const responce = await axiosInstance.get("/community/questions", {
+    //     params:{
+    //       limit,
+    //       currentPage,
+    //       searchTerm
+    //     }
+    //   })
+    //   console.log("asking for questions")
+    //   console.log(responce)
+    //   setQuestions(await responce.data.question)
+    //   setTotalPages(responce.data.totalPages)
+    // }catch(error){
+    //   console.log("error extracting questions: ", error)
+    // }
+    questions = responce.data.questions;
+    totalPages = responce.data.totalPages;
 
     setQuestions(
       allQuestions.slice(currentPage * limit, (currentPage + 1) * limit)
@@ -359,9 +374,20 @@ export default function Community() {
     setSelectedTags([...selectedTags, tag]);
   }
 
-  function handleQuestionSubmit() {
+  async function handleQuestionSubmit() {
     // post question
-    const responce = postQuestion(inputQuestion);
+    try {
+      const response = await axiosInstance.post('/community/questions', inputQuestion);
+      if (response.status === 201 || response.status === 200) {
+        console.log('Request completed successfully:', response.data);
+        alert('Question "'+inputQuestion+'" submitted successfully!');
+      } else {
+        console.error('Unexpected status:', response.status);
+      }
+    } catch (error) {
+      console.error('Error during POST request:', error);
+      alert('Failed to submit the question. Please try again.');
+    }
 
     getQuestions();
   }
@@ -416,11 +442,10 @@ export default function Community() {
             {allTags.map((tag) => {
               return (
                 <button
-                  className={`btn ${
-                    selectedTags.includes(tag)
-                      ? "btn-success active"
-                      : "btn-outline-secondary border border-secondary"
-                  } rounded-pill px-2 mx-2 my-1`}
+                  className={`btn ${selectedTags.includes(tag)
+                    ? "btn-success active"
+                    : "btn-outline-secondary border border-secondary"
+                    } rounded-pill px-2 mx-2 my-1`}
                   onClick={() => handleTagClick(tag)}
                 >
                   {tag}
@@ -454,7 +479,7 @@ export default function Community() {
           return (
             <div className="col-12" onClick={() => {
               navigate("/community/" + question.id);
-            }} style={{cursor: "pointer"}}>
+            }} style={{ cursor: "pointer" }}>
               <div
                 className="p-3 h-100 border rounded d-flex flex-column justify-content-between bg-light"
                 onClick={() => postClickHandler(question.id)}

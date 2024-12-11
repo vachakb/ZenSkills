@@ -62,14 +62,7 @@ const MentorDetailsCard = ({ mentor, onVerify, onDecline }) => {
           <strong>Updated At:</strong> {new Date(mentor.updated_at).toLocaleString()}
         </div>
 
-        <div className="d-flex justify-content-end mt-3">
-          <Button variant="success" className="me-2" onClick={() => onVerify(mentor)}>
-            Verify
-          </Button>
-          <Button variant="danger" onClick={() => onDecline(mentor)}>
-            Decline
-          </Button>
-        </div>
+        
       </Card.Body>
     </Card>
   );
