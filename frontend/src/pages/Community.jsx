@@ -380,7 +380,9 @@ export default function Community() {
   async function handleQuestionSubmit() {
     // post question`
     try {
-      const response = await axiosInstance.post(`${API_URL}/api/community/questions`, inputQuestion);
+      console.log(inputQuestion)
+      const response = await axiosInstance.post(`${API_URL}/api/community/questions`, {inputQuestion});
+      
       if (response.status === 201 || response.status === 200) {
         console.log('Request completed successfully:', response.data);
         alert('Question "' + inputQuestion + '" submitted successfully!');
