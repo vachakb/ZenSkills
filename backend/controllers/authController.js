@@ -200,20 +200,37 @@ exports.logout = function (req, res, next) {
     res.sendStatus(200);
   });
 };
-
-//For Mentor Credentials Verification
-exports.uploadFile = async (req, res) => {
-  const file = await prisma.file.create({
-    omit: {
-      path: true,
-    },
+exports.uploadDocuments = async (req, res) => {
+  const uploaded = await prisma.MentorVerification.create({
     data: {
-      filename: req.file.originalname,
-      path: req.file.path,
-      size: req.file.size,
-      mimeType: req.file.mimetype,
-    },
-  });
-
-  res.json({ file });
-};
+        government_id: {
+            create: {
+                filename: req.files["government_id"].originalname,
+                path: req.files["government_id"].path,
+                size: req.files["government_id"].size,
+                mimeType: req.files["government_id"].mimetype,
+            }
+        },
+        degree_certificate: {
+          create: {
+                filename: req.files["degree_certificate"].originalname,
+                path: req.files["degree_certificate"].path,
+                size: req.files["degree_certificate"].size,
+                mimeType: req.files["degree_certificate"].mimetype,
+            }
+        },
+        additional_file: {
+          create: {
+                filename: req.files["additional_file"].originalname,
+                path: req.files["additional_file"].path,
+                size: req.files["additional_file"].size,
+                mimeType: req.files["additional_file"].mimetype,
+            }
+        },
+        work_email: req.body.work_email,
+        linkedin: req.body.linkedin,
+        additional_info: req.body.additional_info,
+      }
+  })
+res.sendStatus(200);
+}

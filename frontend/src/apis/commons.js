@@ -19,5 +19,8 @@ function uploadImage(image) {
   formData.append("file", image);
   return axiosInstance.post("/image", formData);
 }
+function uploadDocuments(data) {
+  return axiosInstance.post("/file", data);
+}
 
-export { API_URL, axiosInstance, uploadImage };
+export { API_URL, axiosInstance, uploadImage,uploadDocuments };

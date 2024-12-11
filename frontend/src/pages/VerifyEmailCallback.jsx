@@ -9,7 +9,7 @@ function VerifyEmailCallback() {
 
   useEffect(() => {
     verificationEmailCallback(searchParams.get("token"))
-      .then(() => navigate("/register/1"));
+      .then(() => navigate("/verification"));
   }, [searchParams]);
 
   return (

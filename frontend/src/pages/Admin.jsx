@@ -132,15 +132,15 @@ const AdminPage = () => {
   ];
 
   const [currentPage, setCurrentPage] = useState(0);
-  const mentorsPerPage = 3;
+  const limit = 3;
 
   const handlePageClick = ({ selected }) => {
     setCurrentPage(selected);
   };
 
   const currentMentors = mentorsVarifyData.slice(
-    currentPage * mentorsPerPage,
-    currentPage * mentorsPerPage + mentorsPerPage
+    currentPage * limit,
+    currentPage * limit + limit
   );
 
   const renderTabContent = (tab) => {
@@ -213,7 +213,7 @@ const AdminPage = () => {
     // ...
     getMentors()
 
-    setMentors(mentorsVarifyData.slice(currentPage * mentorsPerPage, (currentPage + 1) * mentorsPerPage));
+    setMentors(mentorsVarifyData.slice(currentPage * limit, (currentPage + 1) * limit));
   }, [currentPage])
 
   return (
@@ -256,12 +256,13 @@ const AdminPage = () => {
                           cursor: "pointer",
                           marginBottom: "10px",
                           padding: "10px",
-                          border: selectedMentor?.id === mentor.id ? "2px solid blue" : "1px solid #ddd",
+                          border: (selectedMentor!==null && selectedMentor.user_id === mentor.user_id) ? "2px solid blue" : "1px solid #ddd",
                           borderRadius: "5px",
-                          backgroundColor: selectedMentor!==null || selectedMentor.id === mentor.id ? "#f0f8ff" : "black",
+                          backgroundColor: (selectedMentor !== null && selectedMentor.user_id === mentor.user_id) ? "#f0f8ff" : "#bdbfbe",
                         }}
-                        onClick={() => setSelectedMentor(mentor)}
+                        onClick={() => {setSelectedMentor(mentor);}}
                       >
+                        {console.log(selectedMentor, mentor)}
                         <p className="fw-bold">{mentor.name}</p>
                         <p>{mentor.updated_at}</p>
                       </div>
@@ -271,7 +272,7 @@ const AdminPage = () => {
                     previousLabel={"Previous"}
                     nextLabel={"Next"}
                     breakLabel={"..."}
-                    pageCount={Math.ceil(mentorsVarifyData.length / mentorsPerPage)}
+                    pageCount={Math.ceil(mentorsVarifyData.length / limit)}
                     marginPagesDisplayed={2}
                     pageRangeDisplayed={3}
                     onPageChange={handlePageClick}

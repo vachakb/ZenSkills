@@ -632,7 +632,10 @@ function Room({ meetingId, roomType, isHost, onMeetingEnded }) {
         <h4>You will be redirected shortly...</h4>
       </div>
     );
+
+
   }
+
 
   return (
     <div

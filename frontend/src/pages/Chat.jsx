@@ -349,8 +349,9 @@ function Chat() {
               <p>Loading...</p>
             </div>
           ) : (
-            <div className="d-flex flex-column flex-grow-1">
-              <div className="d-flex gap-3 align-items-center">
+            <div className="d-flex flex-column flex-grow-1" >
+
+              <div className="d-flex gap-3 align-items-center" >
                 <img
                   src={
                     conversations[selectedConversation].profilePicture
@@ -373,6 +374,8 @@ function Chat() {
                   </h6>
                 </div>
               </div>
+              <hr />
+
               <div
                 className="d-flex flex-column flex-grow-1 p-2 gap-2 overflow-auto"
                 onScroll={(ev) => {
