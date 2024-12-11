@@ -300,13 +300,13 @@ exports.getAllQuestions = async (req, res) => {
 };
 
 exports.postQuestion = async (req, res) => {
-  console.log(req)
+  console.log(req);
   const { inputQuestion } = req.body;
-    const userId = req.user.id;
+  const userId = req.user.id;
   try {
     const newQuestion = await prisma.communityQuestion.create({
       data: {
-        question:inputQuestion,
+        question: inputQuestion,
         q_user_id: userId,
         answers: 0,
       },
@@ -363,5 +363,32 @@ exports.postAnswer = async (req, res) => {
   } catch (error) {
     console.error("Error posting answer:", error);
     res.status(500).json({ error: "Error posting answer" });
+  }
+};
+
+exports.getQuestionById = async (req, res) => {
+  try {
+    const { questionId } = req.params;
+    console.log(questionId);
+    const question = await prisma.CommunityQuestion.findUnique({
+      where: { id: questionId },
+      include: {
+        user: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+      },
+    });
+
+    if (!question) {
+      return res.status(404).json({ error: "Question not found" });
+    }
+
+    res.status(200).json(question);
+  } catch (error) {
+    console.error("Error getting question by ID:", error);
+    res.status(500).json({ error: "Error getting question by ID" });
   }
 };
