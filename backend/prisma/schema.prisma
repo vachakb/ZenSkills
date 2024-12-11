@@ -38,8 +38,6 @@ model User {
   profilePictureId String? @unique
   profilePicture Image?  @relation(fields: [profilePictureId], references: [id], onDelete: Cascade)
 
-  credentialsVerified Boolean @default(false)
-  MentorVerification MentorVerification?
 
 
   @@unique(name: "account_id", [email, role])
@@ -431,12 +429,11 @@ model MentorVerification {
   created_at        DateTime @default(now())
   updated_at        DateTime @updatedAt
   mentor            mentor   @relation(fields: [mentor_id], references: [id], onDelete: Cascade)
-  user_id           String @unique
-  user              User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
 
   last_degree       String?
   degree_certificate String?
   additional_file           String?
+
+  verified         Boolean?  @default(false)
   @@index([mentor_id])
-  @@index([user_id])
 }
