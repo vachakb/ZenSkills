@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Container, Row, Col, Nav, Tab, Card, Button } from "react-bootstrap";
+import { Container, Row, Col, Navbar, Nav, Card } from "react-bootstrap";
 import { Line } from "react-chartjs-2";
 import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend } from "chart.js";
 
@@ -7,7 +7,7 @@ import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
 
 const AdminPage = () => {
-  const [key, setKey] = useState("mentors");
+  const [activeTab, setActiveTab] = useState("mentors");
 
   // Dummy Data for each tab
   const mentorsData = {
@@ -143,31 +143,30 @@ const AdminPage = () => {
 
   return (
     <Container>
-      <h2>Admin Dashboard</h2>
-      <Tab.Container id="admin-tabs" activeKey={key} onSelect={(k) => setKey(k)}>
-        <Row>
-          <Col sm={3}>
-            <Nav variant="pills" className="flex-column">
-              <Nav.Item>
-                <Nav.Link eventKey="mentors">Mentors</Nav.Link>
-              </Nav.Item>
-              <Nav.Item>
-                <Nav.Link eventKey="workshops">Workshops</Nav.Link>
-              </Nav.Item>
-              <Nav.Item>
-                <Nav.Link eventKey="applications">Job Applications</Nav.Link>
-              </Nav.Item>
-            </Nav>
-          </Col>
-          <Col sm={9}>
-            <Tab.Content>
-              <Tab.Pane eventKey="mentors">{renderTabContent("mentors")}</Tab.Pane>
-              <Tab.Pane eventKey="workshops">{renderTabContent("workshops")}</Tab.Pane>
-              <Tab.Pane eventKey="applications">{renderTabContent("applications")}</Tab.Pane>
-            </Tab.Content>
-          </Col>
-        </Row>
-      </Tab.Container>
+      <h2 className="text-center m-3 fw-bold">Admin Dashboard</h2>
+      <Navbar bg="light" expand="md">
+        <Nav className="">
+          <Nav.Link onClick={() => setActiveTab("mentors")} active={activeTab === "mentors"}>Mentors</Nav.Link>
+          <Nav.Link onClick={() => setActiveTab("workshops")} active={activeTab === "workshops"}>Workshops</Nav.Link>
+          <Nav.Link onClick={() => setActiveTab("applications")} active={activeTab === "applications"}>Job Applications</Nav.Link>
+          <Nav.Link onClick={() => setActiveTab("verifyMentors")} active={activeTab === "verifyMentors"}>Verify Mentors</Nav.Link>
+        </Nav>
+      </Navbar>
+
+      {/* Render content based on active tab */}
+      <Row>
+        <Col>
+          {activeTab === "mentors" && renderTabContent("mentors")}
+          {activeTab === "workshops" && renderTabContent("workshops")}
+          {activeTab === "applications" && renderTabContent("applications")}
+          {activeTab === "verifyMentors" && (
+            <div style={{ padding: "20px" }}>
+              <h4>Verify mentors</h4>
+              
+            </div>
+          )}
+        </Col>
+      </Row>
     </Container>
   );
 };
