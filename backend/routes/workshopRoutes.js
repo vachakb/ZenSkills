@@ -8,6 +8,7 @@ const {
     deleteWorkshop,
     markAttendance,
     getWorkshopAttendance,
+    getUserRegisteredWorkshops,
   } = require("../controllers/workshopController");
 
 const router = express.Router();
@@ -35,5 +36,7 @@ router.post("/:id/attendance", markAttendance);
 
 // Endpoint to get workshop attendance
 router.get("/:id/attendance", getWorkshopAttendance);
+
+router.get("/registered/:userId", getUserRegisteredWorkshops);
 
 module.exports = router;

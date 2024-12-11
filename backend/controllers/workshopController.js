@@ -246,6 +246,7 @@ const getWorkshopAttendance = async (req, res) => {
 const bookWorkshop = async (req, res) => {
   const { id: workshopId } = req.params;
   const { userId } = req.body;
+  console.log(req.body);
 
   try {
     // Check if the workshop exists
@@ -288,6 +289,25 @@ const bookWorkshop = async (req, res) => {
   }
 };
 
+// Controller to fetch all workshops booked by a user
+const getUserRegisteredWorkshops = async (req, res) => {
+  const { userId } = req.params;
+
+  try {
+    const workshops = await prisma.WorkshopBooking.findMany({
+      where: {
+        user_id: userId,
+      },
+    });
+    console.log(workshops);
+
+    res.status(200).json({ workshops });
+  } catch (error) {
+    console.error("Error fetching user registered workshops:", error);
+    res.status(500).json({ error: "Error fetching user registered workshops" });
+  }
+};
+
 module.exports = {
   getAllWorkshops,
   getWorkshopById,
@@ -297,4 +317,5 @@ module.exports = {
   getWorkshopAttendance,
   markAttendance,
   bookWorkshop,
+  getUserRegisteredWorkshops
 };
