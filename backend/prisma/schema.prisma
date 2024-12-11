@@ -38,8 +38,6 @@ model User {
   profilePictureId String? @unique
   profilePicture Image?  @relation(fields: [profilePictureId], references: [id], onDelete: Cascade)
 
-  credentialsVerified Boolean @default(false)
-  MentorVerification MentorVerification?
 
 
   @@unique(name: "account_id", [email, role])
@@ -414,6 +412,7 @@ model SessionBooking {
   date            DateTime
   event_id String? // Add this line
   created_at      DateTime      @default(now())
+  room_id          String?
 
   session MentorSession @relation(fields: [session_id], references: [id])
   user    User?          @relation(fields: [user_id], references: [id])
@@ -427,15 +426,14 @@ model MentorVerification {
   work_email        String?
   linkedin_profile  String?
   additional_info   String?
-  file_urls         String[] // Add this line to store file URLs
   created_at        DateTime @default(now())
   updated_at        DateTime @updatedAt
   mentor            mentor   @relation(fields: [mentor_id], references: [id], onDelete: Cascade)
-  user_id           String @unique
-  user              User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
 
   last_degree       String?
   degree_certificate String?
+  additional_file           String?
+
+  verified         Boolean?  @default(false)
   @@index([mentor_id])
-  @@index([user_id])
 }

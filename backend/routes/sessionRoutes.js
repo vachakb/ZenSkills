@@ -12,6 +12,7 @@ const {
   createTimeSlots,
   updateTimeSlots,
   getAllUserSessions,
+  setSessionRoomId,
 } = require("../controllers/sessionController");
 
 const router = express.Router();
@@ -25,6 +26,8 @@ router.get("/list/:mentorId", getAllAvailableSessions);
 router.get("/user/list", getAllUserSessions);
 
 router.post("/", createSession);
+
+router.put("/:id/room", setSessionRoomId);
 
 router.post("/:bookingId/book", bookSession);
 

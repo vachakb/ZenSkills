@@ -6,6 +6,8 @@ import ProfileMenu from "./profileMenu";
 import { useLocation } from "react-router-dom";
 import useProfile from "../hooks/useProfile";
 import NotificationMenu from "./NotificationMenu";
+import { FaCoins, FaCreditCard } from 'react-icons/fa';
+import CreditsModal from "./CreditsModal";
 
 function Header({ onToggleSideBar, headerRef }) {
   const { profile } = useProfile();
@@ -20,7 +22,7 @@ function Header({ onToggleSideBar, headerRef }) {
         ZenSkills
       </Navbar.Brand>
       <Nav className="ms-auto d-flex align-items-center gap-4">
-        <div className="d-flex align-items-center gap-3">
+        <div className="d-flex align-items-center gap-4">
           {/* <img src="/bell.svg" alt="Notifications" style={{ width: "28px" }} /> */}
           {/* Notifications */}
           <NotificationMenu
@@ -39,6 +41,21 @@ function Header({ onToggleSideBar, headerRef }) {
               },
             ]}
           />
+
+          {/* <Credits/> */}
+          <div
+            // onClick={toggleMenu}
+            className="d-flex align-items-center gap-2 bg-light bg-opacity-25 rounded p-1 px-2"
+            style={{ cursor: "pointer", color: "white" }}
+            data-bs-toggle="modal" data-bs-target="#credits-modal"
+          >
+            <FaCoins style={{ fontSize: '18px', color: 'white' }} />
+            {/* add api call here */}
+            <span>100</span>
+          </div>
+
+          {/* credits modal */}
+          <CreditsModal id="credits-modal"/>
 
           <GiHamburgerMenu
             color="white"

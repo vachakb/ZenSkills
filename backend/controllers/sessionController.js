@@ -429,7 +429,7 @@ exports.updateBookingStatus = async (req, res) => {
         where: { id: bookingId },
         data: {
           status,
-          event_id: mentorEvent.data.id,
+          // event_id: mentorEvent.data.id,
         },
       });
     } else if (status === "rejected") {
@@ -734,4 +734,16 @@ exports.getAllUserSessions = async (req, res) => {
   });
 
   res.json({ bookings });
+};
+
+exports.setSessionRoomId = async (req, res) => {
+  const { id } = req.params;
+  const { room_id } = req.body;
+
+  await prisma.SessionBooking.update({
+    where: { id },
+    data: { room_id },
+  });
+
+  res.sendStatus(200);
 };
