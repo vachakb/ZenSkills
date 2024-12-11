@@ -7,7 +7,7 @@
 .card-wrapper {
   display: flex;
   flex-direction: column;
-  animation: scrollY 10000s linear infinite; /* Animation for vertical scroll */
+  animation: scrollY 4000s linear infinite; /* Animation for vertical scroll */
 }
 
 .card {
