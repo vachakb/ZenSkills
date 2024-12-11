@@ -1,12 +1,16 @@
 import React, { useMemo } from "react";
 import { Card, Button, Badge } from "react-bootstrap";
 import { DateTime } from "luxon";
-import { updateBookingStatus } from "../apis/session";
+import { setSessionRoomId, updateBookingStatus } from "../apis/session";
+import { createRoom, getToken } from "../apis/meeting";
+import { useNavigate } from "react-router-dom";
 
 const SessionCard = ({ session, profile, onAction }) => {
   const status = useMemo(() => {
     return session.status.charAt(0).toUpperCase() + session.status.slice(1);
   }, [session]);
+
+  const navigate = useNavigate();
 
   const getStatusBadge = (status) => {
     switch (status) {
@@ -27,6 +31,21 @@ const SessionCard = ({ session, profile, onAction }) => {
     }
   };
 
+  const joinSession = async () => {
+    let roomId = session.room_id;
+
+    if (!roomId) {
+      const tokenRes = await getToken();
+      const token = tokenRes.data.token;
+      const roomRes = await createRoom(token);
+      roomId = roomRes.data.roomId
+      console.log(session.id, roomId)
+      setSessionRoomId(session.id, roomId)
+    }
+
+    navigate(`/meeting/${roomId}`);
+  }
+
   const updateSessionStatus = (status) => {
     updateBookingStatus(session.id, status);
     onAction();
@@ -37,7 +56,7 @@ const SessionCard = ({ session, profile, onAction }) => {
       case "Accepted":
         return (
           <>
-            <Button variant="success">Join</Button>
+            <Button variant="success" onClick={() => joinSession()}>Join</Button>
             <Button variant="danger" onClick={() => updateSessionStatus("cancelled")}>Cancel</Button>
           </>
         );

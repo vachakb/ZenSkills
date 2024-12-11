@@ -72,6 +72,10 @@ function updateBookingStatus(bookingId, status) {
   return axiosInstance.put(`/session/${bookingId}/status`, { status });
 }
 
+function setSessionRoomId(bookingId, roomId) {
+  return axiosInstance.put(`/session/${bookingId}/room`, { room_id: roomId });
+}
+
 export {
   getAllAvailableSessions,
   getSession,
@@ -82,4 +86,5 @@ export {
   getAllTopics,
   deleteSession,
   updateBookingStatus,
+  setSessionRoomId,
 };

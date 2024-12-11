@@ -408,6 +408,7 @@ model SessionBooking {
   date            DateTime
   event_id String? // Add this line
   created_at      DateTime      @default(now())
+  room_id          String?
 
   session MentorSession @relation(fields: [session_id], references: [id])
   user    User?          @relation(fields: [user_id], references: [id])
