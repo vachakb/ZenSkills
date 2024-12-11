@@ -16,7 +16,6 @@ const { states } = require("../misc/states");
 const multer = require("multer");
 const upload = multer({ dest: "uploads/file/" });
 
-
 passport.serializeUser((user, done) => {
   process.nextTick(() => {
     done(null, { id: user.id, email: user.email, role: user.role });
@@ -186,11 +185,13 @@ router.post(
 );
 
 router.post("/logout", authController.logout);
-const documentsUpload = upload.fields([{ name: "government_id", maxCount: 1 }, { name: "degree_certificate", maxCount: 1 }, { name: "additional_file", maxCount: 1 }])
+
+const documentsUpload = upload.fields([
+  { name: "government_id", maxCount: 1 },
+  { name: "degree_certificate", maxCount: 1 },
+  { name: "additional_file", maxCount: 1 },
+]);
+
 router.post("/file", documentsUpload, authController.uploadDocuments);
-
-
-
-// router.post("/file", upload.multiple("file"), uploadFile);
 
 module.exports = router;
