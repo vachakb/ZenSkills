@@ -88,7 +88,7 @@ function ProfileMenu({ profile }) {
               {console.log(isEditing)}
               Edit Profile
             </Button>
-            <Button
+            {profile.isMentor && <Button
               variant="outline-primary"
               className="w-100 mb-2"
               onClick={() => {
@@ -99,7 +99,7 @@ function ProfileMenu({ profile }) {
               style={{ borderRadius: "20px" }}
             >
               Update Time Slots
-            </Button>
+            </Button>}
             <Button
               variant="outline-primary"
               className="w-100 mb-2"

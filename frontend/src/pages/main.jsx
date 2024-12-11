@@ -48,6 +48,8 @@ import AdminPage from "./Admin.jsx";
 import Verification from "./Verification.jsx";
 
 import UpdateTimeSlots from "./UpdateTimeSlots.jsx";
+import Referrals from "./Referrals.jsx";
+import ReferralRequests from "./referral_request.jsx";
 
 
 const mentor = {
@@ -301,6 +303,14 @@ const router = createBrowserRouter([
       {
         path: "update_slots",
         element: <UpdateTimeSlots />
+      },
+      {
+        path: "referrals",
+        element: <Referrals />
+      },
+      {
+        path: "referral_request",
+        element: <ReferralRequests />,
       },
     ],
   }, {
