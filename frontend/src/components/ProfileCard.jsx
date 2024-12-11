@@ -6,6 +6,7 @@ import { GiRoundStar } from "react-icons/gi";
 import { FieldArray } from "formik";
 import { getAllTags } from "../apis/user";
 import { editProfile } from "../apis/mentees";
+import { API_URL } from "../apis/commons";
 
 const ProfileCard = ({ profile, isCurrentUser = false, isEditing = false, formikProps = undefined }) => {
   const handleShareClick = () => {
@@ -123,12 +124,13 @@ const ProfileCard = ({ profile, isCurrentUser = false, isEditing = false, formik
                   console.log(ev)
                   if (ev.target.files.length > 0 && profilePicture.current) {
                     profilePicture.current.src = URL.createObjectURL(ev.target.files[0]);
+                    formikProps.setFieldValue("profilePicture", ev.target.files[0]);
                   }
                 }}
                 ref={profilePictureChooser}
               />
               <img
-                src={demoMentorImage}
+                src={profile.profilePicture ? `${API_URL}/api/images/${profile.profilePicture.id}` : demoMentorImage}
                 alt="Profile"
                 className="rounded-circle"
                 style={{
@@ -255,7 +257,7 @@ const ProfileCard = ({ profile, isCurrentUser = false, isEditing = false, formik
           </Card.Body>
           {isEditing && (
             <div className="d-flex justify-content-end mt-3">
-              <Button variant="success" type="submit" onClick={handleSubmit}>
+              <Button variant="success" type="submit">
                 Save
               </Button>
             </div>

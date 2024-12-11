@@ -4,15 +4,16 @@ import UserInfo from "../components/UserInfo";
 import { useState, useEffect } from "react";
 import Statistics from "../components/Statistics";
 import Achievements from "../components/Achievements";
-import { useLocation } from "react-router-dom";
 import Milestones from "../components/Milestones";
 import MenteeSessions from "../components/MenteeSessions";
 import useProfile from "../hooks/useProfile";
 import { Form, Formik } from "formik";
 import { getAllAvailableSessions } from "../apis/session";
+import { editUserProfile } from "../apis/user";
+import { uploadImage } from "../apis/commons";
 
-function UserProfile() {
-  const isEditing = useLocation().state?.isEditing ?? false;
+function UserProfile({ _isEditing }) {
+  const [isEditing, setIsEditing] = useState(_isEditing);
 
   const [radioValue, setRadioValue] = useState("1");
   const [sessions, setSessions] = useState([]); // Initialize sessions state
@@ -40,7 +41,7 @@ function UserProfile() {
     };
   };
 
-  const { profile, isProfileLoading } = useProfile();
+  const { profile, isProfileLoading, refetchProfile } = useProfile();
 
   const onLoad = async () => {
     setIsLoading(true);
@@ -85,8 +86,24 @@ function UserProfile() {
           ? profile.mentor.expertise
           : profile.mentee.interests,
         bio: profile.isMentor ? profile.mentor.bio : profile.mentee.bio,
+        profilePicture: null,
+        profilePictureId: null,
       }}
-      onSubmit={(data) => console.log(data)}
+      onSubmit={async (data) =>  {
+        try {
+          if (data.profilePicture) {
+            const uploadRes = await uploadImage(data.profilePicture);
+            console.log(uploadRes)
+            data.profilePictureId = uploadRes.data.image.id;
+          }
+          delete data.profilePicture;
+          await editUserProfile(data)
+          refetchProfile();
+          setIsEditing(false);
+        } catch ( err ) {
+          console.error(err)
+        }
+      }}
     >
       {(formikProps) => (
         <Form

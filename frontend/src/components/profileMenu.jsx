@@ -68,14 +68,20 @@ function ProfileMenu({ profile }) {
               className="w-100 mb-2"
              
               style={{ borderRadius: "20px" }}
-              onClick={() => navigate("user_profile", { state: { isEditing: false} })}
+              onClick={() => {
+                navigate("user_profile");
+                navigate(0);
+              }}
             >
               View Profile
             </Button>
             <Button
               variant="outline-primary"
               className="w-100 mb-2"
-              onClick={() => navigate("user_profile", { state: { isEditing: true } })}
+              onClick={() => {
+                navigate("edit_profile");
+                navigate(0);
+              }}
               style={{ borderRadius: "20px" }}
               
             >

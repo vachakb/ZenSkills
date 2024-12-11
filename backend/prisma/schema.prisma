@@ -35,6 +35,9 @@ model User {
   WorkshopBooking WorkshopBooking[]
   SessionBooking  SessionBooking[]
 
+  profilePictureId String? @unique
+  profilePicture Image?  @relation(fields: [profilePictureId], references: [id], onDelete: Cascade)
+
   @@unique(name: "account_id", [email, role])
 }
 
@@ -354,7 +357,7 @@ model Message {
   sender_id         String
   sender            User @relation(fields: [sender_id], references: [id], onDelete: Cascade)
   conversation_id   String
-  conversation      Conversation @relation(fields: [conversation_id], references: [id])
+  conversation      Conversation @relation(fields: [conversation_id], references: [id], onDelete: Cascade)
   content           String
   type              MessageType
   attachment        Attachment?
@@ -383,6 +386,7 @@ model Image {
   size Int
   mimeType String
   workshop workshops?
+  user User?
 }
 
 enum BookingStatus {

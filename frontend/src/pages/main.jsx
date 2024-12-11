@@ -254,7 +254,11 @@ const router = createBrowserRouter([
       },
       {
         path: "user_profile",
-        element: <UserProfile />,
+        element: <UserProfile _isEditing={false} />,
+      },
+      {
+        path: "edit_profile",
+        element: <UserProfile _isEditing={true} />,
       },
       {
         path: "chat",
