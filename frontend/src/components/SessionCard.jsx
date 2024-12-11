@@ -3,7 +3,9 @@ import { Card, Button, Badge } from "react-bootstrap";
 import { DateTime } from "luxon";
 import { updateBookingStatus } from "../apis/session";
 
+
 const SessionCard = ({ session, profile, onAction }) => {
+
   const status = useMemo(() => {
     return session.status.charAt(0).toUpperCase() + session.status.slice(1);
   }, [session]);
@@ -37,7 +39,7 @@ const SessionCard = ({ session, profile, onAction }) => {
       case "Accepted":
         return (
           <>
-            <Button variant="success">Join</Button>
+            <Button variant="success" >Join</Button>
             <Button variant="danger" onClick={() => updateSessionStatus("cancelled")}>Cancel</Button>
           </>
         );

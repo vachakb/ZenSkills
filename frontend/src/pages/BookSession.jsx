@@ -111,7 +111,7 @@ function BookSession() {
             </div>
           ))}
         </div>
-        <div className="d-flex gap-4">
+        <div className="d-flex gap-4 flex-wrap">
           {selectedDay &&
             session.timeSlots[selectedDay].map((value, index) => (
               <div
