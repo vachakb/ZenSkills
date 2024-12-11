@@ -428,7 +428,6 @@ model MentorVerification {
   work_email        String?
   linkedin_profile  String?
   additional_info   String?
-  file_urls         String[] // Add this line to store file URLs
   created_at        DateTime @default(now())
   updated_at        DateTime @updatedAt
   mentor            mentor   @relation(fields: [mentor_id], references: [id], onDelete: Cascade)
@@ -437,6 +436,7 @@ model MentorVerification {
 
   last_degree       String?
   degree_certificate String?
+  additional_file           String?
   @@index([mentor_id])
   @@index([user_id])
 }
