@@ -7,19 +7,19 @@ import { Formik } from "formik";
 import { useNavigate } from "react-router-dom";
 import states from "../misc/states";
 import languages from "../misc/languages";
+import { uploadDocuments } from "../apis/commons";
 
 function Verification() {
     const navigate = useNavigate();
 
     const schema = yup.object({
         work_email: yup.string().required("This is a required field"),
-        work_email: yup.string().required("This is a required field"),
-        gender: yup
-            .string()
-            .oneOf(["Male", "Female", "Other"], "This is a required field")
-            .required("This is a required field"),
-        language: yup.string().oneOf(languages, "This is a required field"),
-        location: yup.string().oneOf(states, "This is a required field"),
+        linkedin: yup.string().required("This is a required field"),
+        change: yup.string().required("This is a required field"),
+        govid: yup.string().required("This is a required field"),
+        govid_image: yup.mixed().required("Please enter an image"),
+        additional: yup.mixed().required("Please enter an image"),
+        degree: yup.mixed().required("Please enter an image"),
     });
 
     return (
@@ -29,13 +29,26 @@ function Verification() {
                     <Formik
                         validationSchema={schema}
                         initialValues={{
-                            name: "",
-                            gender: "Gender",
-                            language: "English",
-                            location: "Location",
+                            work_email: "",
+                            linkedin: "",
+                            change: "",
+
+                            govid_image: "",
+                            additional: "",
+                            degree: "",
+
                         }}
                         onSubmit={(data) => {
-                            navigate("/register/2", { state: data });
+                            const body = new FormData();
+                            body.append("government_id", data.govid_image);
+                            body.append("degree_certificate", data.degree);
+                            // same for all the files
+                            body.append("additional_file", data.additional);
+                            body.append("additional_info", data.change);
+                            body.append("work_email", data.work_email);
+                            body.append("linkedin", data.linkedin);
+                            // same for all the fields
+                            uploadDocuments(body); // or however u called the endpoint in user.js
                         }}
                     >
                         {(formikProps) => (
@@ -43,87 +56,134 @@ function Verification() {
                                 className="d-flex flex-column gap-4"
                                 noValidate
                                 onSubmit={formikProps.handleSubmit}
+                                style={{ marginTop: "70px" }}
                             >
-                                <div className="text-center">
-                                    <h6 className="fst-italic" style={{ color: "#9C9AA5" }}>
+                                <div className="text-center mb-0">
+                                    <h6 className="fst-italic mb-0" style={{ color: "#9C9AA5" }}>
                                         1 / 3
                                     </h6>
-                                    <h1 className="my-4 fw-bold">Customize your Profile</h1>
+                                    <h1 className="my-4 fw-bold mb-0">Complete Mentor Verification</h1>
                                 </div>
                                 <TextField
-                                    name="name"
-                                    label="Name"
+                                    name="work_email"
+                                    label="Work Email"
+                                    type="email"
+                                    value={formikProps.values.work_email}
+                                    placeholder="abc123@gmail.com"
+                                    onChange={formikProps.handleChange}
+                                    onBlur={formikProps.handleBlur}
+                                    isValid={formikProps.touched.work_email && !formikProps.errors.work_email}
+                                    isInvalid={
+                                        formikProps.touched.work_email && !!formikProps.errors.work_email
+                                    }
+                                    error={formikProps.errors.work_email}
+                                    required
+                                />
+                                <TextField
+                                    name="linkedin"
+                                    label="Linkedin Profile"
                                     type="text"
-                                    value={formikProps.values.name}
-                                    placeholder="ABC"
+                                    value={formikProps.values.linkedin}
+                                    placeholder="profile url"
                                     onChange={formikProps.handleChange}
                                     onBlur={formikProps.handleBlur}
-                                    isValid={formikProps.touched.name && !formikProps.errors.name}
+                                    isValid={formikProps.touched.linkedin && !formikProps.errors.linkedin}
                                     isInvalid={
-                                        formikProps.touched.name && !!formikProps.errors.name
+                                        formikProps.touched.linkedin && !!formikProps.errors.linkedin
                                     }
-                                    error={formikProps.errors.name}
+                                    error={formikProps.errors.linkedin}
+                                    required
+                                />
+                                <TextField
+                                    name="change"
+                                    label="What change do you want to derive from your mentorship?"
+                                    type="text"
+                                    value={formikProps.values.change}
+                                    placeholder="Your answer"
+                                    onChange={formikProps.handleChange}
+                                    onBlur={formikProps.handleBlur}
+                                    isValid={formikProps.touched.change && !formikProps.errors.change}
+                                    isInvalid={
+                                        formikProps.touched.change && !!formikProps.errors.change
+                                    }
+                                    error={formikProps.errors.change}
                                     required
                                 />
                                 <Select
-                                    name="gender"
-                                    label="Gender"
-                                    value={formikProps.values.gender}
-                                    options={["Male", "Female", "Other"]}
-                                    placeholder="Gender"
+                                    name="govid"
+                                    label="Choose an official ID proof issued by the Government of India:"
+                                    value={formikProps.values.govid}
+                                    options={["Aadhar Card", "Pan Card", "Driving License", "Voter's Id Card", "Passport", "Other"]}
+                                    placeholder="ID Proof"
                                     onChange={formikProps.handleChange}
                                     onBlur={formikProps.handleBlur}
                                     isValid={
-                                        formikProps.touched.gender && !formikProps.errors.gender
+                                        formikProps.touched.govid && !formikProps.errors.govid
                                     }
                                     isInvalid={
-                                        formikProps.touched.gender && !!formikProps.errors.gender
+                                        formikProps.touched.govid && !!formikProps.errors.govid
                                     }
-                                    error={formikProps.errors.gender}
+                                    error={formikProps.errors.govid}
                                     required
                                 />
-                                <Select
-                                    name="language"
-                                    label="Preferred Language"
-                                    value={formikProps.values.language}
-                                    options={languages}
-                                    onChange={formikProps.handleChange}
-                                    onBlur={formikProps.handleBlur}
-                                    isValid={
-                                        formikProps.touched.language && !formikProps.errors.language
-                                    }
-                                    isInvalid={
-                                        formikProps.touched.language &&
-                                        !!formikProps.errors.language
-                                    }
-                                    error={formikProps.errors.language}
-                                    required
-                                />
-                                <Select
-                                    name="location"
-                                    label="Location"
-                                    value={formikProps.values.location}
-                                    options={states}
-                                    placeholder="Location"
-                                    onChange={formikProps.handleChange}
-                                    onBlur={formikProps.handleBlur}
-                                    isValid={
-                                        formikProps.touched.location && !formikProps.errors.location
-                                    }
-                                    isInvalid={
-                                        formikProps.touched.location &&
-                                        !!formikProps.errors.location
-                                    }
-                                    error={formikProps.errors.location}
-                                    required
-                                />
+
+                                <div className="d-flex flex-column gap-3 mb-0">
+
+
+                                    <label for="degree_cert">Upload Degree Certificate</label>
+                                    <input
+                                        type="file"
+                                        label="Upload Degree Certificate"
+                                        className="form-control"
+                                        placeholder="Select file"
+                                        accept="image/*"
+                                        onChange={async (ev) => {
+                                            if (ev.target.files.length > 0) {
+                                                formikProps.setFieldValue("degree_cert", ev.target.files[0]);
+                                            }
+                                        }}
+                                    />
+
+                                </div>
+                                <div className="d-flex flex-column gap-3 mb-0">
+
+
+                                    <label for="additional">Upload additional documents</label>
+                                    <input
+                                        type="file"
+                                        className="form-control"
+                                        placeholder="Select file"
+                                        accept="image/*"
+                                        onChange={async (ev) => {
+                                            if (ev.target.files.length > 0) {
+                                                formikProps.setFieldValue("degree_cert", ev.target.files[0]);
+                                            }
+                                        }}
+                                    />
+
+                                </div>
+                                <div className="d-flex flex-column gap-3 mb-0">
+
+
+                                    <label for="govid_image">Upload Official ID Proof issued by The Government Of India</label>
+                                    <input
+                                        type="file"
+
+                                        className="form-control"
+                                        placeholder="Select file"
+                                        accept="image/*"
+                                        onChange={async (ev) => {
+                                            if (ev.target.files.length > 0) {
+                                                formikProps.setFieldValue("degree_cert", ev.target.files[0]);
+                                            }
+                                        }}
+                                    />
+
+                                </div>
+
                                 <Button
                                     type="submit"
-                                    disabled={
-                                        formikProps.isValidating ||
-                                        formikProps.isSubmitting ||
-                                        !(formikProps.isValid && formikProps.dirty)
-                                    }
+
                                 >
                                     Continue
                                 </Button>
@@ -136,4 +196,4 @@ function Verification() {
         </Container>
     );
 }
-export default RegisterUserInfo;
+export default Verification;

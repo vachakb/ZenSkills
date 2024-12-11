@@ -45,6 +45,7 @@ import Question from "./Question.jsx";
 import BlankPage from "./blank.jsx";
 import RegisterTimeSlots from "./RegisterTimeSlots.jsx";
 import AdminPage from "./Admin.jsx";
+import Verification from "./Verification.jsx";
 
 
 const mentor = {
@@ -147,10 +148,10 @@ const router = createBrowserRouter([
       {
         path: "/",
         element: <LandingPage />,
-      },{
+      }, {
         path: "admin",
         element: <AdminPage />
-      },{
+      }, {
         path: "admin/:mentorId",
         element: <AdminPage />
       },
@@ -294,8 +295,12 @@ const router = createBrowserRouter([
         path: "admin",
         element: <AdminPage />
       },
+      {
+        path: "verification",
+        element: <Verification />
+      },
     ],
-  },{
+  }, {
     path: "/landing-page",
     element: <LandingPage />,
   }

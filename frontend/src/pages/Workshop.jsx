@@ -127,6 +127,7 @@ const WorkshopsPage = ({ demoTags }) => {
   const [totalPages, setTotalPages] = useState(1);
   const itemsPerPage = 6;
 
+
   const [allTags, setAllTags] = useState(demoTags);
   const [selectedTags, setSelectedTags] = useState([]);
   const [filterDropdownVisibility, setFilterDropdownVisibility] =
@@ -395,7 +396,7 @@ const WorkshopsPage = ({ demoTags }) => {
 
                     () => handleWorkshopClick(index)
 
-                  }>Details</Button><Button>Register</Button></div>
+                  }>Details</Button>{profile.isMentor && <Button>Register</Button>}</div>
                 </div>
               </div>
             </div>
