@@ -747,6 +747,14 @@ exports.getAllUserSessions = async (req, res) => {
       user: true,
     },
     where: where,
+    orderBy: [
+      {
+        date: "asc",
+      },
+      {
+        start_time: "asc",
+      },
+    ],
   });
 
   res.json({ bookings });
