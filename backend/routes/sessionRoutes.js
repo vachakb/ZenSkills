@@ -13,6 +13,7 @@ const {
   updateTimeSlots,
   getAllUserSessions,
   setSessionRoomId,
+  getAcceptedSessions,
 } = require("../controllers/sessionController");
 
 const router = express.Router();
@@ -46,5 +47,7 @@ router.get("/:sessionId/available-timeslots", getAvailableTimeSlots);
 
 // Endpoint to update time slots
 router.put("/:mentorId/time-slots", updateTimeSlots); // Add this line
+
+router.get("/user/accepted", getAcceptedSessions);
 
 module.exports = router;
