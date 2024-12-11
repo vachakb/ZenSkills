@@ -434,6 +434,8 @@ model MentorVerification {
   user_id           String @unique
   user              User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
 
+  last_degree       String?
+  degree_certificate String?
   @@index([mentor_id])
   @@index([user_id])
 }
