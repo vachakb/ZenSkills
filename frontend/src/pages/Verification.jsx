@@ -9,6 +9,15 @@ import states from "../misc/states";
 import languages from "../misc/languages";
 import { uploadDocuments } from "../apis/commons";
 
+const governmentIdMap = {
+  "Aadhar Card": "aadhar",
+  "Pan Card": "pan",
+  "Driving License": "driving_license",
+  "Voter's Id Card": "voter_id",
+  "Passport": "passport",
+  "Other": "other"
+};
+
 function Verification() {
     const navigate = useNavigate();
 
@@ -29,13 +38,13 @@ function Verification() {
                     <Formik
                         validationSchema={schema}
                         initialValues={{
+                            govid: "",
                             work_email: "",
                             linkedin: "",
                             change: "",
-
-                            govid_image: "",
-                            additional: "",
-                            degree: "",
+                            govid_image: null,
+                            additional: null,
+                            degree: null,
 
                         }}
                         onSubmit={(data) => {
@@ -47,6 +56,7 @@ function Verification() {
                             body.append("additional_info", data.change);
                             body.append("work_email", data.work_email);
                             body.append("linkedin", data.linkedin);
+                            body.append("government_id_type", governmentIdMap[data.govid]);
                             // same for all the fields
                             uploadDocuments(body); // or however u called the endpoint in user.js
                         }}
@@ -130,7 +140,7 @@ function Verification() {
                                 <div className="d-flex flex-column gap-3 mb-0">
 
 
-                                    <label for="degree_cert">Upload Degree Certificate</label>
+                                    <label for="degree">Upload Degree Certificate</label>
                                     <input
                                         type="file"
                                         label="Upload Degree Certificate"
@@ -139,7 +149,7 @@ function Verification() {
                                         accept="image/*"
                                         onChange={async (ev) => {
                                             if (ev.target.files.length > 0) {
-                                                formikProps.setFieldValue("degree_cert", ev.target.files[0]);
+                                                formikProps.setFieldValue("degree", ev.target.files[0]);
                                             }
                                         }}
                                     />
@@ -156,7 +166,7 @@ function Verification() {
                                         accept="image/*"
                                         onChange={async (ev) => {
                                             if (ev.target.files.length > 0) {
-                                                formikProps.setFieldValue("degree_cert", ev.target.files[0]);
+                                                formikProps.setFieldValue("additional", ev.target.files[0]);
                                             }
                                         }}
                                     />
@@ -174,7 +184,7 @@ function Verification() {
                                         accept="image/*"
                                         onChange={async (ev) => {
                                             if (ev.target.files.length > 0) {
-                                                formikProps.setFieldValue("degree_cert", ev.target.files[0]);
+                                                formikProps.setFieldValue("govid_image", ev.target.files[0]);
                                             }
                                         }}
                                     />
@@ -183,7 +193,6 @@ function Verification() {
 
                                 <Button
                                     type="submit"
-
                                 >
                                     Continue
                                 </Button>

@@ -20,7 +20,7 @@ function uploadImage(image) {
   return axiosInstance.post("/image", formData);
 }
 function uploadDocuments(data) {
-  return axiosInstance.post("/file", data);
+  return axiosInstance.post("/auth/file", data);
 }
 
-export { API_URL, axiosInstance, uploadImage,uploadDocuments };
+export { API_URL, axiosInstance, uploadImage, uploadDocuments };

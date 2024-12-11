@@ -206,31 +206,46 @@ exports.uploadDocuments = async (req, res) => {
     data: {
       government_id: {
         create: {
-          filename: req.files["government_id"].originalname,
-          path: req.files["government_id"].path,
-          size: req.files["government_id"].size,
-          mimeType: req.files["government_id"].mimetype,
+          filename: req.files["government_id"][0].originalname,
+          path: req.files["government_id"][0].path,
+          size: req.files["government_id"][0].size,
+          mimeType: req.files["government_id"][0].mimetype,
         },
       },
       degree_certificate: {
         create: {
-          filename: req.files["degree_certificate"].originalname,
-          path: req.files["degree_certificate"].path,
-          size: req.files["degree_certificate"].size,
-          mimeType: req.files["degree_certificate"].mimetype,
+          filename: req.files["degree_certificate"][0].originalname,
+          path: req.files["degree_certificate"][0].path,
+          size: req.files["degree_certificate"][0].size,
+          mimeType: req.files["degree_certificate"][0].mimetype,
         },
       },
       additional_file: {
         create: {
-          filename: req.files["additional_file"].originalname,
-          path: req.files["additional_file"].path,
-          size: req.files["additional_file"].size,
-          mimeType: req.files["additional_file"].mimetype,
+          filename: req.files["additional_file"][0].originalname,
+          path: req.files["additional_file"][0].path,
+          size: req.files["additional_file"][0].size,
+          mimeType: req.files["additional_file"][0].mimetype,
         },
       },
       work_email: req.body.work_email,
-      linkedin: req.body.linkedin,
+      linkedin_profile: req.body.linkedin,
       additional_info: req.body.additional_info,
+      government_id_type: req.body.government_id_type,
+      user: {
+        connect: {
+          id: req.user.id,
+        },
+      },
+    },
+  });
+
+  await prisma.user.update({
+    where: {
+      id: req.user.id,
+    },
+    data: {
+      credentialsVerified: true,
     },
   });
 
