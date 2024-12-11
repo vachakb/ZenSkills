@@ -4,6 +4,10 @@ import { Navigate } from "react-router-dom";
 import ReactPaginate from "react-paginate";
 import { fetchTags } from "../apis/explore";
 import { useNavigate } from "react-router-dom";
+import { axiosInstance } from "../apis/commons";
+
+
+const API_URL = "http://localhost:5000";
 
 export default function Community() {
   const navigate = useNavigate();
@@ -325,17 +329,31 @@ export default function Community() {
   }, []);
 
   async function getQuestions() {
-    // call api for questions/blogs
+    console.log("calling question")
+    try {
+      console.log(limit, currentPage, searchTerm)
+      const responce = await axiosInstance.get(`${API_URL}/api/community/questions`, {
+        params: {
+          limit,
+          currentPage,
+          searchTerm
+        }
+      })
+      console.log("got questions")
+      console.log(responce)
+      setQuestions(responce.data.questions)
+      setTotalPages(responce.data.totalPages)
+    } catch (error) {
+      console.log("error extracting questions: ", error)
+    }
+    // questions = responce.data.questions;
+    // totalPages = responce.data.totalPages;
 
-    //   const responce = await fetchQuestions(currentPage, limit, searchTerm);
-    //   questions = responce.data.questions;
-    //   totalPages = responce.data.totalPages;
-
-    setQuestions(
-      allQuestions.slice(currentPage * limit, (currentPage + 1) * limit)
-    );
-    setTotalPages(Math.ceil(allQuestions.length / limit));
-    console.log(currentPage, questions, totalPages);
+    // setQuestions(
+    //   allQuestions.slice(currentPage * limit, (currentPage + 1) * limit)
+    // );
+    // setTotalPages(Math.ceil(allQuestions.length / limit));
+    // console.log(currentPage, questions, totalPages);
   }
 
   useEffect(() => {
@@ -359,9 +377,22 @@ export default function Community() {
     setSelectedTags([...selectedTags, tag]);
   }
 
-  function handleQuestionSubmit() {
-    // post question
-    const responce = postQuestion(inputQuestion);
+  async function handleQuestionSubmit() {
+    // post question`
+    try {
+      console.log(inputQuestion)
+      const response = await axiosInstance.post(`${API_URL}/api/community/questions`, {inputQuestion});
+      
+      if (response.status === 201 || response.status === 200) {
+        console.log('Request completed successfully:', response.data);
+        alert('Question "' + inputQuestion + '" submitted successfully!');
+      } else {
+        console.error('Unexpected status:', response.status);
+      }
+    } catch (error) {
+      console.error('Error during POST request:', error);
+      alert('Failed to submit the question. Please try again.');
+    }
 
     getQuestions();
   }
@@ -416,11 +447,10 @@ export default function Community() {
             {allTags.map((tag) => {
               return (
                 <button
-                  className={`btn ${
-                    selectedTags.includes(tag)
-                      ? "btn-success active"
-                      : "btn-outline-secondary border border-secondary"
-                  } rounded-pill px-2 mx-2 my-1`}
+                  className={`btn ${selectedTags.includes(tag)
+                    ? "btn-success active"
+                    : "btn-outline-secondary border border-secondary"
+                    } rounded-pill px-2 mx-2 my-1`}
                   onClick={() => handleTagClick(tag)}
                 >
                   {tag}
@@ -450,11 +480,11 @@ export default function Community() {
       {/* col col-sm-12 col-md-6 col-lg-4 col-xl-3 col-xxl-2 */}
       {/* questions */}
       <div className="row g-2">
-        {questions.map((question) => {
+        {questions?.map((question) => {
           return (
             <div className="col-12" onClick={() => {
               navigate("/community/" + question.id);
-            }} style={{cursor: "pointer"}}>
+            }} style={{ cursor: "pointer" }}>
               <div
                 className="p-3 h-100 border rounded d-flex flex-column justify-content-between bg-light"
                 onClick={() => postClickHandler(question.id)}

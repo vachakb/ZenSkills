@@ -22,11 +22,12 @@ import MentorCard from "../components/MentorCard";
 import axios from "axios";
 import useProfile from "../hooks/useProfile";
 import Calendar from "../components/Calendar";
+import { axiosInstance } from "../apis/commons";
 
 const API_URL = "http://localhost:5000";
 
 function MenteeWelcome({ mentors_, events_ }) {
-  const [mentors, setMentors] = useState(mentors_);
+  const [mentors, setMentors] = useState([]);
 
   const { profile, isProfileLoading } = useProfile();
 
@@ -70,7 +71,7 @@ function MenteeWelcome({ mentors_, events_ }) {
     async function fetchData() {
       try {
         const [mentorsResponse, eventsResponse] = await Promise.all([
-          axios.get(`${API_URL}/api/mentors`),
+          axios.get(`${API_URL}/api/mentors/recommandations`),
           // axios.get(`${API_URL}/api/events`),
         ]);
         setMentors(mentorsResponse.data.mentors || []);
@@ -81,6 +82,21 @@ function MenteeWelcome({ mentors_, events_ }) {
     }
     fetchData();
   }, []);
+
+  // async function getMentors(){
+  //   try{
+  //     const responce = await axiosInstance.get("");
+  //     if(responce.status===200 || responce.status===201){
+  //       console.log("extracted: ", responce.data.mentors)
+  //     }
+  //   }catch(error){
+  //     console.log("error extractibg recommanded mentors: ", error)
+  //   }
+  // }
+
+  // useEffect(()=>{
+  //   setMentors(getMentors())
+  // }, [])
 
   if (isProfileLoading) {
     return (
@@ -154,21 +170,17 @@ function MenteeWelcome({ mentors_, events_ }) {
             </h6>
           </div>
           <div
-            className="gap-4"
-            style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))",
-            }}
+            className="gap-4 d-flex flex-wrap"
           >
             {mentors.length > 0 ? (
-              mentors.map((mentor) => <MentorCard key={mentor.mentor_id} mentor={mentor} />)
+              mentors.map((mentor) => <MentorCard key={mentor.mentor_id} mentor={mentor} width_={300}/>)
             ) : (
               <p>No mentors available.</p>
             )}
           </div>
 
           {/* Events Section */}
-          <div>
+          {/* <div>
             <h3 className="fw-bold">Events</h3>
             <h6 style={{ color: "#436DA7" }} className="m-0">
               To help you connect and grow.
@@ -183,7 +195,7 @@ function MenteeWelcome({ mentors_, events_ }) {
             ) : (
               <p>No events available.</p>
             )}
-          </div>
+          </div> */}
         </Col>
 
         {/* Sidebar Section */}

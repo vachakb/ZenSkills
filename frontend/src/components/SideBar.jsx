@@ -7,6 +7,7 @@ import { FaChalkboardTeacher, FaRegUserCircle } from "react-icons/fa";
 import { FaRegClock } from "react-icons/fa6";
 import { BiMessageDetail } from "react-icons/bi";
 import { MdWorkOutline } from "react-icons/md";
+import { BsPeople } from "react-icons/bs";
 import classNames from "classnames";
 import { useLocation } from "react-router-dom";  // To track current route
 import ProfileMenu from "./profileMenu";
@@ -92,6 +93,15 @@ function SideBar(props) {
         >
           <MdWorkOutline color="white" size={"2.3em"} className="mb-1" />
           <span>Jobs</span>
+        </Nav.Link>
+
+        <Nav.Link
+          href="/community"
+          className="d-flex flex-column align-items-center mb-2"
+          style={{ color: "white", fontSize: "10px" }}
+        >
+          <BsPeople style={{ fontSize: "25px", color: "white" }} />
+          <span>Community</span>
         </Nav.Link>
 
         {/* Profile link */}
