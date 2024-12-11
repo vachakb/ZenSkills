@@ -688,9 +688,20 @@ exports.updateTimeSlots = async (req, res) => {
 exports.getAllUserSessions = async (req, res) => {
   const { status } = req.query;
 
-  const where = {
-    user_id: req.user.id,
-  };
+  const where = {};
+
+  if (req.user.role === "mentor") {
+    where.session = {
+      mentor: {
+        user_id: req.user.id,
+      },
+    };
+    where.user = {
+      isNot: null,
+    };
+  } else if (req.user.role === "mentee") {
+    where.user_id = req.user.id;
+  }
 
   if (status) {
     where.status = {
