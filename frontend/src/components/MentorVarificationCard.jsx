@@ -1,5 +1,8 @@
+import { useNavigate } from "react-router-dom"
+
 export default function MentorVarificationCard({mentorData}){
-    return <div>
-        
-    </div>
+
+    const navigate = useNavigate()
+
+    return 
 }
