@@ -97,7 +97,7 @@ const SessionCard = ({ session, profile, onAction }) => {
           </Card.Text>
           <Card.Text className="mb-0">{session.session.description}</Card.Text>
           <Card.Text>
-            With <b>{session.session.mentor.User.name}</b>
+            With <b>{profile.isMentor ? session.user.name : session.session.mentor.User.name}</b>
           </Card.Text>
         </div>
 
