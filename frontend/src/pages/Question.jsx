@@ -3,11 +3,13 @@ import ReactPaginate from "react-paginate";
 import { useSearchParams } from 'react-router-dom';
 import { axiosInstance } from "../apis/commons";
 
+const API_URL = "http://localhost:5000";
+
 export default function Question() {
   // in reality, get id from url and values form
-
   const [searchParams] = useSearchParams();
   const questionId = searchParams.get('questionId')
+  console.log(questionId)
   const [comment, setComment] = useState("")
 
   const questionObject = {
@@ -131,27 +133,35 @@ export default function Question() {
 
   async function getAnswers() {
     // call api for questions/blogs
+    try{
+      const responce = await axiosInstance.get("", {
+        params: {
+          questionId, currentPage, limit
+        }
+      });
+      setAnswers(responce.data.answers)
+      setTotalPages(responce.data.totalPages)
+    }catch(error){
+      console.log("error on client: ", error);
+    }
+  }
 
-    const responce = await axiosInstance.get("", {
-      params: {
-        questionId, currentPage, limit
-      }
-    });
-    setAnswers(responce.data.answers)
-    setTotalPages(responce.data.totalPages)
+  async function postAnswer() {
+    try{
+      const response = await axiosInstance.post("", {
+        answer:comment,
+        questionId
+      })
+    }catch(error){
 
-    // setAnswers(
-    //   questionObject.answers.slice(
-    //     currentPage * limit,
-    //     (currentPage + 1) * limit
-    //   )
-    // );
-    // setTotalPages(Math.ceil(questionObject.answers.length / limit));
-    // console.log(currentPage, answers, totalPages);
+    }
   }
 
   async function handleSubmit() {
     // posting comment
+    postAnswer()
+    setCurrentPage(0)
+    getAnswers()
   }
 
   useEffect(() => {
