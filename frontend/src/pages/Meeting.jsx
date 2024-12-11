@@ -10,7 +10,7 @@ import {
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { Button, Form } from "react-bootstrap";
 import ReactPlayer from "react-player";
-import { useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import classNames from "classnames";
 import { createRoom, getToken } from "../apis/meeting";
 import {
@@ -23,7 +23,8 @@ import {
   PiChatSlashFill,
   PiDoorOpenFill,
 } from "react-icons/pi";
-import { useNavigate } from "react-router-dom";
+import useProfile from "../hooks/useProfile";
+import { updateBookingStatus } from "../apis/session";
 
 function Chat({ open, meetingId, localParticipantId }) {
   const { publish, messages } = usePubSub(meetingId);
@@ -314,8 +315,14 @@ function ControlButton({ src, label, color, onClick }) {
   );
 }
 
-function Controls({ className, openChat, onToggleChat }) {
-  const { leave, toggleMic, toggleWebcam, localMicOn, localWebcamOn } =
+function Controls({
+  className,
+  openChat,
+  onToggleChat,
+  isHost,
+  onMeetingEnded,
+}) {
+  const { leave, end, toggleMic, toggleWebcam, localMicOn, localWebcamOn } =
     useMeeting();
 
   return (
@@ -341,9 +348,19 @@ function Controls({ className, openChat, onToggleChat }) {
       />
       <ControlButton
         src={<PiDoorOpenFill />}
-        label="Leave"
+        label={isHost ? "End" : "Leave"}
         color="#F04438"
-        onClick={() => leave()}
+        onClick={() => {
+          if (isHost) {
+            if (onMeetingEnded) {
+              onMeetingEnded();
+            }
+
+            end();
+          } else {
+            leave();
+          }
+        }}
       />
     </div>
   );
@@ -599,16 +616,20 @@ function JoinMeeting({
   );
 }
 
-function Room({ meetingId }) {
-  const navigate = useNavigate();
+function Room({ meetingId, roomType, isHost, onMeetingEnded }) {
   const { _, participants, localParticipant, mainParticipant } = useMeeting();
 
   const [openChat, setOpenChat] = useState(false);
 
+  const navigate = useNavigate();
+
   if (!localParticipant) {
+    setTimeout(() => navigate("/sessions"), 3000);
+
     return (
-      <div className="d-flex justify-content-center align-items-center vw-100 vh-100">
+      <div className="d-flex flex-column justify-content-center align-items-center vw-100 vh-100">
         <h3>The meeting ended.</h3>
+        <h4>You will be redirected shortly...</h4>
       </div>
     );
 
@@ -637,6 +658,8 @@ function Room({ meetingId }) {
           className="mt-auto mx-auto"
           openChat={openChat}
           onToggleChat={() => setOpenChat(!openChat)}
+          isHost={isHost}
+          onMeetingEnded={onMeetingEnded}
         />
         <h6 className="text-white text-center m-0 mt-2">
           Meeting ID: {meetingId}
@@ -652,90 +675,51 @@ function Room({ meetingId }) {
 }
 
 function Meeting() {
-  const { meetingId } = useParams();
-
-  const [meetingIdToUse, setMeetingIdToUse] = useState();
+  const { token, roomId, sessionId, roomType, isHost } = useLocation().state;
 
   const [name, setName] = useState("");
 
   const [joined, setJoined] = useState(false);
 
-  const [token, setToken] = useState();
-
   const [cameraEnabled, setCameraEnabled] = useState(false);
 
   const [micEnabled, setMicEnabled] = useState(false);
 
-  const createMeeting = async () => {
-    try {
-      const roomRes = await createRoom(token);
-      setMeetingIdToUse(roomRes.data.roomId);
-
-      let currentUrl = window.location.href;
-
-      if (currentUrl.charAt(currentUrl.length - 1) === "/") {
-        currentUrl = currentUrl.substring(0, currentUrl.length - 1);
-      }
-
-      history.pushState(
-        `meeting ${roomRes.data.roomId}`,
-        "ZenSkills",
-        `${currentUrl}/${roomRes.data.roomId}`,
-      );
-    } catch (err) {
-      console.error(err);
-    }
+  const completeMeeting = () => {
+    updateBookingStatus(sessionId, "completed").then((res) => console.log(res.data)).catch(err => console.error(err));
   };
 
-  const generateToken = () => {
-    getToken(meetingId)
-      .then((res) => {
-        setToken(res.data.token);
-        setMeetingIdToUse(meetingId);
-      })
-      .catch((err) => console.error(err));
-  };
-
-  useEffect(() => {
-    if (!token) {
-      generateToken();
-    }
-  }, []);
-
-  if (meetingIdToUse) {
-    return (
-      <MeetingProvider
-        config={{
-          meetingId: meetingIdToUse,
-          micEnabled: micEnabled,
-          webcamEnabled: cameraEnabled,
-          name: name,
-        }}
-        token={token}
-      >
-        {joined ? (
-          <Room meetingId={meetingIdToUse} />
-        ) : (
-          <JoinMeeting
-            meetingId={meetingIdToUse}
-            onJoined={() => setJoined(true)}
-            name={name}
-            onNameChange={setName}
-            cameraEnabled={cameraEnabled}
-            setCameraEnabled={setCameraEnabled}
-            micEnabled={micEnabled}
-            setMicEnabled={setMicEnabled}
-          />
-        )}
-      </MeetingProvider>
-    );
-  } else {
-    return (
-      <div className="d-flex justify-content-center align-items-center vw-100 vh-100">
-        <Button onClick={createMeeting}>Create meeting</Button>
-      </div>
-    );
-  }
+  return (
+    <MeetingProvider
+      config={{
+        meetingId: roomId,
+        micEnabled: micEnabled,
+        webcamEnabled: cameraEnabled,
+        name: name,
+      }}
+      token={token}
+    >
+      {joined ? (
+        <Room
+          meetingId={roomId}
+          roomType={roomType}
+          isHost={isHost}
+          onMeetingEnded={isHost ? () => completeMeeting() : undefined}
+        />
+      ) : (
+        <JoinMeeting
+          meetingId={roomId}
+          onJoined={() => setJoined(true)}
+          name={name}
+          onNameChange={setName}
+          cameraEnabled={cameraEnabled}
+          setCameraEnabled={setCameraEnabled}
+          micEnabled={micEnabled}
+          setMicEnabled={setMicEnabled}
+        />
+      )}
+    </MeetingProvider>
+  );
 }
 
 export default Meeting;

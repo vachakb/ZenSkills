@@ -31,21 +31,29 @@ const SessionCard = ({ session, profile, onAction }) => {
         return <Badge bg="secondary">{status}</Badge>;
     }
   };
-
   const joinSession = async () => {
+    const tokenRes = await getToken();
+    const token = tokenRes.data.token;
+
     let roomId = session.room_id;
 
     if (!roomId) {
-      const tokenRes = await getToken();
-      const token = tokenRes.data.token;
       const roomRes = await createRoom(token);
-      roomId = roomRes.data.roomId
-      console.log(session.id, roomId)
-      setSessionRoomId(session.id, roomId)
+      roomId = roomRes.data.roomId;
+      await setSessionRoomId(session.id, roomId);
     }
 
-    navigate(`/meeting/${roomId}`);
-  }
+    navigate(`/meeting/${roomId}`, {
+      state: {
+        token,
+        roomId,
+        sessionId: session.id,
+        roomType: "one-on-one",
+        isHost: session.session.mentor.User.id === profile.id,
+      },
+    });
+  };
+
 
   const updateSessionStatus = (status) => {
     updateBookingStatus(session.id, status);
