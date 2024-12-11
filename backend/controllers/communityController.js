@@ -255,11 +255,8 @@ const allQuestions = [
 ];
 
 exports.getAllQuestions = async (req, res) => {
-  console.log("----------> asking for all questions");
   try {
-    console.log("in try");
     const { limit = 10, currentPage = 0, searchTerm = "" } = req.query;
-    console.log(limit, currentPage, searchTerm);
 
     const offset = currentPage * limit;
 
@@ -305,8 +302,7 @@ exports.getAllQuestions = async (req, res) => {
 exports.postQuestion = async (req, res) => {
   console.log(req)
   const { inputQuestion } = req.body;
-  //   const userId = req.user.id;
-  const userId = "3bd27950-9f7d-4d89-8a93-52da18639e10";
+    const userId = req.user.id;
   try {
     const newQuestion = await prisma.communityQuestion.create({
       data: {
@@ -345,9 +341,6 @@ exports.postAnswer = async (req, res) => {
   const { questionId } = req.params;
   const userId = req.user.id;
   // const userId = "154fa164-043c-42b2-a0cf-3bbae453ba15";
-
-  console.log(answer, questionId)
-
   try {
     const newAnswer = await prisma.communityAnswer.create({
       data: {
