@@ -256,9 +256,9 @@ const AdminPage = () => {
                           cursor: "pointer",
                           marginBottom: "10px",
                           padding: "10px",
-                          border: selectedMentor?.id === mentor.id ? "2px solid blue" : "1px solid #ddd",
+                          border: (selectedMentor!==null && selectedMentor.id === mentor.id) ? "2px solid blue" : "1px solid #ddd",
                           borderRadius: "5px",
-                          backgroundColor: selectedMentor!==null || selectedMentor.id === mentor.id ? "#f0f8ff" : "black",
+                          backgroundColor: (selectedMentor!==null && selectedMentor.id === mentor.id) ? "#f0f8ff" : "grey",
                         }}
                         onClick={() => setSelectedMentor(mentor)}
                       >
