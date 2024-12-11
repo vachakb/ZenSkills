@@ -38,8 +38,9 @@ model User {
   profilePictureId String? @unique
   profilePicture   Image?  @relation(fields: [profilePictureId], references: [id], onDelete: Cascade)
 
-  credentialsVerified Boolean             @default(false)
-  MentorVerification  MentorVerification?
+  credentialsVerified Boolean @default(false)
+  MentorVerification MentorVerification?
+
 
   @@unique(name: "account_id", [email, role])
 }
@@ -414,23 +415,30 @@ model SessionBooking {
 }
 
 model MentorVerification {
-  id                 String   @id @default(uuid())
-  mentor_id          String   @unique
-  government_id      String //  URL
+  id                String   @id @default(uuid())
+  mentor_id         String   @unique
+  government_id     String
   government_id_type String
-  work_email         String?  // 
-  linkedin_profile   String?  //link
-  additional_info    String?  
-  created_at         DateTime @default(now())
-  updated_at         DateTime @updatedAt
-  mentor             mentor   @relation(fields: [mentor_id], references: [id], onDelete: Cascade)
-  user_id            String   @unique
-  user               User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  work_email        String?
+  linkedin_profile  String?
+  additional_info   String?
+  created_at        DateTime @default(now())
+  updated_at        DateTime @updatedAt
+  mentor            mentor   @relation(fields: [mentor_id], references: [id], onDelete: Cascade)
+  user_id           String @unique
+  user              User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
 
-  last_degree        String?
-  degree_certificate String?  //url
-  additional_file    String?
-
+  last_degree       String?
+  degree_certificate String?
+  additional_file           String?
   @@index([mentor_id])
-  @@index([user_id])
+}
+
+enum government_id_type {
+  aadhar
+  pan
+  voter_id
+  passport
+  driving_license
+  other
 }
