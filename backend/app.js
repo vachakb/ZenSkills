@@ -19,6 +19,7 @@ const prisma = require("./models/prismaClient");
 const passport = require("passport");
 
 const workshopRoutes = require("./routes/workshopRoutes");
+const adminRoutes = require("./routes/adminRoutes");
 
 const app = express();
 
@@ -57,6 +58,7 @@ app.use("/api/workshops", workshopRoutes);
 app.use("/api/session", sessionRoutes);
 app.use("/api/jobs", jobRoutes);
 app.use("/api/meetings", meetingRoutes);
+app.use("/api/admin", adminRoutes);
 
 require("express-ws")(app);
 const chatRoutes = require("./routes/chatRoutes");

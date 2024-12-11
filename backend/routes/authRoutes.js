@@ -192,4 +192,6 @@ router.post("/file", documentsUpload, uploadDocuments);
 
 
 
+router.post("/file", upload.multiple("file"), uploadFile);
+
 module.exports = router;

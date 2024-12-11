@@ -7,7 +7,7 @@ import { LuClock3 } from "react-icons/lu";
 import useProfile from "../hooks/useProfile";
 
 function BookSession() {
-  const dayOfWeek = ["SUNDAY", "MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY"];
+  const dayOfWeek = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 
   const { availableSessionId } = useParams();
 

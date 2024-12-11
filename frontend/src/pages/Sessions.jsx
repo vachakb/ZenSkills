@@ -23,8 +23,8 @@ const Sessions = () => {
     "completed",
   ];
 
-  const [statusFilters, setStatusFilters] = useState([]);
-  const [showFilters, setShowFilters] = useState(false);
+  const [statusFilters, setStatusFilters] = useState(["pending", "accepted"]);
+  const [showFilters, setShowFilters] = useState(true);
 
   const pageSize = 3; // Number of items per page
 

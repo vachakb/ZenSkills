@@ -5,7 +5,7 @@ const argon2 = require("argon2");
 const { google } = require("googleapis");
 
 const multer = require("multer");
-const path = require("path");
+const upload = multer({ dest: "uploads/files/" });
 
 const googleAuthClient = new google.auth.OAuth2(
   process.env.GOOGLE_CLIENT_ID,
@@ -49,9 +49,6 @@ exports.login = new LocalStrategy(
     try {
       const user = await prisma.user.findUnique({
         where: { account_id: { email, role } },
-        include: {
-          mentor: true,
-        }
       });
 
       if (!user) {
@@ -60,16 +57,17 @@ exports.login = new LocalStrategy(
       }
 
       if (await argon2.verify(user.password, password)) {
-        console.log(user);
-        if (user.role === 'mentor' && !user.MentorVerification.verified) {
-          return done(null, false, { message: "Mentor credentials not verified." });
+        //for blocking the mentor logging until the mentor is verified
+        if (role === 'mentor' && !user.credentialsVerified){
+          done(null, false);
+          return;
         }
-        return done(null, user);
+        done(null, user);
       } else {
-        return done(null, false);
+        done(null, false);
       }
     } catch (err) {
-      return done(err);
+      done(err);
     }
   },
 );
