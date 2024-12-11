@@ -52,19 +52,19 @@ exports.login = new LocalStrategy(
       });
 
       if (!user) {
-        done(null, false);
+        done("User not found. Check email and role.", false);
         return;
       }
 
       if (await argon2.verify(user.password, password)) {
         //for blocking the mentor logging until the mentor is verified
         if (role === "mentor" && !user.credentialsVerified) {
-          done(null, false);
+          done("Credentials verification process still ongoing.", false);
           return;
         }
         done(null, user);
       } else {
-        done(null, false);
+        done("Wrong credentials.", false);
       }
     } catch (err) {
       done(err);
@@ -241,11 +241,13 @@ exports.uploadDocuments = async (req, res) => {
   });
 
   // Send verification email to the mentor's work email
-  await sendWorkEmail();
-  res.status(201).json({ message: "Mentor verification submitted successfully" });
-}
+  await sendWorkEmail(req.body.work_email);
+  res
+    .status(201)
+    .json({ message: "Mentor verification submitted successfully" });
+};
 
-const sendWorkEmail = async () => {
+const sendWorkEmail = async (work_email) => {
   const transporter = nodemailer.createTransport({
     service: "gmail", // You can use your email provider
     auth: {
@@ -256,7 +258,7 @@ const sendWorkEmail = async () => {
 
   await transporter.sendMail({
     from: '"Mentoring Platform" <no-reply@example.com>',
-    to: mentorVerification.work_email,
+    to: work_email,
     subject: "Mentor Verification Submitted",
     html: `
       <h2>Mentor Verification Submitted</h2>

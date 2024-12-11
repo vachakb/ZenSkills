@@ -54,8 +54,8 @@ router.post(
       role: req.body.role,
     });
   },
-  (_, res) => {
-    res.sendStatus(500);
+  (err, req, res, next) => {
+    res.status(500).json({ message: err });
   },
 );
 

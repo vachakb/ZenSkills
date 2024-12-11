@@ -63,12 +63,9 @@ function Login() {
                   navigate(isMentor ? "/mentor_welcome" : "/mentee_welcome"),
                 )
                 .catch((err) => {
-                  console.error(err);
-                  console.log(err.response);
-
-                  if (err.response && err.response.status === 401) {
+                  if (err.response) {
                     alert(
-                      "Wrong credentials. Check for correct email, password and role.",
+                      err.response.data.message
                     );
                   }
                 })
