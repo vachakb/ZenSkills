@@ -1,7 +1,6 @@
 const express = require("express");
 const router = express.Router();
 const authController = require("../controllers/authController");
-const uploadDocuments = require("../controllers/authController");
 
 const {
   registerUserProfile,
@@ -16,7 +15,6 @@ const { languages } = require("../misc/languages");
 const { states } = require("../misc/states");
 const multer = require("multer");
 const upload = multer({ dest: "uploads/file/" });
-
 
 passport.serializeUser((user, done) => {
   process.nextTick(() => {
@@ -187,11 +185,13 @@ router.post(
 );
 
 router.post("/logout", authController.logout);
-const documentsUpload = upload.fields([{ name: "government_id", maxCount: 1 }, { name: "degree_certificate", maxCount: 1 }, { name: "additional_file", maxCount: 1 }])
-router.post("/file", documentsUpload, uploadDocuments);
 
+const documentsUpload = upload.fields([
+  { name: "government_id", maxCount: 1 },
+  { name: "degree_certificate", maxCount: 1 },
+  { name: "additional_file", maxCount: 1 },
+]);
 
-
-router.post("/file", upload.multiple("file"), uploadFile);
+router.post("/file", documentsUpload, authController.uploadDocuments);
 
 module.exports = router;
