@@ -47,6 +47,8 @@ import RegisterTimeSlots from "./RegisterTimeSlots.jsx";
 import AdminPage from "./Admin.jsx";
 import Verification from "./Verification.jsx";
 
+import UpdateTimeSlots from "./UpdateTimeSlots.jsx";
+
 
 const mentor = {
   id: "id",
@@ -295,6 +297,10 @@ const router = createBrowserRouter([
       {
         path: "verification",
         element: <Verification />
+      },
+      {
+        path: "update_slots",
+        element: <UpdateTimeSlots />
       },
     ],
   }, {

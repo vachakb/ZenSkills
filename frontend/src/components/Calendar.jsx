@@ -3,13 +3,13 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { Card } from "react-bootstrap";
 import classNames from "classnames";
 import { Link } from "react-router-dom";
-import { getAllUserSessions } from "../apis/session";
+import { getAllUserSessions, getAcceptedSessions } from "../apis/session";
 
 function Calendar({ profile }) {
   const [bookings, setBookings] = useState([]);
 
   const onLoad = () => {
-    getAllUserSessions()
+    getAcceptedSessions()
       .then((res) => setBookings(res.data.bookings))
       .catch((err) => console.error(err));
   };

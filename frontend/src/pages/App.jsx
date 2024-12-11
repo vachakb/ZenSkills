@@ -17,7 +17,8 @@ const excludedRoutes = [
   { path: "/meeting/" },
   { path: "/meeting/:meetingId" },
   { path: "/admin" },
-  { path: "/verification" }
+  { path: "/verification" },
+
 ];
 
 function App() {

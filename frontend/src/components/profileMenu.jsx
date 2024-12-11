@@ -8,15 +8,15 @@ import { logout } from "../apis/user";
 
 function ProfileMenu({ profile }) {
   const [showMenu, setShowMenu] = useState(false);
-  const isEditing = useLocation().state?.isEditing??false;
+  const isEditing = useLocation().state?.isEditing ?? false;
 
   const navigate = useNavigate();
- 
+
 
   const menuRef = useRef(null);
 
   const toggleMenu = () => setShowMenu((prev) => !prev);
- 
+
 
   // Close the menu when clicking outside
   useEffect(() => {
@@ -54,7 +54,7 @@ function ProfileMenu({ profile }) {
             borderRadius: "10px",
             zIndex: 10,
             transform: "translateX(-90%)",
-          
+
           }}
         >
           <Card.Body className="d-flex flex-column align-items-center p-3">
@@ -66,7 +66,7 @@ function ProfileMenu({ profile }) {
             <Button
               variant="outline-primary"
               className="w-100 mb-2"
-             
+
               style={{ borderRadius: "20px" }}
               onClick={() => {
                 navigate("user_profile");
@@ -83,10 +83,22 @@ function ProfileMenu({ profile }) {
                 navigate(0);
               }}
               style={{ borderRadius: "20px" }}
-              
+
             >
               {console.log(isEditing)}
               Edit Profile
+            </Button>
+            <Button
+              variant="outline-primary"
+              className="w-100 mb-2"
+              onClick={() => {
+
+                navigate("/update_slots");
+
+              }}
+              style={{ borderRadius: "20px" }}
+            >
+              Update Time Slots
             </Button>
             <Button
               variant="outline-primary"
@@ -108,7 +120,7 @@ function ProfileMenu({ profile }) {
             >
               Logout
             </Button>
-            
+
           </Card.Body>
         </Card>
       )}
