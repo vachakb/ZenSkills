@@ -4,6 +4,9 @@ const {
   getMentorProfile,
   editProfile,
   getMentorsList,
+  createReferral,
+  updateReferralStatus,
+  getAllReferrals,
 } = require("../controllers/mentorController");
 const {
   getReviewsByMentorId,
@@ -13,12 +16,17 @@ const {
   getRecommendations,
 } = require("../controllers/recommendationController");
 
+const multer = require("multer");
+const upload = multer({ dest: "uploads/files/" });
+
 const router = express.Router();
 
 // Endpoint to fetch mentors
 router.get("/", getMentors);
 
 router.get("/list", getMentorsList);
+
+router.get("/referrals", getAllReferrals);
 
 // Endpoint to fetch mentor profile
 router.get("/:mentorId", getMentorProfile);
@@ -31,5 +39,13 @@ router.get("/reviews/:mentorId", getReviewsByMentorId);
 router.post("/reviews/:mentorId", addReview);
 
 router.post("/recommendations", getRecommendations);
+
+router.post(
+  "/referral",
+  upload.fields([{ name: "resume", maxCount: 1 }]),
+  createReferral,
+);
+
+router.put("/referral", updateReferralStatus);
 
 module.exports = router;

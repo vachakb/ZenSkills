@@ -201,10 +201,105 @@ const getMentorsList = async (req, res) => {
   }
 };
 
+const getAllReferrals = async (req, res) => {
+  const { status } = req.query;
+
+  const where = {
+    mentor: {
+      User: {
+        id: req.user.id,
+      },
+    },
+  };
+
+  if (status) {
+    where.status = status;
+  }
+
+  try {
+    const referrals = await prisma.referral.findMany({
+      where,
+    });
+
+    res.json({ referrals });
+  } catch (error) {
+    console.error(error);
+    res.sendStatus(500);
+  }
+};
+
+const createReferral = async (req, res) => {
+  const { mentor_id, job_url, description, reason } = req.body;
+  const resume = req.files["resume"][0];
+
+  try {
+    await prisma.referral.create({
+      data: {
+        mentor: {
+          connect: {
+            id: mentor_id,
+          },
+        },
+        job_url,
+        description,
+        reason,
+        status: "PENDING",
+        resume: {
+          create: {
+            filename: resume.originalname,
+            path: resume.path,
+            size: resume.size,
+            mimeType: resume.mimetype,
+          },
+        },
+        mentee: {
+          connect: {
+            user_id: req.user.id,
+          },
+        },
+      },
+    });
+
+    res.sendStatus(200);
+  } catch (error) {
+    console.error(error);
+    res.sendStatus(500);
+  }
+};
+
+const updateReferralStatus = async (req, res) => {
+  const { referral_id, status } = req.body;
+
+  try {
+    if (status === "ACCEPTED") {
+      await prisma.referral.update({
+        where: {
+          id: referral_id,
+        },
+        data: {
+          status,
+        },
+      });
+    } else if (status === "REJECTED") {
+      await prisma.referral.delete({ where: { id: referral_id } });
+    } else {
+      return res.sendStatus(400);
+    }
+
+    res.sendStatus(200);
+  } catch (error) {
+    console.error(error);
+    res.sendStatus(500);
+  }
+};
+
 module.exports = {
   getMentors,
   getTags,
   getMentorProfile,
   editProfile,
   getMentorsList,
+  getAllReferrals,
+  createReferral,
+  updateReferralStatus,
 };
