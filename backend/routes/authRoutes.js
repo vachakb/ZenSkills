@@ -92,8 +92,8 @@ router.get(
     action: "acceptToken",
     failWithError: true,
   }),
-  (_, res) => {
-    res.sendStatus(200);
+  (req, res) => {
+    res.json({ role: req.user.role });
   },
   (_, res) => {
     res.sendStatus(500);
