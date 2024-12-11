@@ -121,22 +121,6 @@ exports.createSession = async (req, res) => {
       },
     });
 
-    const getNext7Dates = () => {
-      const dates = [];
-      const today = new Date();
-    
-      for (let i = 0; i < 7; i++) {
-        const nextDate = new Date(today);
-        nextDate.setDate(today.getDate() + i);
-        dates.push(nextDate);
-      }
-    
-      return dates;
-    };
-    
-    console.log(getNext7Dates());
-    const next7Dates = getNext7Dates();
-
     await prisma.MentorSession.create({
       data: {
         name: sessionName,
@@ -147,17 +131,13 @@ exports.createSession = async (req, res) => {
         },
         SessionBooking: {
           create: timeSlots
-            .map((timeSlot,index) => {
+            .map((timeSlot) => {
               const startTime = DateTime.fromFormat(timeSlot.from, "HH:mm");
               const endTime = DateTime.fromFormat(timeSlot.to, "HH:mm");
-              const date = DateTime.fromJSDate(next7Dates[index % 7]);
+              const date = DateTime.now().set({
+                weekday: dayOfWeek.indexOf(timeSlot.day),
+              });
 
-            // .map((timeSlot) => {
-            //   const startTime = DateTime.fromFormat(timeSlot.from, "HH:mm");
-            //   const endTime = DateTime.fromFormat(timeSlot.to, "HH:mm");
-            //   const date = DateTime.now().set({
-            //     weekday: dayOfWeek.indexOf(timeSlot.day),
-            //   });
               const bookings = [];
               let currentTime = startTime;
 

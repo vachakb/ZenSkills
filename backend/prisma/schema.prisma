@@ -57,6 +57,8 @@ model mentee {
   interests    tags[]            @relation("MenteeTags")
   education    MenteeEducation[]
   Review       Review[]          @relation(map: "review_mentee_fk")
+  referrals Referral[]
+  ratings MenteeRating[]
 }
 
 model mentor {
@@ -88,6 +90,9 @@ model mentor {
 
   documentId String? @unique
 
+  requestedReferrals Referral[]
+
+  menteeRatings MenteeRating[]
 }
 
 model tags {
@@ -453,6 +458,36 @@ model Document {
   government_id     MentorVerification? @relation("government_id")
   degree_certificate MentorVerification? @relation("degree_certificate")
   additional_file    MentorVerification? @relation("additional_file")
+  referral Referral?
+}
+
+model Referral {
+  id String @id @default(uuid())
+  mentor_id String
+  mentor mentor @relation(fields: [mentor_id], references: [id], onDelete: Cascade)
+  mentee_id String
+  mentee mentee @relation(fields: [mentee_id], references: [id], onDelete: Cascade)
+  job_url String
+  description String
+  reason String
+  resume_id String @unique
+  resume Document @relation(fields: [resume_id], references: [id], onDelete: Cascade)
+  status ReferralStatus
+}
+
+enum ReferralStatus {
+  PENDING
+  ACCEPTED
+}
+
+model MenteeRating {
+  id String @id @default(uuid())
+  rating Int
+  comment String
+  mentee_id String
+  mentee mentee @relation(fields: [mentee_id], references: [id], onDelete: Cascade)
+  from_id String
+  from mentor @relation(fields: [from_id], references: [id], onDelete: Cascade)
 }
 
 model CommunityQuestion {

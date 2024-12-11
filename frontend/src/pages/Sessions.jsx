@@ -80,7 +80,7 @@ const Sessions = () => {
     <Container className="d-flex flex-column gap-4">
         <div className="d-flex align-items-center gap-2">
           <h3 className="m-0">Sessions</h3>
-          {/* { profile.isMentor && <Button onClick={() => navigate("/createsession_1")}>Create session</Button> } */}
+          { profile.isMentor && <Button onClick={() => navigate("/createsession_1")}>Create session</Button> }
           <Button onClick={() => setShowFilters(!showFilters)}>Filters{ statusFilters.length > 0 && ` ${statusFilters.length}` }</Button>
         </div>
         { showFilters &&
