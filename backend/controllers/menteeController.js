@@ -80,7 +80,43 @@ async function editProfile(req, res) {
   }
 }
 
+async function getMenteeStats(req, res) {
+  const userId = req.user.id;
+
+  try {
+    const mentee = await prisma.mentee.findUnique({
+      where: { user_id: userId },
+      include: {
+        User: true,
+        // interests: true,
+      },
+    });
+
+    if (!mentee) return res.status(404).json({ error: "Mentee not found" });
+
+    const completed = await prisma.sesstionBooking.count({
+      where: { user_id: mentee.User.id, status: "completed" },
+    });
+
+    const upcoming = await prisma.sesstionBooking.count({
+      where: { user_id: mentee.User.id, status: "accepted" },
+    });
+
+    const response = {
+      number_of_sessions: completed,
+      upcoming_sessions: upcoming,
+    };
+
+
+    res.json(response);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Failed to fetch mentee profile" });
+  }
+}
+
 module.exports = {
   getMenteeProfile,
   editProfile,
+  getMenteeStats,
 };

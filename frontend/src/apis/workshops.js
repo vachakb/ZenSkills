@@ -15,5 +15,8 @@ function createWorkshop(workshop){
   return axiosInstance.post(`/workshops`,workshop);
 }
 
+function getUserRegisteredWorkshops (userId){
+  return axiosInstance.get(`/workshops/registered/${userId}`);
+};
 
-export { getAllWorkshops, getWorkshopById, bookWorkshop,createWorkshop};
+export { getAllWorkshops, getWorkshopById, bookWorkshop,createWorkshop, getUserRegisteredWorkshops };
