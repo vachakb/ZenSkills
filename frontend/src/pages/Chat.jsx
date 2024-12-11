@@ -50,8 +50,13 @@ function Conversation({ children, onClick, profilePicture }) {
           objectFit: "contain",
         }}
       />
-
-      <span>{children}</span>
+      <span
+        style={{
+          wordBreak: "break-word",
+        }}
+      >
+        {children}
+      </span>
     </div>
   );
 }
@@ -324,7 +329,7 @@ function Chat() {
         </Modal.Footer>
       </Modal>
       <div className="d-flex h-100">
-        <div className="d-flex flex-column border-end border-1 pe-4 me-4 gap-4">
+        <div style={{ maxWidth: "25%", minWidth: "25%" }} className="d-flex flex-column border-end border-1 pe-4 me-4 gap-4">
           {conversations.map((conversation, index) => (
             <Conversation
               onClick={() => {
@@ -349,9 +354,8 @@ function Chat() {
               <p>Loading...</p>
             </div>
           ) : (
-            <div className="d-flex flex-column flex-grow-1" >
-
-              <div className="d-flex gap-3 align-items-center" >
+            <div className="d-flex flex-column flex-grow-1">
+              <div className="d-flex gap-3 align-items-center">
                 <img
                   src={
                     conversations[selectedConversation].profilePicture

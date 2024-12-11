@@ -56,8 +56,7 @@ const SessionCard = ({ session, profile, onAction }) => {
 
 
   const updateSessionStatus = (status) => {
-    updateBookingStatus(session.id, status);
-    onAction();
+    updateBookingStatus(session.id, status).then(() => onAction()).catch(err => console.error(err));
   };
 
   const buttons = useMemo(() => {

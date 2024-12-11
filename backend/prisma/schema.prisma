@@ -411,7 +411,7 @@ model SessionBooking {
   created_at DateTime      @default(now())
   room_id    String?
 
-  session MentorSession @relation(fields: [session_id], references: [id])
+  session MentorSession @relation(fields: [session_id], references: [id], onDelete: Cascade)
   user    User?         @relation(fields: [user_id], references: [id])
 }
 

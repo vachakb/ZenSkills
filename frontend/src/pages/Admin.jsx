@@ -131,6 +131,112 @@ const AdminPage = () => {
     }
   ];
 
+  const chartData = {
+    labels: ["January", "February", "March", "April", "May", "June"],
+    datasets: [
+      {
+        label: "Dataset 1",
+        data: [30, 50, 40, 60, 70, 80],
+        backgroundColor: "rgba(75, 192, 192, 0.2)",
+        borderColor: "rgba(75, 192, 192, 1)",
+        borderWidth: 1,
+      },
+      {
+        label: "Dataset 2",
+        data: [50, 40, 60, 30, 90, 70],
+        backgroundColor: "rgba(255, 99, 132, 0.2)",
+        borderColor: "rgba(255, 99, 132, 1)",
+        borderWidth: 1,
+      },
+    ],
+  };
+
+  const mentorsData = {
+    total: 120,
+    active: 90,
+    inactive: 30,
+    titel1: "Total Mentors",
+    titel2: "Active Mentors",
+    titel3: "Inactive Mentors",
+    chart: {
+      labels: ["January", "February", "March", "April", "May", "June"],
+      datasets: [
+        {
+          label: "Active Mentors",
+          data: [50, 60, 55, 70, 80, 90],
+          backgroundColor: "rgba(75, 192, 192, 0.2)",
+          borderColor: "rgba(75, 192, 192, 1)",
+          borderWidth: 1,
+        },
+        {
+          label: "Inactive Mentors",
+          data: [20, 15, 25, 10, 5, 10],
+          backgroundColor: "rgba(255, 99, 132, 0.2)",
+          borderColor: "rgba(255, 99, 132, 1)",
+          borderWidth: 1,
+        },
+      ],
+    },
+  };
+
+  const workshopsData = {
+    total: 50,
+    active: 20,
+    inactive: 30,
+    titel1: "",
+    titel2: "",
+    titel3: "",
+    chart: {
+      labels: ["January", "February", "March", "April", "May", "June"],
+      datasets: [
+        {
+          label: "Workshops Conducted",
+          data: [10, 15, 20, 25, 30, 35],
+          backgroundColor: "rgba(54, 162, 235, 0.2)",
+          borderColor: "rgba(54, 162, 235, 1)",
+          borderWidth: 1,
+        },
+        {
+          label: "Upcoming Workshops",
+          data: [5, 10, 8, 15, 20, 25],
+          backgroundColor: "rgba(153, 102, 255, 0.2)",
+          borderColor: "rgba(153, 102, 255, 1)",
+          borderWidth: 1,
+        },
+      ],
+    },
+  };
+
+  const jobApplicationsData = {
+    total: 200,
+    open: 50,
+    closed: 150,
+    titel1: "",
+    titel2: "",
+    titel3: "",
+    chart: {
+      labels: ["January", "February", "March", "April", "May", "June"],
+      datasets: [
+        {
+          label: "Open Applications",
+          data: [20, 25, 30, 35, 40, 50],
+          backgroundColor: "rgba(255, 206, 86, 0.2)",
+          borderColor: "rgba(255, 206, 86, 1)",
+          borderWidth: 1,
+        },
+        {
+          label: "Closed Applications",
+          data: [80, 90, 100, 110, 120, 150],
+          backgroundColor: "rgba(75, 192, 192, 0.2)",
+          borderColor: "rgba(75, 192, 192, 1)",
+          borderWidth: 1,
+        },
+      ],
+    },
+  };
+
+
+
   const [currentPage, setCurrentPage] = useState(0);
   const limit = 3;
 
@@ -165,7 +271,7 @@ const AdminPage = () => {
           <Col>
             <Card className="h-100">
               <Card.Body>
-                <Card.Title>Total {title}</Card.Title>
+                <Card.Title>{data.title1}</Card.Title>
                 <Card.Text>{data.total}</Card.Text>
               </Card.Body>
             </Card>
@@ -173,7 +279,7 @@ const AdminPage = () => {
           <Col>
             <Card className="h-100">
               <Card.Body>
-                <Card.Title>Open {title}</Card.Title>
+                <Card.Title>{data.title2}</Card.Title>
                 <Card.Text>{data.open || data.active}</Card.Text>
               </Card.Body>
             </Card>
@@ -181,7 +287,7 @@ const AdminPage = () => {
           <Col>
             <Card className="h-100">
               <Card.Body>
-                <Card.Title>Closed/Completed {title}</Card.Title>
+                <Card.Title>{data.title3}</Card.Title>
                 <Card.Text>{data.closed || data.inactive}</Card.Text>
               </Card.Body>
             </Card>
@@ -198,12 +304,13 @@ const AdminPage = () => {
     );
   };
 
-  async function getMentors(){
+  async function getMentors() {
     const responce = await axiosInstance.get("", {
-      params:{
+      params: {
         currentPage,
         limit
-    }})
+      }
+    })
 
     setMentors(responce.data.mentors);
   }
@@ -248,25 +355,27 @@ const AdminPage = () => {
                 {/* Left Section */}
                 <Col md={6} className="border-end">
                   <div className="d-flex flex-column" style={{ maxHeight: "400px", overflowY: "auto" }}>
-                    {mentorsVarifyData.map((mentor) => (
-                      <div
+                    {mentorsVarifyData.map((mentor) => {
+                      let [x1, x2] = mentor.updated_at.split('T')
+                      x2 = x2.replace('Z', '')
+                      return <div
                         className="d-flex justify-content-between align-items-center"
                         key={mentor.id}
                         style={{
                           cursor: "pointer",
                           marginBottom: "10px",
                           padding: "10px",
-                          border: (selectedMentor!==null && selectedMentor.user_id === mentor.user_id) ? "2px solid blue" : "1px solid #ddd",
+                          border: (selectedMentor !== null && selectedMentor.user_id === mentor.user_id) ? "2px solid blue" : "1px solid #ddd",
                           borderRadius: "5px",
                           backgroundColor: (selectedMentor !== null && selectedMentor.user_id === mentor.user_id) ? "#f0f8ff" : "#bdbfbe",
                         }}
-                        onClick={() => {setSelectedMentor(mentor);}}
+                        onClick={() => { setSelectedMentor(mentor); }}
                       >
                         {console.log(selectedMentor, mentor)}
                         <p className="fw-bold">{mentor.name}</p>
-                        <p>{mentor.updated_at}</p>
+                        <p>{x1} {x2}</p>
                       </div>
-                    ))}
+                    })}
                   </div>
                   <ReactPaginate
                     previousLabel={"Previous"}
@@ -295,8 +404,16 @@ const AdminPage = () => {
                   {selectedMentor ? (
                     <MentorDetailsCard
                       mentor={selectedMentor}
-                      onVerify={(mentor) => console.log("Verified:", mentor)}
-                      onDecline={(mentor) => console.log("Declined:", mentor)}
+                      onVerify={(mentor) => {
+                        console.log("Verified:", mentor);
+                        mentorsVarifyData = mentorsVarifyData.filter(item => item.user_id !== selectedMentor.user_id);
+                        selectedMentor = null
+                      }}
+                      onDecline={(mentor) => {
+                        console.log("Declined:", mentor)
+                        mentorsVarifyData = mentorsVarifyData.filter(item => item.user_id !== selectedMentor.user_id);
+                        selectedMentor = null
+                      }}
                     />
                   ) : (
                     <div className="text-center text-muted" style={{ marginTop: "50px" }}>

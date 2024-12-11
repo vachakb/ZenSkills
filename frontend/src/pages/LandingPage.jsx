@@ -429,7 +429,7 @@ function App() {
           {/* Left Side */}
           <div className="col-md-6 text-start">
             <p
-              className="text-primary"
+              className="text-primary fw-bold"
               style={{
                 textDecoration: "underline",
                 textDecorationColor: "var(--bs-warning)",
@@ -437,8 +437,8 @@ function App() {
             >
               Learn a new skill, launch a project, land your dream career.
             </p>
-            <h1 className="fw-bold display-4 text-primary">
-              1-on-1 Mentorship
+            <h1 className="fw-bold display-5 text-primary">
+              New-Age Mentorship
               {/* <span style={{ display: "inline-block", width: "300px" }}>
                 <div
                   id="verticalCarousel"
@@ -561,7 +561,7 @@ function App() {
         </div>
 
         {/* organizations */}
-        <div className="row border-top-2 border-bottom-2">
+        <div className="row border-top-2 border-bottom-2 mb-4">
           <p
             className="fw-bold fs-4 text-primary text-center"
             style={{
@@ -569,7 +569,7 @@ function App() {
               textDecorationColor: "var(--bs-primary)",
             }}
           >
-            Proven success with 20,000+ top organiations
+            200+ mentors from top organizations
           </p>
           <div className="d-flex flex-wrap align-items-center justify-content-center">
             {organizationsImages.map((src) => {
@@ -623,7 +623,7 @@ function App() {
         {/* Top mentors */}
         <>
           <p
-            className="text-center fw-bold fs-3 text-primary"
+            className="text-center fw-bold fs-4 text-primary"
             style={{
               textDecoration: "underline",
               textDecorationColor: "var(--bs-primary)",
