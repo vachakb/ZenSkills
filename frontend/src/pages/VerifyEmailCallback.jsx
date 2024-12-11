@@ -7,9 +7,20 @@ function VerifyEmailCallback() {
 
   const navigate = useNavigate();
 
+  const onLoad = async () => {
+    const res = await verificationEmailCallback(searchParams.get("token"));
+    if (res.data.role === "mentor") {
+      navigate("/verification");
+    } else {
+      navigate("/register/1")
+    }
+  }
+
   useEffect(() => {
-    verificationEmailCallback(searchParams.get("token"))
-      .then(() => navigate("/verification"));
+    if (searchParams.has("token")) {
+      onLoad()
+    }
+   onLoad();
   }, [searchParams]);
 
   return (

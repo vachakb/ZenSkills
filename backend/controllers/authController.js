@@ -58,10 +58,10 @@ exports.login = new LocalStrategy(
 
       if (await argon2.verify(user.password, password)) {
         //for blocking the mentor logging until the mentor is verified
-        // if (role === 'mentor' && !user.credentialsVerified){
-        //   done(null, false);
-        //   return;
-        // }
+        if (role === "mentor" && !user.credentialsVerified) {
+          done(null, false);
+          return;
+        }
         done(null, user);
       } else {
         done(null, false);
@@ -240,5 +240,27 @@ exports.uploadDocuments = async (req, res) => {
     },
   });
 
-  res.sendStatus(200);
+  // Send verification email to the mentor's work email
+  await sendWorkEmail();
+  res.status(201).json({ message: "Mentor verification submitted successfully" });
+}
+
+const sendWorkEmail = async () => {
+  const transporter = nodemailer.createTransport({
+    service: "gmail", // You can use your email provider
+    auth: {
+      user: process.env.EMAIL_USER, // Your email
+      pass: process.env.EMAIL_PASS, // Your email password or app-specific password
+    },
+  });
+
+  await transporter.sendMail({
+    from: '"Mentoring Platform" <no-reply@example.com>',
+    to: mentorVerification.work_email,
+    subject: "Mentor Verification Submitted",
+    html: `
+      <h2>Mentor Verification Submitted</h2>
+      <p>Your mentor verification details have been submitted successfully. Please wait until your credentials are verified by the admin.</p>
+      <p>We will get back to you within 48 hours</p>`,
+  });
 };

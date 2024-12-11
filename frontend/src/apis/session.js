@@ -49,6 +49,10 @@ function getAllUserSessions(status) {
   return axiosInstance.get(url);
 }
 
+function getAcceptedSessions() {
+  return axiosInstance.get("/session/user/accepted");
+}
+
 function bookSession(bookingId) {
   return axiosInstance.post(`/session/${bookingId}/book`);
 }
@@ -90,5 +94,6 @@ export {
   deleteSession,
   updateBookingStatus,
   setSessionRoomId,
+  getAcceptedSessions,
   updateTimeSlots
 };
