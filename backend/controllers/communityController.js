@@ -1,4 +1,4 @@
-const prisma = require('../models/prismaClient');
+const prisma = require("../models/prismaClient");
 
 const allQuestions = [
   {
@@ -255,26 +255,56 @@ const allQuestions = [
 ];
 
 exports.getAllQuestions = async (req, res) => {
-  console.log("----------> asking for all questions")
-  try{
-    console.log("in try")
-    const {limit, currentPage, searchTerm} = req.params;
-    console.log(limit, currentPage, searchTerm)
-    const toBeSent = allQuestions.slice(currentPage*limit, (currentPage+1)*limit)
-    console.log(toBeSent)
-    if(searchTerm===""){
-      res.status(200).json(toBeSent)
-      // console.log("answers sent")
-    }
-  }catch{
+  console.log("----------> asking for all questions");
+  try {
+    console.log("in try");
+    const { limit = 10, currentPage = 0, searchTerm = "" } = req.query;
+    console.log(limit, currentPage, searchTerm);
+
+    const offset = currentPage * limit;
+
+    const whereClause = searchTerm
+      ? {
+          OR: [
+            { question: { contains: searchTerm, mode: "insensitive" } },
+            { user: { name: { contains: searchTerm, mode: "insensitive" } } },
+          ],
+        }
+      : {};
+
+    const totalQuestions = await prisma.CommunityQuestion.count({
+      where: whereClause,
+    });
+
+    const questions = await prisma.CommunityQuestion.findMany({
+      skip: parseInt(offset),
+      take: parseInt(limit),
+      where: whereClause,
+      include: {
+        user: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+      },
+    });
+
+    const totalPages = Math.ceil(totalQuestions / limit);
+
+    res.status(200).json({
+      questions,
+      totalPages,
+    });
+  } catch (error) {
     console.error("Error getting questions:", error);
     res.status(500).json({ error: "Error getting questions" });
   }
-}
+};
 
 exports.postQuestion = async (req, res) => {
   const { question } = req.body;
-//   const userId = req.user.id;
+  //   const userId = req.user.id;
   const userId = "3bd27950-9f7d-4d89-8a93-52da18639e10";
 
   try {
@@ -311,33 +341,32 @@ exports.updateQuestion = async (req, res) => {
 };
 
 exports.postAnswer = async (req, res) => {
-    const { answer } = req.body;
-    const { questionId} = req.params;
-    // const userId = req.user.id;
-    const userId = "154fa164-043c-42b2-a0cf-3bbae453ba15";
-  
-    try {
-      const newAnswer = await prisma.communityAnswer.create({
-        data: {
-          answer,
-          communityQuestion_id: questionId,
-          a_user_id: userId,
+  const { answer } = req.body;
+  const { questionId } = req.params;
+  const userId = req.user.id;
+  // const userId = "154fa164-043c-42b2-a0cf-3bbae453ba15";
+
+  try {
+    const newAnswer = await prisma.communityAnswer.create({
+      data: {
+        answer,
+        communityQuestion_id: questionId,
+        a_user_id: userId,
+      },
+    });
+
+    await prisma.communityQuestion.update({
+      where: { id: questionId },
+      data: {
+        answers: {
+          increment: 1,
         },
-      });
-  
-      await prisma.communityQuestion.update({
-        where: { id: questionId },
-        data: {
-          answers: {
-            increment: 1,
-          },
-        },
-      });
-  
-      res.status(201).json(newAnswer);
-    } catch (error) {
-      console.error("Error posting answer:", error);
-      res.status(500).json({ error: "Error posting answer" });
-    }
-  };
-  
+      },
+    });
+
+    res.status(201).json(newAnswer);
+  } catch (error) {
+    console.error("Error posting answer:", error);
+    res.status(500).json({ error: "Error posting answer" });
+  }
+};

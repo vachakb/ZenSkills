@@ -334,14 +334,14 @@ export default function Community() {
       console.log(limit, currentPage, searchTerm)
       const responce = await axiosInstance.get(`${API_URL}/api/community/questions`, {
         params: {
-          limit: 3,
-          currentPage: 0,
-          searchTerm: ""
+          limit,
+          currentPage,
+          searchTerm
         }
       })
       console.log("got questions")
       console.log(responce)
-      setQuestions(responce.data.question)
+      setQuestions(responce.data.questions)
       setTotalPages(responce.data.totalPages)
     } catch (error) {
       console.log("error extracting questions: ", error)
@@ -378,7 +378,7 @@ export default function Community() {
   }
 
   async function handleQuestionSubmit() {
-    // post question
+    // post question`
     try {
       const response = await axiosInstance.post(`${API_URL}/api/community/questions`, inputQuestion);
       if (response.status === 201 || response.status === 200) {
@@ -478,7 +478,7 @@ export default function Community() {
       {/* col col-sm-12 col-md-6 col-lg-4 col-xl-3 col-xxl-2 */}
       {/* questions */}
       <div className="row g-2">
-        {questions.map((question) => {
+        {questions?.map((question) => {
           return (
             <div className="col-12" onClick={() => {
               navigate("/community/" + question.id);
