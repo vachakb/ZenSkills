@@ -84,7 +84,8 @@ model mentor {
 
   TimeSlot TimeSlot[]
 
-  MentorVerification MentorVerification[]
+  documentId String? @unique
+
 }
 
 model tags {
@@ -416,22 +417,20 @@ model SessionBooking {
 
 model MentorVerification {
   id                String   @id @default(uuid())
-  mentor_id         String   @unique
-  government_id     String
-  government_id_type String
+  user_id           String   @unique
+  government_id_document_id      String @unique
+  government_id Document @relation("government_id", fields: [government_id_document_id], references: [id], onDelete: Cascade)
+  government_id_type government_id_type
   work_email        String?
   linkedin_profile  String?
   additional_info   String?
   created_at        DateTime @default(now())
   updated_at        DateTime @updatedAt
-  mentor            mentor   @relation(fields: [mentor_id], references: [id], onDelete: Cascade)
-  user_id           String @unique
-  user              User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
-
-  last_degree       String?
-  degree_certificate String?
-  additional_file           String?
-  @@index([mentor_id])
+  user            User   @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  degree_certificate_document_id String? @unique
+  degree_certificate Document? @relation("degree_certificate", fields: [degree_certificate_document_id], references: [id], onDelete: Cascade)
+  additional_file_document_id           String?  @unique
+  additional_file Document? @relation("additional_file", fields: [additional_file_document_id], references: [id], onDelete: Cascade)
 }
 
 enum government_id_type {
@@ -441,4 +440,15 @@ enum government_id_type {
   passport
   driving_license
   other
+}
+
+model Document {
+  id String @id @default(uuid())
+  filename String
+  path String
+  size Int
+  mimeType String
+  government_id     MentorVerification? @relation("government_id")
+  degree_certificate MentorVerification? @relation("degree_certificate")
+  additional_file    MentorVerification? @relation("additional_file")
 }

@@ -4,6 +4,9 @@ const LocalStrategy = require("passport-local");
 const argon2 = require("argon2");
 const { google } = require("googleapis");
 
+const multer = require("multer");
+const upload = multer({ dest: "uploads/files/" });
+
 const googleAuthClient = new google.auth.OAuth2(
   process.env.GOOGLE_CLIENT_ID,
   process.env.GOOGLE_CLIENT_SECRET,
@@ -54,6 +57,11 @@ exports.login = new LocalStrategy(
       }
 
       if (await argon2.verify(user.password, password)) {
+        //for blocking the mentor logging until the mentor is verified
+        if (role === 'mentor' && !user.credentialsVerified){
+          done(null, false);
+          return;
+        }
         done(null, user);
       } else {
         done(null, false);
@@ -191,4 +199,21 @@ exports.logout = function (req, res, next) {
     }
     res.sendStatus(200);
   });
+};
+
+//For Mentor Credentials Verification
+exports.uploadFile = async (req, res) => {
+  const file = await prisma.file.create({
+    omit: {
+      path: true,
+    },
+    data: {
+      filename: req.file.originalname,
+      path: req.file.path,
+      size: req.file.size,
+      mimeType: req.file.mimetype,
+    },
+  });
+
+  res.json({ file });
 };
