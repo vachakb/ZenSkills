@@ -154,14 +154,10 @@ function MenteeWelcome({ mentors_, events_ }) {
             </h6>
           </div>
           <div
-            className="gap-4"
-            style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))",
-            }}
+            className="gap-4 d-flex flex-wrap"
           >
             {mentors.length > 0 ? (
-              mentors.map((mentor) => <MentorCard key={mentor.mentor_id} mentor={mentor} />)
+              mentors.map((mentor) => <MentorCard key={mentor.mentor_id} mentor={mentor} width_={300}/>)
             ) : (
               <p>No mentors available.</p>
             )}
