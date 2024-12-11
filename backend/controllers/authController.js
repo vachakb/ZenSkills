@@ -241,11 +241,11 @@ exports.uploadDocuments = async (req, res) => {
   });
 
   // Send verification email to the mentor's work email
-  await sendWorkEmail(uploaded);
-  res.status(201).json({ message: "Mentor verification submitted successfully", uploaded });
+  await sendWorkEmail();
+  res.status(201).json({ message: "Mentor verification submitted successfully" });
 }
 
-const sendWorkEmail = async (user, token) => {
+const sendWorkEmail = async () => {
   const transporter = nodemailer.createTransport({
     service: "gmail", // You can use your email provider
     auth: {
@@ -253,8 +253,6 @@ const sendWorkEmail = async (user, token) => {
       pass: process.env.EMAIL_PASS, // Your email password or app-specific password
     },
   });
-
-  const verificationUrl = "http://localhost:5173/please-wait";
 
   await transporter.sendMail({
     from: '"Mentoring Platform" <no-reply@example.com>',
