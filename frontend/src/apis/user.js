@@ -39,6 +39,10 @@ function getUserProfile() {
   return axiosInstance.get("/profile");
 }
 
+function editUserProfile(data) {
+  return axiosInstance.put("/profile", data);
+}
+
 export {
   login,
   register,
@@ -49,4 +53,5 @@ export {
   googleCallback,
   getAllTags,
   getUserProfile,
+  editUserProfile,
 };

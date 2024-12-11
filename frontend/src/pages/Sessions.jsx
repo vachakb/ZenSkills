@@ -12,6 +12,19 @@ const Sessions = () => {
   const [totalSessions, setTotalSessions] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
+  const [initialLoading, setInitialLoading] = useState(true);
+
+  const statuses = [
+    "pending",
+    "accepted",
+    "rejected",
+    "rescheduled",
+    "cancelled",
+    "completed",
+  ];
+
+  const [statusFilters, setStatusFilters] = useState([]);
+  const [showFilters, setShowFilters] = useState(false);
 
   const pageSize = 3; // Number of items per page
 
@@ -20,15 +33,35 @@ const Sessions = () => {
   const navigate = useNavigate();
 
   const onLoad = () => {
-    getAllUserSessions()
-      .then((res) => setSessions(res.data.bookings))
+    setIsLoading(true);
+    getAllUserSessions(statusFilters.join(","))
+      .then((res) => {
+        setSessions(res.data.bookings);
+        setIsLoading(false);
+      })
       .catch((err) => console.error(err));
   };
 
   // Fetch sessions when the active tab or page changes
   useEffect(() => {
     onLoad();
-  }, [activeTab, currentPage]);
+  }, [currentPage]);
+
+  useEffect(() => {
+    let timeoutId;
+
+    if (!initialLoading) {
+      timeoutId = setTimeout(() => {
+        onLoad();
+      }, 500)
+    } else {
+      setInitialLoading(false);
+    }
+
+    return () => {
+      clearTimeout(timeoutId);
+    };
+  }, [statusFilters]);
 
   // Handle pagination page change
   const handlePageChange = (selectedPage) => {
@@ -44,69 +77,43 @@ const Sessions = () => {
   }
 
   return (
-    <Container>
-      {/* Static heading */}
+    <Container className="d-flex flex-column gap-4">
         <div className="d-flex align-items-center gap-2">
-          <h3 className="my-4">Sessions</h3>
+          <h3 className="m-0">Sessions</h3>
           { profile.isMentor && <Button onClick={() => navigate("/createsession_1")}>Create session</Button> }
+          <Button onClick={() => setShowFilters(!showFilters)}>Filters{ statusFilters.length > 0 && ` ${statusFilters.length}` }</Button>
         </div>
-      {/* <p className="text-muted">
-        The Timings are based on your selected Time Zone Asia/Calcutta{" "}
-        <a href="#">Update</a>
-      </p> */}
-
-      {/* Tabs */}
-      <Tab.Container
-        activeKey={activeTab}
-        onSelect={(tab) => {
-          setActiveTab(tab);
-          setCurrentPage(1);
-        }}
-      >
-        {/* <Nav variant="tabs">
-          <Nav.Item>
-            <Nav.Link eventKey="Upcoming">Upcoming</Nav.Link>
-          </Nav.Item>
-          <Nav.Item>
-            <Nav.Link eventKey="History">History</Nav.Link>
-          </Nav.Item>
-        </Nav> */}
-        <ul className="nav nav-tabs mb-4" id="workshopTabs">
-          <li className="nav-item">
-            <button
-              className={`nav-link ${activeTab === "Upcoming" ? "active" : ""}`}
-              onClick={() => setActiveTab("Upcoming")}
-            >
-              Upcoming
-            </button>
-          </li>
-          <li className="nav-item">
-            <button
-              className={`nav-link ${
-                activeTab === "Completed" ? "active" : ""
-              }`}
-              onClick={() => setActiveTab("Completed")}
-            >
-              Completed
-            </button>
-          </li>
-        </ul>
-
-        {/* Tab Content */}
-        <Tab.Content className="mt-4">
+        { showFilters &&
+        <div className="d-flex gap-2">
+          {statuses.map(status => (
+            <Button style={{
+            backgroundColor: statusFilters.includes(status)
+                      ? "#07d100"
+                      : "rgb(233, 236, 239)",
+borderColor: statusFilters.includes(status)
+                      ? "#07d100"
+                      : "rgb(233, 236, 239)"
+            }} key={status} onClick={() =>  {
+              if (statusFilters.includes(status)) {
+                setStatusFilters(statusFilters.filter(value => value !== status));
+              } else {
+                setStatusFilters([...statusFilters, status])
+              }
+               }}>{status}</Button>
+          ))}
+        </div>
+        }
           {isLoading ? (
             <div className="text-center my-5">
               <Spinner animation="border" variant="primary" />
             </div>
           ) : (
-            <>
-              {sessions.map((session, index) => (
-                <SessionCard session={session} key={session.id} />
+            <div className="d-flex flex-column">
+              {sessions.map((session) => (
+                <SessionCard session={session} profile={profile} onAction={() => onLoad()} key={session.id} />
               ))}
-            </>
+            </div>
           )}
-        </Tab.Content>
-      </Tab.Container>
 
       {/* Shared Pagination */}
       {!isLoading && (

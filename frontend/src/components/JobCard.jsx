@@ -4,7 +4,9 @@ import { useNavigate } from "react-router-dom";
 const JobCard = ({
   id,
   title,
-  jobTypes,
+  workSchedule,
+  workLocation,
+  employmentCategories,
   salary,
   company,
   location,
@@ -40,8 +42,10 @@ const JobCard = ({
 
         {/* Job Type and Salary */}
         <div className="mb-3">
-          {jobTypes.map((jobType) => {
-            return <span className="badge bg-success mx-1">{jobType}</span>;
+            <span className="badge bg-success mx-1">{workSchedule}</span>
+            <span className="badge bg-success mx-1">{workLocation}</span>
+          {employmentCategories.map((category) => {
+            return <span className="badge bg-success mx-1" key={category}>{category}</span>
           })}
         </div>
 

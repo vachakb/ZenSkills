@@ -4,19 +4,16 @@ import UserInfo from "../components/UserInfo";
 import { useState, useEffect } from "react";
 import Statistics from "../components/Statistics";
 import Achievements from "../components/Achievements";
-import { useLocation } from "react-router-dom";
 import Milestones from "../components/Milestones";
 import MenteeSessions from "../components/MenteeSessions";
 import useProfile from "../hooks/useProfile";
 import { Form, Formik } from "formik";
-import { axiosInstance } from "../apis/commons";
-import { getMentorProfile } from "../apis/mentors";
 import { getAllAvailableSessions } from "../apis/session";
-import { getSession } from "../apis/session";
+import { editUserProfile } from "../apis/user";
+import { uploadImage } from "../apis/commons";
 
-
-function UserProfile() {
-  const isEditing = useLocation().state?.isEditing ?? false;
+function UserProfile({ _isEditing }) {
+  const [isEditing, setIsEditing] = useState(_isEditing);
 
   const [radioValue, setRadioValue] = useState("1");
   const [sessions, setSessions] = useState([]); // Initialize sessions state
@@ -44,32 +41,19 @@ function UserProfile() {
     };
   };
 
-  const { profile, isProfileLoading } = useProfile();
-
+  const { profile, isProfileLoading, refetchProfile } = useProfile();
 
   const onLoad = async () => {
     setIsLoading(true);
     try {
-
-
-
-
-
       const mentorId = profile?.mentor.id;
-
-
-
 
       const resAvailableSessions = await getAllAvailableSessions(mentorId);
 
-
       setSessions(resAvailableSessions.data.sessions);
-
-
     } catch (err) {
       console.error(err);
-    }
-    finally {
+    } finally {
       setIsLoading(false);
     }
   };
@@ -92,20 +76,54 @@ function UserProfile() {
     <Formik
       initialValues={{
         name: profile.name,
-        title: profile.isMentor ? profile.mentor.mentor_job_title : profile?.mentee?.mentee_title,
-        occupation: profile.isMentor ? profile.mentor.company : profile.mentee.company,
-        skills: profile.isMentor ? profile.mentor.expertise : profile.mentee.interests,
+        title: profile.isMentor
+          ? profile.mentor.mentor_job_title
+          : profile?.mentee?.mentee_title,
+        occupation: profile.isMentor
+          ? profile.mentor.company
+          : profile.mentee.company,
+        skills: profile.isMentor
+          ? profile.mentor.expertise
+          : profile.mentee.interests,
         bio: profile.isMentor ? profile.mentor.bio : profile.mentee.bio,
+        profilePicture: null,
+        profilePictureId: null,
       }}
-      onSubmit={(data) => console.log(data)}
+      onSubmit={async (data) =>  {
+        try {
+          if (data.profilePicture) {
+            const uploadRes = await uploadImage(data.profilePicture);
+            console.log(uploadRes)
+            data.profilePictureId = uploadRes.data.image.id;
+          }
+          delete data.profilePicture;
+          await editUserProfile(data)
+          refetchProfile();
+          setIsEditing(false);
+        } catch ( err ) {
+          console.error(err)
+        }
+      }}
     >
       {(formikProps) => (
-        <Form noValidate className="container-fluid" onSubmit={formikProps.handleSubmit}>
+        <Form
+          noValidate
+          className="container-fluid"
+          onSubmit={formikProps.handleSubmit}
+        >
           <div className="row" style={{ display: "flex" }}>
             {/* Main Content */}
             <div className="col-lg" style={{ flex: "1", marginRight: "10px" }}>
-              <ProfileCard profile={profile} isCurrentUser={true} isEditing={isEditing} formikProps={formikProps} />
-              <div className="pt-0 mt-0" style={{ width: "100%", borderBottom: "1px solid grey" }}>
+              <ProfileCard
+                profile={profile}
+                isCurrentUser={true}
+                isEditing={isEditing}
+                formikProps={formikProps}
+              />
+              <div
+                className="pt-0 mt-0"
+                style={{ width: "100%", borderBottom: "1px solid grey" }}
+              >
                 <ButtonGroup className="d-flex flex-row justify-content-start">
                   {radios.map((radio, idx) => (
                     <ToggleButton
@@ -125,18 +143,34 @@ function UserProfile() {
                 </ButtonGroup>
               </div>
               <div className="mt-3">
-                {radioValue === "1" && <UserInfo profile={profile} isEditing={isEditing} formikProps={formikProps} />}
+                {radioValue === "1" && (
+                  <UserInfo
+                    profile={profile}
+                    isEditing={isEditing}
+                    formikProps={formikProps}
+                  />
+                )}
                 {radioValue === "2" && <Milestones data={timelineData} />}
               </div>
             </div>
 
-
             {/* Sidebar */}
-            <div className="col-lg-auto" style={{ flex: "0 0 50%", maxWidth: "500px", marginRight: "30px" }}>
-              <div className="d-flex flex-column" style={{ gap: "30px", marginTop: "30px" }}>
+            <div
+              className="col-lg-auto"
+              style={{
+                flex: "0 0 50%",
+                maxWidth: "500px",
+                marginRight: "30px",
+              }}
+            >
+              <div
+                className="d-flex flex-column"
+                style={{ gap: "30px", marginTop: "30px" }}
+              >
                 <Statistics />
 
-                {profile.isMentor && <MenteeSessions sessions={sessions} />}{/* Display the fetched sessions */}
+                {profile.isMentor && <MenteeSessions sessions={sessions} />}
+                {/* Display the fetched sessions */}
                 <Achievements />
               </div>
             </div>

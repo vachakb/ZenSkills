@@ -39,8 +39,14 @@ function getSession(id) {
   return axiosInstance.get(`/session/${id}`);
 }
 
-function getAllUserSessions() {
-  return axiosInstance.get("/session/user/list");
+function getAllUserSessions(status) {
+  let url = "/session/user/list";
+
+  if (status) {
+    url += `?status=${status}`;
+  }
+
+  return axiosInstance.get(url);
 }
 
 function bookSession(bookingId) {

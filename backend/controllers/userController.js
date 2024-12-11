@@ -17,6 +17,7 @@ exports.getUserProfile = async (req, res) => {
             expertise: true,
           },
         },
+        profilePicture: true,
       },
       omit: {
         password: true,
@@ -57,6 +58,65 @@ exports.deleteProfile = async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Unable to delete profile." });
+  }
+};
+
+exports.editProfile = async (req, res) => {
+  const { name, bio, title, occupation, skills, profilePictureId } = req.body;
+
+  try {
+    const user = await prisma.User.update({
+      where: {
+        id: req.user.id,
+      },
+      data: {
+        name,
+        profilePicture: {
+          connect: {
+            id: profilePictureId,
+          },
+        },
+      },
+    });
+
+    if (req.user.role === "mentee") {
+      await prisma.mentee.update({
+        where: {
+          user_id: user.id,
+        },
+        data: {
+          bio,
+          mentee_title: title,
+          company: occupation,
+          interests: {
+            connect: skills.map((skill) => ({
+              tag_id: skill.tag_id,
+            })),
+          },
+        },
+      });
+    } else if (req.user.role === "mentor") {
+      await prisma.mentor.update({
+        where: {
+          user_id: user.id,
+        },
+        data: {
+          bio,
+          mentor_job_title: title,
+          company: occupation,
+          expertise: {
+            connect: skills.map((skill) => ({
+              tag_id: skill.tag_id,
+            })),
+          },
+        },
+      });
+    }
+
+    return res.sendStatus(200);
+  } catch (err) {
+    console.error(err);
+    return res.sendStatus(500);
   }
 };
 

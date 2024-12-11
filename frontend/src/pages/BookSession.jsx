@@ -110,7 +110,7 @@ const dayOfWeek = ["SUNDAY", "MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRID
               }}
             >
               <h5>{key.substring(0, 3)}</h5>
-              <h5>{session.timeSlots[key].length}</h5>
+              <h5>{session.timeSlots[key].filter(timeSlot => timeSlot.available).length}</h5>
             </div>
           ))}
         </div>
@@ -123,10 +123,11 @@ const dayOfWeek = ["SUNDAY", "MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRID
                     index === selectedSlot
                       ? "rgba(0, 0, 0, 0.16) 0px 1px 4px, rgba(14, 0, 63, 0.52) 0px 0px 0px 3px"
                       : "unset",
-                  cursor: "pointer",
+                  cursor: value.available ? "pointer" : "unset",
+                  opacity: !value.available ? "40%" : "unset"
                 }}
                 className="rounded px-2 py-1 border border-1"
-                onClick={() => setSelectedSlot(index)}
+                onClick={value.available ? () => setSelectedSlot(index) : undefined}
               >
                 {value.from} - {value.to}
               </div>

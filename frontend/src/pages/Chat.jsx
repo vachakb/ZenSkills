@@ -11,6 +11,9 @@ import { Button, Form, Modal, Spinner } from "react-bootstrap";
 import classNames from "classnames";
 import { API_URL } from "../apis/commons";
 import { DateTime } from "luxon";
+import demoMentorImage from "../assets/mentorImage.png";
+import { LuSend } from "react-icons/lu";
+import { GrAttachment } from "react-icons/gr";
 
 const getFileSize = (size) => {
   const units = ["Bytes", "KB", "MB", "GB"];
@@ -27,10 +30,27 @@ const getFileSize = (size) => {
   return exactSize;
 };
 
-function Conversation({ children, onClick }) {
+function Conversation({ children, onClick, profilePicture }) {
   return (
-    <div style={{ cursor: "pointer", backgroundColor: "lightgrey", width: "100%", height: "60px", borderRadius: "10px" }} className="px-3 mx-0 mx-2" onClick={onClick}>
-      {children}
+    <div
+      style={{ cursor: "pointer" }}
+      className="d-flex gap-2 align-items-center px-1"
+      onClick={onClick}
+    >
+      <img
+        src={
+          profilePicture
+            ? `${API_URL}/api/images/${profilePicture.id}`
+            : demoMentorImage
+        }
+        className="rounded-circle"
+        style={{
+          width: "32px",
+          height: "32px",
+          objectFit: "contain",
+        }}
+      />
+      <span>{children}</span>
     </div>
   );
 }
@@ -91,6 +111,14 @@ function Chat() {
     refetchConversations();
   }, []);
 
+  const getConversationContents = (conversationId) => {
+    sendJsonMessage({
+      type: "RETRIEVE",
+      content: conversationId,
+    });
+    setIsChatLoading(false);
+  };
+
   const { sendJsonMessage } = useWebSocket(
     "ws://localhost:5000/api/chat/connect",
     {
@@ -145,6 +173,7 @@ function Chat() {
     createConversation({ type: "PRIVATE", otherUsers: [user] }).then((res) => {
       setConversations([res.data.conversation, ...conversations]);
       setSelectedConversation(0);
+      getConversationContents(res.data.conversation.id);
     });
   };
 
@@ -225,21 +254,19 @@ function Chat() {
             <Conversation
               onClick={() => {
                 setSelectedConversation(index);
-                sendJsonMessage({
-                  type: "RETRIEVE",
-                  content: conversation.id,
-                });
-                setIsChatLoading(false);
+                getConversationContents(conversation.id);
               }}
+              profilePicture={conversation.profilePicture}
               key={conversation.id}
 
             >
               {conversation.title}
             </Conversation>
           ))}
-          <Conversation onClick={() => openNewConversationModal()}>
+          <hr />
+          <Button onClick={() => openNewConversationModal()}>
             Start new conversation...
-          </Conversation>
+          </Button>
         </div>
         {selectedConversation > -1 ? (
           isChatLoading ? (
@@ -248,8 +275,28 @@ function Chat() {
             </div>
           ) : (
             <div className="d-flex flex-column flex-grow-1">
-              <div>
-                <h5>{conversations[selectedConversation].title}</h5>
+              <div className="d-flex gap-3 align-items-center">
+                <img
+                  src={
+                    conversations[selectedConversation].profilePicture
+                      ? `${API_URL}/api/images/${conversations[selectedConversation].profilePicture.id}`
+                      : demoMentorImage
+                  }
+                  className="rounded-circle"
+                  style={{
+                    width: "32px",
+                    height: "32px",
+                    objectFit: "contain",
+                  }}
+                />
+                <div className="d-flex flex-column">
+                  <h5 className="m-0">
+                    {conversations[selectedConversation].title}
+                  </h5>
+                  <h6 className="m-0">
+                    {conversations[selectedConversation].role}
+                  </h6>
+                </div>
               </div>
               <div
                 className="d-flex flex-column flex-grow-1 p-2 gap-2 overflow-auto"
@@ -274,8 +321,8 @@ function Chat() {
                     })}
                     key={msg.id}
                   >
-                    {messages[index - 1] &&
-                      messages[index - 1].sender.id !== msg.sender.id ? (
+                    {messages[index - 1] === undefined || (messages[index - 1] !== undefined &&
+                      messages[index - 1].sender.id !== msg.sender.id) ? (
                       <h6
                         style={{
                           textAlign:
@@ -340,7 +387,7 @@ function Chat() {
                   ev.preventDefault();
                 }}
               >
-                <div className="d-flex border rounded flex-grow-1 px-2">
+                <div className="d-flex border rounded flex-grow-1 px-2 py-2">
                   <Form.Control
                     style={{ boxShadow: "none" }}
                     className="border-0 me-2 focus-ring p-0"
@@ -364,14 +411,19 @@ function Chat() {
                     }}
                     ref={filePicker}
                   />
-                  <img
-                    style={{ width: "1rem", cursor: "pointer" }}
+                  <GrAttachment
+                    style={{ cursor: "pointer" }}
                     className="ms-auto"
-                    src="/attachment.svg"
+                    fontSize="24px"
                     onClick={() => filePicker.current.click()}
                   />
                 </div>
-                <Button onClick={handleSubmitMessage}>Send</Button>
+                <LuSend
+                  style={{ cursor: "pointer" }}
+                  className="my-auto"
+                  onClick={handleSubmitMessage}
+                  fontSize="24px"
+                />
               </div>
               {fileToUpload && (
                 <div className="d-flex gap-2 px-3 py-1">

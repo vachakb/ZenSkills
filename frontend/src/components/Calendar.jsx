@@ -3,57 +3,28 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { Card } from "react-bootstrap";
 import classNames from "classnames";
 import { Link } from "react-router-dom";
-import useProfile from "../hooks/useProfile";
-
-const sessions = [
-  {
-    id: 1,
-    date: DateTime.local().plus({ day: 1 }),
-    time: "3:30PM",
-    status: "Confirmed",
-    name: "Vacha Buch",
-    title: "React Workshop",
-  },
-  {
-    id: 2,
-    date: DateTime.local(),
-    time: "11:00AM",
-    status: "Pending",
-    name: "Varad Chaudhari",
-    title: "JavaScript Basics",
-  },
-  {
-    id: 3,
-    date: DateTime.local(),
-    time: "2:00PM",
-    status: "Confirmed",
-    name: "Ravi Patel",
-    title: "Node.js Deep Dive",
-  },
-  {
-    id: 4,
-    date: DateTime.local(),
-    time: "2:00PM",
-    status: "Confirmed",
-    name: "Ravi Patel",
-    title: "Node.js Deep Dive",
-  },
-  {
-    id: 5,
-    date: DateTime.local(),
-    time: "11:00AM",
-    status: "Pending",
-    name: "Varad Chaudhari",
-    title: "JavaScript Basics",
-  },
-];
+import { getAllUserSessions } from "../apis/session";
 
 function Calendar({ profile }) {
+  const [bookings, setBookings] = useState([]);
+
+  const onLoad = () => {
+    getAllUserSessions()
+      .then((res) => setBookings(res.data.bookings))
+      .catch((err) => console.error(err));
+  };
+
+  useEffect(() => {
+    if (profile) {
+      onLoad();
+    }
+  }, [profile])
+
   const [selectedDate, setSelectedDate] = useState(DateTime.local());
 
-  const selectedDateSessions = useMemo(() => {
-    return sessions.filter((session) =>
-      selectedDate.hasSame(session.date, "day"),
+  const selectedDateBookings = useMemo(() => {
+    return bookings.filter((booking) =>
+      selectedDate.hasSame(DateTime.fromISO(booking.date), "day"),
     );
   }, [selectedDate]);
 
@@ -193,52 +164,55 @@ function Calendar({ profile }) {
         <div
           className={classNames({
             "d-flex gap-2": true,
-            "flex-column": selectedDateSessions.length > 0,
+            "flex-column": selectedDateBookings.length > 0,
           })}
         >
           <img
             style={{
               width: "1.5em",
-              display: selectedDateSessions.length > 0 ? "none" : "block",
+              display: selectedDateBookings.length > 0 ? "none" : "block",
             }}
             src="/calendar.svg"
           />
           <div
             style={{
-              height: selectedDateSessions.length > 0 ? "150px" : "unset",
+              height: selectedDateBookings.length > 0 ? "150px" : "unset",
             }}
             className="d-flex flex-column gap-4 overflow-auto"
           >
-            {selectedDateSessions.length > 0
-              ? selectedDateSessions.map((session) => (
-                <div className="d-flex flex-column gap-2" key={session.id}>
-                  <div className="d-flex gap-2 align-items-center">
-                    <h6 className="m-0">At {session.time}</h6>
-                    <div
-                      style={{ borderRadius: "24px" }}
-                      className={classNames({
-                        "px-2 py-1 text-white": true,
-                        "bg-success": session.status === "Confirmed",
-                        "bg-danger": session.status === "Pending",
-                      })}
-                    >
-                      <span>{session.status}</span>
+            {selectedDateBookings.length > 0
+              ? selectedDateBookings.map((booking) => (
+                  <div className="d-flex flex-column gap-2" key={booking.id}>
+                    <div className="d-flex gap-2 align-items-center">
+                      <h6 className="m-0">At {DateTime.fromISO(booking.start_time).toFormat("h:mm a")}</h6>
+                      <div
+                        style={{ borderRadius: "24px" }}
+                        className={classNames({
+                          "px-2 py-1 text-white": true,
+                          "bg-secondary": true,
+                          "bg-success": booking.status === "accepted",
+                          "bg-warning": booking.status === "pending",
+                          "bg-primary": booking.status === "completed",
+                          "bg-danger": booking.status === "cancelled",
+                        })}
+                      >
+                        <span>{booking.status}</span>
+                      </div>
+                    </div>
+
+                    <div className="d-flex">
+                      <h6 className="m-0">
+                        <b>{booking.session.name}</b> - {booking.session.mentor.User.name}
+                      </h6>
                     </div>
                   </div>
-
-                  <div className="d-flex">
-                    <h6 className="m-0">
-                      <b>{session.title}</b> - {session.name}
-                    </h6>
-                  </div>
-                </div>
-              ))
+                ))
               : null}
           </div>
           <div className="d-flex flex-column align-items-start">
             <p
               style={{
-                display: selectedDateSessions.length > 0 ? "none" : "block",
+                display: selectedDateBookings.length > 0 ? "none" : "block",
               }}
               className="m-0"
             >
@@ -252,9 +226,11 @@ function Calendar({ profile }) {
             >
               Go to all session
             </Link>
-            {profile.isMentor && <Link style={{ color: "#037F7D" }} to="/createsession_1">
-              Create a session
-            </Link>}
+            {profile.isMentor && (
+              <Link style={{ color: "#037F7D" }} to="/createsession_1">
+                Create a session
+              </Link>
+            )}
           </div>
         </div>
       </Card.Body>

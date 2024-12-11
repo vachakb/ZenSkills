@@ -5,6 +5,16 @@ const useProfile = () => {
   const [profile, setProfile] = useState({});
   const [isProfileLoading, setIsProfileLoading] = useState(true);
 
+  const refetchProfile = () => {
+    setIsProfileLoading(true);
+
+     getUserProfile().then((res) => {
+        res.data.profile.isMentor = res.data.profile.role === "mentor";
+        setProfile(res.data.profile);
+        setIsProfileLoading(false)
+    });
+  }
+
   useEffect(() => {
     let ignore = false;
 
@@ -23,7 +33,7 @@ const useProfile = () => {
     };
   }, []);
 
-  return { profile, isProfileLoading };
+  return { profile, isProfileLoading, refetchProfile };
 };
 
 export default useProfile;

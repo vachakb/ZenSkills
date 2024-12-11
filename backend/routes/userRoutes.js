@@ -4,6 +4,7 @@ const {
   deleteProfile,
   uploadImage,
   getImage,
+  editProfile,
 } = require("../controllers/userController");
 const { getTags } = require("../controllers/mentorController");
 
@@ -19,6 +20,8 @@ router.delete("/profile/delete", deleteProfile);
 
 // Endpoint to fetch tags
 router.get("/tags", getTags);
+
+router.put("/profile", editProfile);
 
 router.post("/image", upload.single("file"), uploadImage);
 
