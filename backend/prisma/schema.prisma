@@ -83,6 +83,9 @@ model mentor {
   created_first_session Boolean @default(false)
 
   TimeSlot TimeSlot[]
+
+  documentId String? @unique
+
 }
 
 model tags {
