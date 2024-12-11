@@ -412,15 +412,17 @@ exports.updateBookingStatus = async (req, res) => {
         ],
       };
 
-      // Add event to mentor's Google Calendar
-      googleClient.setCredentials({
-        refresh_token: booking.session.mentor.User.googleRefreshToken,
-      });
-      const calendar = google.calendar({ version: "v3", auth: googleClient });
-      const mentorEvent = await calendar.events.insert({
-        calendarId: "primary",
-        resource: event,
-      });
+      if (booking.session.mentor.User.googleRefreshToken) {
+        // Add event to mentor's Google Calendar
+        googleClient.setCredentials({
+          refresh_token: booking.session.mentor.User.googleRefreshToken,
+        });
+        const calendar = google.calendar({ version: "v3", auth: googleClient });
+        const mentorEvent = await calendar.events.insert({
+          calendarId: "primary",
+          resource: event,
+        });
+      }
 
       // Store event IDs for future reference
       updatedBooking = await prisma.SessionBooking.update({
@@ -436,15 +438,17 @@ exports.updateBookingStatus = async (req, res) => {
         data: { status },
       });
     } else if (status === "cancelled" && booking.status === "accepted") {
-      // Delete event from mentor's Google Calendar
-      googleClient.setCredentials({
-        refresh_token: booking.session.mentor.User.googleRefreshToken,
-      });
-      const calendar = google.calendar({ version: "v3", auth: googleClient });
-      await calendar.events.delete({
-        calendarId: "primary",
-        eventId: booking.event_id,
-      });
+      if (booking.session.mentor.User.googleRefreshToken) {
+        // Delete event from mentor's Google Calendar
+        googleClient.setCredentials({
+          refresh_token: booking.session.mentor.User.googleRefreshToken,
+        });
+        const calendar = google.calendar({ version: "v3", auth: googleClient });
+        await calendar.events.delete({
+          calendarId: "primary",
+          eventId: booking.event_id,
+        });
+      }
       updatedBooking = await prisma.SessionBooking.update({
         where: { id: bookingId },
         data: { status },
@@ -461,12 +465,35 @@ exports.updateBookingStatus = async (req, res) => {
       const newStartDateTime = new Date(`${newDate}T${newStartTime}:00`);
       const newEndDateTime = new Date(`${newDate}T${newEndTime}:00`);
 
-      // Update the event in Google Calendar
-      googleClient.setCredentials({
-        refresh_token: booking.session.mentor.User.googleRefreshToken,
-      });
-      const calendar = google.calendar({ version: "v3", auth: googleClient });
-      if (booking.event_id) {
+      if (booking.session.mentor.User.googleRefreshToken) {
+        // Update the event in Google Calendar
+        googleClient.setCredentials({
+          refresh_token: booking.session.mentor.User.googleRefreshToken,
+        });
+        const calendar = google.calendar({ version: "v3", auth: googleClient });
+        if (booking.event_id) {
+          await calendar.events.update({
+            calendarId: "primary",
+            eventId: booking.event_id,
+            resource: {
+              start: {
+                dateTime: newStartDateTime.toISOString(),
+                timeZone: "Asia/Kolkata",
+              },
+              end: {
+                dateTime: newEndDateTime.toISOString(),
+                timeZone: "Asia/Kolkata",
+              },
+            },
+          });
+        }
+      }
+
+      if (booking.user.googleRefreshToken) {
+        // Update the event in user's Google Calendar
+        googleClient.setCredentials({
+          refresh_token: booking.user.googleRefreshToken,
+        });
         await calendar.events.update({
           calendarId: "primary",
           eventId: booking.event_id,
@@ -482,25 +509,6 @@ exports.updateBookingStatus = async (req, res) => {
           },
         });
       }
-
-      // Update the event in user's Google Calendar
-      googleClient.setCredentials({
-        refresh_token: booking.user.googleRefreshToken,
-      });
-      await calendar.events.update({
-        calendarId: "primary",
-        eventId: booking.event_id,
-        resource: {
-          start: {
-            dateTime: newStartDateTime.toISOString(),
-            timeZone: "Asia/Kolkata",
-          },
-          end: {
-            dateTime: newEndDateTime.toISOString(),
-            timeZone: "Asia/Kolkata",
-          },
-        },
-      });
 
       // Update the booking in the database
       updatedBooking = await prisma.SessionBooking.update({
