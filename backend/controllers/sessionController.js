@@ -422,16 +422,25 @@ exports.updateBookingStatus = async (req, res) => {
           calendarId: "primary",
           resource: event,
         });
-      }
 
-      // Store event IDs for future reference
-      updatedBooking = await prisma.SessionBooking.update({
-        where: { id: bookingId },
-        data: {
-          status,
-          // event_id: mentorEvent.data.id,
-        },
-      });
+        // Store event IDs for future reference
+        updatedBooking = await prisma.SessionBooking.update({
+          where: { id: bookingId },
+          data: {
+            status,
+            event_id: mentorEvent.data.id,
+          },
+        });
+      } else {
+        // Store event IDs for future reference
+        updatedBooking = await prisma.SessionBooking.update({
+          where: { id: bookingId },
+          data: {
+            status,
+            // event_id: mentorEvent.data.id,
+          },
+        });
+      }
     } else if (status === "rejected") {
       updatedBooking = await prisma.SessionBooking.update({
         where: { id: bookingId },
@@ -517,6 +526,13 @@ exports.updateBookingStatus = async (req, res) => {
           start_time: newStartDateTime,
           end_time: newEndDateTime,
           date: new Date(newDate),
+          status,
+        },
+      });
+    } else if (status === "completed") {
+      updatedBooking = await prisma.SessionBooking.update({
+        where: { id: bookingId },
+        data: {
           status,
         },
       });
