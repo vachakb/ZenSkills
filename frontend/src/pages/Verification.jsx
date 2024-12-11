@@ -48,6 +48,7 @@ function Verification() {
                             body.append("work_email", data.work_email);
                             body.append("linkedin", data.linkedin);
                             // same for all the fields
+                            console.log(body);
                             uploadDocuments(body); // or however u called the endpoint in user.js
                         }}
                     >
