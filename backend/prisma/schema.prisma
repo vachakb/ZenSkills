@@ -38,7 +38,8 @@ model User {
   profilePictureId String? @unique
   profilePicture Image?  @relation(fields: [profilePictureId], references: [id], onDelete: Cascade)
 
-
+  credentialsVerified Boolean @default(false)
+  MentorVerification MentorVerification[]
 
   @@unique(name: "account_id", [email, role])
 }
@@ -84,7 +85,10 @@ model mentor {
 
   TimeSlot TimeSlot[]
 
-  MentorVerification MentorVerification[]
+  documentId String? @unique
+  document file?  @relation(fields: [documentId], references: [id], onDelete: Cascade)
+
+
 }
 
 model tags {
@@ -420,20 +424,20 @@ model SessionBooking {
 
 model MentorVerification {
   id                String   @id @default(uuid())
-  mentor_id         String   @unique
-  governmentId     String
+  user_id           String   @unique
+  governmentId      String
   government_id_type government_id_type
   work_email        String?
   linkedin_profile  String?
   additional_info   String?
   created_at        DateTime @default(now())
   updated_at        DateTime @updatedAt
-  mentor            mentor   @relation(fields: [mentor_id], references: [id], onDelete: Cascade)
+  user            User   @relation(fields: [user_id], references: [id], onDelete: Cascade)
   degree_certificate String?
   additional_file           String?
 
   verified         Boolean?  @default(false)
-  @@index([mentor_id])
+  @@index([user_id])
 }
 
 enum government_id_type {
@@ -443,4 +447,13 @@ enum government_id_type {
   passport
   driving_license
   other
+}
+
+model file {
+  id String @id @default(uuid())
+  filename String
+  path String
+  size Int
+  mimeType String
+  mentor mentor[]
 }
