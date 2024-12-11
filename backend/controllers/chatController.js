@@ -51,6 +51,10 @@ exports.getAllConversations = async (req, res) => {
         value.role = other?.role;
       }
 
+      if (value.type === "GROUP") {
+        value.title = value.users.map((user) => user.name).join(", ");
+      }
+
       return value;
     }),
   });
@@ -84,6 +88,10 @@ exports.createConversation = async (req, res) => {
     conversation.title = other?.name;
     conversation.profilePicture = other?.profilePicture;
     conversation.role = other?.role;
+  }
+
+  if (conversation.type === "GROUP") {
+    conversation.title = conversation.users.map((user) => user.name).join(", ");
   }
 
   res.json({ conversation });

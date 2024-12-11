@@ -49,13 +49,10 @@ function Conversation({ children, onClick, profilePicture }) {
           height: "32px",
           objectFit: "contain",
         }}
-
       />
 
       <span>{children}</span>
-
     </div>
-
   );
 }
 
@@ -153,16 +150,26 @@ function Chat() {
   const [showNewConversationModal, setShowNewConversationModal] =
     useState(false);
 
+  const [originalAvailableChatUsers, setOriginalAvailableChatUsers] = useState(
+    [],
+  );
   const [availableChatUsers, setAvailableChatUsers] = useState([]);
 
   const [isAvailableChatUsersLoading, setIsAvailableChatUsersLoading] =
     useState(false);
 
+  const [selectedChatGroupUsers, setSelectedChatGroupUsers] = useState([]);
+
+  const [chatType, setChatType] = useState("");
+
   const openNewConversationModal = () => {
+    setChatType("PRIVATE");
+    setSelectedChatGroupUsers([]);
     setShowNewConversationModal(true);
     setIsAvailableChatUsersLoading(true);
     getAllAvailableChatUsers()
       .then((res) => {
+        setOriginalAvailableChatUsers(res.data.users);
         setAvailableChatUsers(res.data.users);
         setIsAvailableChatUsersLoading(false);
       })
@@ -173,8 +180,8 @@ function Chat() {
     setShowNewConversationModal(false);
   };
 
-  const startNewConversation = (user) => {
-    createConversation({ type: "PRIVATE", otherUsers: [user] }).then((res) => {
+  const startNewConversation = (otherUsers, type) => {
+    createConversation({ type, otherUsers }).then((res) => {
       setConversations([res.data.conversation, ...conversations]);
       setSelectedConversation(0);
       getConversationContents(res.data.conversation.id);
@@ -205,27 +212,69 @@ function Chat() {
             <Spinner />
           ) : (
             <div className="d-flex flex-column gap-2">
-              <div>
-                <Form.Check type="radio" label="Private" />
-                <Form.Check type="radio" label="Group" />
+              <div className="d-flex gap-2">
+                <Form.Check
+                  name="chat-type"
+                  type="radio"
+                  label="Private"
+                  checked={chatType === "PRIVATE"}
+                  onChange={() => setChatType("PRIVATE")}
+                />
+                <Form.Check
+                  name="chat-type"
+                  type="radio"
+                  label="Group"
+                  checked={chatType === "GROUP"}
+                  onChange={() => {
+                    if (chatType === "PRIVATE") {
+                      setSelectedChatGroupUsers([]);
+                      setChatType("GROUP");
+                    }
+                  }}
+                />
               </div>
               <div
                 style={{ height: "200px", overflowY: "auto" }}
                 className="d-flex flex-column gap-2 mb-2"
               >
-                {availableChatUsers.map((user) => (
+                {(chatType === "GROUP"
+                  ? availableChatUsers.filter(
+                      (user) => !selectedChatGroupUsers.includes(user),
+                    )
+                  : availableChatUsers
+                ).map((user) => (
                   <div
                     style={{
                       cursor: "pointer",
-
                     }}
-                    className="d-flex border border-1 rounded px-4 py-2"
+                    className="d-flex border border-1 rounded px-4 py-2 gap-2 align-items-center"
                     onClick={() => {
-                      closeNewConversationModal();
-                      startNewConversation(user);
+                      if (chatType === "PRIVATE") {
+                        closeNewConversationModal();
+                        startNewConversation([user], "PRIVATE");
+                      } else {
+                        setSelectedChatGroupUsers([
+                          ...selectedChatGroupUsers,
+                          user,
+                        ]);
+                      }
                     }}
                   >
+                    <img
+                      src={
+                        user.profilePicture
+                          ? `${API_URL}/api/images/${user.profilePicture.id}`
+                          : demoMentorImage
+                      }
+                      className="rounded-circle"
+                      style={{
+                        width: "32px",
+                        height: "32px",
+                        objectFit: "contain",
+                      }}
+                    />
                     <span className="fw-bold fs-5">{user.name}</span>
+                    <span className="fs-6">{user.role}</span>
                     <span className="ms-auto fs-6">
                       Joined on{" "}
                       {DateTime.fromISO(user.created_at).toFormat(
@@ -238,8 +287,20 @@ function Chat() {
               <Form.Control
                 type="text"
                 placeholder="Name..."
-                onChange={(ev) => { }}
+                onChange={(ev) => {
+                  const query = ev.currentTarget.value;
+                  setAvailableChatUsers(
+                    originalAvailableChatUsers.filter((value) =>
+                      value.name.toLowerCase().startsWith(query.toLowerCase()),
+                    ),
+                  );
+                }}
               />
+              {chatType === "GROUP" && selectedChatGroupUsers.length > 0 && (
+                <h6 className="m-0">
+                  {selectedChatGroupUsers.map((user) => user.name).join(", ")}
+                </h6>
+              )}
             </div>
           )}
         </Modal.Body>
@@ -250,10 +311,20 @@ function Chat() {
           >
             Cancel
           </Button>
+          {chatType === "GROUP" && (
+            <Button
+              onClick={() => {
+                closeNewConversationModal();
+                startNewConversation(selectedChatGroupUsers, "GROUP");
+              }}
+            >
+              Save
+            </Button>
+          )}
         </Modal.Footer>
       </Modal>
       <div className="d-flex h-100">
-        <div className="d-flex flex-column border-end border-1 pe-4 me-4 gap-4"  >
+        <div className="d-flex flex-column border-end border-1 pe-4 me-4 gap-4">
           {conversations.map((conversation, index) => (
             <Conversation
               onClick={() => {
@@ -262,15 +333,11 @@ function Chat() {
               }}
               profilePicture={conversation.profilePicture}
               key={conversation.id}
-
             >
               {conversation.title}
-
             </Conversation>
-
           ))}
           <hr />
-
 
           <Button onClick={() => openNewConversationModal()}>
             Start new conversation...
@@ -313,8 +380,8 @@ function Chat() {
                   setIsChatAtBottom(
                     Math.abs(
                       ev.currentTarget.scrollHeight -
-                      (ev.currentTarget.scrollTop +
-                        ev.currentTarget.clientHeight),
+                        (ev.currentTarget.scrollTop +
+                          ev.currentTarget.clientHeight),
                     ) <= 1,
                   );
                 }}
@@ -329,7 +396,8 @@ function Chat() {
                     })}
                     key={msg.id}
                   >
-                    {messages[index - 1] === undefined || (messages[index - 1] !== undefined &&
+                    {messages[index - 1] === undefined ||
+                    (messages[index - 1] !== undefined &&
                       messages[index - 1].sender.id !== msg.sender.id) ? (
                       <h6
                         style={{
@@ -457,7 +525,7 @@ function Chat() {
             <h4>Select a conversation or start a new one</h4>
           </div>
         )}
-      </div >
+      </div>
     </>
   );
 }
