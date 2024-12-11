@@ -150,9 +150,6 @@ const router = createBrowserRouter([
       },{
         path: "admin",
         element: <AdminPage />
-      },{
-        path: "admin/:mentorId",
-        element: <AdminPage />
       },
       {
         path: "upcoming",
