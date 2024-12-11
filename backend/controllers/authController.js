@@ -4,6 +4,9 @@ const LocalStrategy = require("passport-local");
 const argon2 = require("argon2");
 const { google } = require("googleapis");
 
+const multer = require("multer");
+const path = require("path");
+
 const googleAuthClient = new google.auth.OAuth2(
   process.env.GOOGLE_CLIENT_ID,
   process.env.GOOGLE_CLIENT_SECRET,
@@ -46,6 +49,9 @@ exports.login = new LocalStrategy(
     try {
       const user = await prisma.user.findUnique({
         where: { account_id: { email, role } },
+        include: {
+          mentor: true,
+        }
       });
 
       if (!user) {
@@ -54,12 +60,16 @@ exports.login = new LocalStrategy(
       }
 
       if (await argon2.verify(user.password, password)) {
-        done(null, user);
+        console.log(user);
+        if (user.role === 'mentor' && !user.MentorVerification.verified) {
+          return done(null, false, { message: "Mentor credentials not verified." });
+        }
+        return done(null, user);
       } else {
-        done(null, false);
+        return done(null, false);
       }
     } catch (err) {
-      done(err);
+      return done(err);
     }
   },
 );
