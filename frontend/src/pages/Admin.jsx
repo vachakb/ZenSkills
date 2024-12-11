@@ -6,6 +6,7 @@ import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement
 import MentorDetailsCard from "../components/MentorDetailsCard";
 import axios from 'axios';
 import { axiosInstance } from "../apis/commons";
+import { Button } from "react-bootstrap";
 
 // Register chart.js components
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
@@ -16,7 +17,7 @@ const AdminPage = () => {
   const [selectedMentor, setSelectedMentor] = useState(null);
   // const verifiedMentorsId = []
   // Paginate data
-  const mentorsVarifyData = [
+  let mentorsVarifyData = [
     {
       name: "John Doe",
       gender: "Male",
@@ -238,6 +239,7 @@ const AdminPage = () => {
 
 
   const [currentPage, setCurrentPage] = useState(0);
+  const [totalPages, setTotalPages] = useState(0)
   const limit = 3;
 
   const handlePageClick = ({ selected }) => {
@@ -305,14 +307,21 @@ const AdminPage = () => {
   };
 
   async function getMentors() {
-    const responce = await axiosInstance.get("", {
-      params: {
-        currentPage,
-        limit
-      }
-    })
-
-    setMentors(responce.data.mentors);
+    try {
+      const responce = await axiosInstance.get("api/admin/", {
+        params: {
+          currentPage,
+          limit
+        }
+      })
+      setMentors(responce.data.mentors)
+      setTotalPages(responce.data.totalPages)
+    }catch(error){
+      console.log("error extracting mentor: ", error)
+    }
+    // setMentors(mentorsVarifyData.splice(currentPage * limit, (currentPage + 1) * limit))
+    // setTotalPages(Math.ceil(mentorsVarifyData.length / limit))
+    // setMentors(responce.data.mentors);
   }
 
   useEffect(() => {
@@ -320,8 +329,26 @@ const AdminPage = () => {
     // ...
     getMentors()
 
-    setMentors(mentorsVarifyData.slice(currentPage * limit, (currentPage + 1) * limit));
+    // setMentors(mentorsVarifyData.slice(currentPage * limit, (currentPage + 1) * limit));
   }, [currentPage])
+
+  async function verifySubmit() {
+
+  }
+
+  async function declineSubmit() {
+    try {
+      const responce = await axiosInstance.delete("", selectedMentor.user_id)
+      if (responce.status === 200 || responce.status === 201) {
+        console.log("declined ", selectedMentor.user_id)
+        setSelectedMentor(null)
+      } else {
+        console.log("there is unknown error")
+      }
+    } catch (error) {
+      console.log("error declining request: ", error)
+    }
+  }
 
   return (
     <Container>
@@ -377,25 +404,24 @@ const AdminPage = () => {
                       </div>
                     })}
                   </div>
-                  <ReactPaginate
-                    previousLabel={"Previous"}
-                    nextLabel={"Next"}
-                    breakLabel={"..."}
-                    pageCount={Math.ceil(mentorsVarifyData.length / limit)}
-                    marginPagesDisplayed={2}
-                    pageRangeDisplayed={3}
-                    onPageChange={handlePageClick}
-                    containerClassName={"pagination justify-content-center mt-3"}
-                    pageClassName={"page-item"}
-                    pageLinkClassName={"page-link"}
-                    previousClassName={"page-item"}
-                    previousLinkClassName={"page-link"}
-                    nextClassName={"page-item"}
-                    nextLinkClassName={"page-link"}
-                    breakClassName={"page-item"}
-                    breakLinkClassName={"page-link"}
-                    activeClassName={"active"}
-                  />
+                  <div className="mt-4 d-flex justify-content-center">
+                    <ReactPaginate
+                      previousLabel={"Previous"}
+                      nextLabel={"Next"}
+                      breakLabel="..."
+                      pageCount={totalPages}
+                      forcePage={currentPage}
+                      onPageChange={(selected) => setCurrentPage(selected.selected)}
+                      containerClassName={"pagination"}
+                      pageClassName={"page-item"}
+                      pageLinkClassName={"page-link"}
+                      previousClassName={"page-item"}
+                      previousLinkClassName={"page-link"}
+                      nextClassName={"page-item"}
+                      nextLinkClassName={"page-link"}
+                      activeClassName={"active"}
+                    />
+                  </div>
                 </Col>
 
 
@@ -406,13 +432,15 @@ const AdminPage = () => {
                       mentor={selectedMentor}
                       onVerify={(mentor) => {
                         console.log("Verified:", mentor);
-                        mentorsVarifyData = mentorsVarifyData.filter(item => item.user_id !== selectedMentor.user_id);
-                        selectedMentor = null
+                        mentorsVarifyData = mentorsVarifyData.filter(item => item.user_id !== mentor.user_id);
+                        setSelectedMentor(null)
+                        getMentors()
                       }}
                       onDecline={(mentor) => {
                         console.log("Declined:", mentor)
-                        mentorsVarifyData = mentorsVarifyData.filter(item => item.user_id !== selectedMentor.user_id);
-                        selectedMentor = null
+                        mentorsVarifyData = mentorsVarifyData.filter(item => item.user_id !== mentor.user_id);
+                        setSelectedMentor(null)
+                        getMentors()
                       }}
                     />
                   ) : (
@@ -420,6 +448,18 @@ const AdminPage = () => {
                       <p>Select a mentor to view their details.</p>
                     </div>
                   )}
+                  <div className={`d-flex justify-content-end mt-3 ${(selectedMentor !== null) ? "" : "d-none"}`}>
+                    <Button variant="success" className={`border me-2 ${(selectedMentor !== null) ? "" : "disabled"}`} onClick={() => {
+                      verifySubmit()
+                    }}>
+                      Verify
+                    </Button>
+                    <Button variant="danger" className={`border ${(selectedMentor !== null) ? "" : "disabled"}`} onClick={() => {
+                      declineSubmit()
+                    }}>
+                      Decline
+                    </Button>
+                  </div>
                 </Col>
 
               </Row>

@@ -186,4 +186,230 @@ const editProfile = async (req, res) => {
   }
 };
 
-module.exports = { getMentors, getTags, getMentorProfile, editProfile };
+const getMentorsList = async (req, res) => {
+  try {
+    const mentors = await prisma.mentor.findMany({
+      include: {
+        User: true,
+      },
+    });
+
+    res.json({ mentors });
+  } catch (error) {
+    console.error("Error fetching all mentors:", error);
+    res.sendStatus(500);
+  }
+};
+
+const getAllReferrals = async (req, res) => {
+  const { status } = req.query;
+
+  const where = {
+    mentor: {
+      User: {
+        id: req.user.id,
+      },
+    },
+  };
+
+  if (status) {
+    where.status = status;
+  }
+
+  try {
+    const referrals = await prisma.referral.findMany({
+      where,
+    });
+
+    res.json({ referrals });
+  } catch (error) {
+    console.error(error);
+    res.sendStatus(500);
+  }
+};
+
+const createReferral = async (req, res) => {
+  const { mentor_id, job_url, description, reason } = req.body;
+  const resume = req.files["resume"][0];
+
+  try {
+    await prisma.referral.create({
+      data: {
+        mentor: {
+          connect: {
+            id: mentor_id,
+          },
+        },
+        job_url,
+        description,
+        reason,
+        status: "PENDING",
+        resume: {
+          create: {
+            filename: resume.originalname,
+            path: resume.path,
+            size: resume.size,
+            mimeType: resume.mimetype,
+          },
+        },
+        mentee: {
+          connect: {
+            user_id: req.user.id,
+          },
+        },
+      },
+    });
+
+    res.sendStatus(200);
+  } catch (error) {
+    console.error(error);
+    res.sendStatus(500);
+  }
+};
+
+const updateReferralStatus = async (req, res) => {
+  const { referral_id, status } = req.body;
+
+  try {
+    if (status === "ACCEPTED") {
+      await prisma.referral.update({
+        where: {
+          id: referral_id,
+        },
+        data: {
+          status,
+        },
+      });
+    } else if (status === "REJECTED") {
+      await prisma.referral.delete({ where: { id: referral_id } });
+    } else {
+      return res.sendStatus(400);
+    }
+
+    res.sendStatus(200);
+  } catch (error) {
+    console.error(error);
+    res.sendStatus(500);
+  }
+};
+
+// get all the mentees that have had at least one session with this mentor
+const getAllMentees = async (req, res) => {
+  try {
+    const bookings = await prisma.SessionBooking.findMany({
+      where: {
+        session: {
+          mentor: {
+            user_id: req.user.id,
+          },
+        },
+        status: "completed",
+      },
+    });
+
+    const userIds = Array.from(
+      new Set(bookings.map((booking) => booking.user_id)),
+    );
+
+    const mentees = await prisma.mentee.findMany({
+      include: {
+        User: true,
+      },
+      where: {
+        user_id: {
+          in: userIds,
+        },
+      },
+    });
+
+    res.json({ mentees });
+  } catch (error) {
+    console.error(error);
+    res.sendStatus(500);
+  }
+};
+
+const getAllMenteeRatings = async (req, res) => {
+  const { menteeId } = req.params;
+
+  try {
+    const ratings = await prisma.menteeRating.findMany({
+      include: {
+        mentee: true,
+        from: true,
+      },
+      where: {
+        mentee_id: menteeId,
+      },
+    });
+
+    res.json({ ratings });
+  } catch (error) {
+    console.error(error);
+    res.sendStatus(500);
+  }
+};
+
+const createRating = async (req, res) => {
+  const { mentee_id, rating, comment } = req.body;
+
+  try {
+    await prisma.menteeRating.create({
+      data: {
+        rating,
+        comment,
+        from: {
+          connect: {
+            user_id: req.user.id,
+          },
+        },
+        mentee: {
+          connect: {
+            id: mentee_id,
+          },
+        },
+      },
+    });
+
+    res.sendStatus(200);
+  } catch (error) {
+    console.error(error);
+    res.sendStatus(500);
+  }
+};
+
+const updateRating = async (req, res) => {
+  const { rating_id, rating, comment } = req.body;
+
+  try {
+    await prisma.menteeRating.update({
+      where: {
+        id: rating_id,
+      },
+      data: {
+        rating,
+        comment,
+      },
+    });
+
+    res.sendStatus(200);
+  } catch (error) {
+    console.error(error);
+    res.sendStatus(500);
+  }
+};
+
+module.exports = {
+  getMentors,
+  getTags,
+  getMentorProfile,
+  editProfile,
+  getMentorsList,
+  getAllReferrals,
+  createReferral,
+  updateReferralStatus,
+  getAllMentees,
+  getAllMenteeRatings,
+  createRating,
+  updateRating,
+};

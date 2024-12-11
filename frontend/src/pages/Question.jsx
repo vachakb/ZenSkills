@@ -1,12 +1,16 @@
 import { useState, useEffect } from "react";
 import ReactPaginate from "react-paginate";
 import { useSearchParams } from 'react-router-dom';
+import { axiosInstance } from "../apis/commons";
+
+const API_URL = "http://localhost:5000";
 
 export default function Question() {
   // in reality, get id from url and values form
-
   const [searchParams] = useSearchParams();
   const questionId = searchParams.get('questionId')
+  console.log(questionId)
+  const [comment, setComment] = useState("")
 
   const questionObject = {
     id: 2,
@@ -129,22 +133,36 @@ export default function Question() {
 
   async function getAnswers() {
     // call api for questions/blogs
-
-      // const responce = await fetchAnswers(questionId, currentPage, limit);
-    //   answers = responce.data.answers;
-    //   totalPages = responce.data.totalPages;
-
-    setAnswers(
-      questionObject.answers.slice(
-        currentPage * limit,
-        (currentPage + 1) * limit
-      )
-    );
-    setTotalPages(Math.ceil(questionObject.answers.length / limit));
-    console.log(currentPage, answers, totalPages);
+    try{
+      const responce = await axiosInstance.get("", {
+        params: {
+          questionId, currentPage, limit
+        }
+      });
+      setAnswers(responce.data.answers)
+      setTotalPages(responce.data.totalPages)
+    }catch(error){
+      console.log("error on client: ", error);
+    }
   }
 
-  useEffect
+  async function postAnswer() {
+    try{
+      const response = await axiosInstance.post(`${API_URL}/api/community/questions`, {
+        answer:comment,
+        questionId
+      })
+    }catch(error){
+
+    }
+  }
+
+  async function handleSubmit() {
+    // posting comment
+    postAnswer()
+    setCurrentPage(0)
+    getAnswers()
+  }
 
   useEffect(() => {
     getAnswers()
@@ -177,6 +195,40 @@ export default function Question() {
             </span>
           </div>
         </div>
+      </div>
+
+      {/* user answer */}
+      <div className="m-2 d-flex gap-3">
+        <img
+          src="https://via.placeholder.com/50"
+          alt={`user's image`}
+          className="rounded-circle"
+          style={{ width: "50px", height: "50px" }}
+        />
+        <textarea
+          placeholder="Write your answer here..."
+          value={comment}
+          onChange={(e) => setComment(e.target.value)}
+          rows={1}
+          style={{
+            width: '100%',
+            padding: '5px 0',
+            fontSize: '16px',
+            border: 'none',
+            borderBottom: '2px solid #ccc',
+            resize: 'none', // Prevent manual resizing
+            overflow: 'hidden', // Hide scrollbars
+            outline: 'none', // Remove focus outline
+          }}
+          onInput={(e) => {
+            e.target.style.height = 'auto'; // Reset height to calculate scroll height
+            e.target.style.height = `${e.target.scrollHeight}px`; // Adjust to content
+          }}
+        />
+        <button
+          className="btn btn-info border"
+          onClick={handleSubmit}
+        >Submit</button>
       </div>
 
       {/* answers */}
