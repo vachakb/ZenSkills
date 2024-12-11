@@ -148,7 +148,7 @@ export default function Question() {
 
   async function postAnswer() {
     try{
-      const response = await axiosInstance.post("", {
+      const response = await axiosInstance.post(`${API_URL}/api/community/questions`, {
         answer:comment,
         questionId
       })
@@ -228,16 +228,6 @@ export default function Question() {
         <button
           className="btn btn-info border"
           onClick={handleSubmit}
-        // style={{
-        //   alignSelf: 'flex-end',
-        //   padding: '10px 20px',
-        //   backgroundColor: '#007BFF',
-        //   color: '#fff',
-        //   border: 'none',
-        //   borderRadius: '5px',
-        //   cursor: 'pointer',
-        //   fontSize: '16px',
-        // }}
         >Submit</button>
       </div>
 
