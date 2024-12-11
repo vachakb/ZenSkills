@@ -189,32 +189,7 @@ export default function MentorWelcome({ events_ }) {
             <Calendar profile={profile} />
           </div>
 
-          <Card
-            text="primary"
-            bg="white"
-            border="primary"
-            className="mb-5"
-            style={{ width: "320px", height: "130px", boxShadow: '4px 4px 10px gray' }}
-          >
-            <Card.Title
-              className="mt-4 py-0 mb-0"
-              style={{ fontSize: "15px", marginLeft: "20px" }}
-            >
-              <u>Complete your first session</u>
-              <MdOutlineKeyboardDoubleArrowRight
-                size={"2em"}
-                style={{ verticalAlign: "middle", marginLeft: "50px" }}
-                onClick={() => navigate("/sessions")}
-              />
-            </Card.Title>
-            <Card.Text className="mx-3 mt-2" style={{ fontSize: "13px" }}>
-              <RiCopperCoinLine
-                size={"2em"}
-                style={{ color: "#f1dc2e", marginRight: "10px" }}
-              />
-              Unlock other milestones
-            </Card.Text>
-          </Card>
+
           <Card
             text="primary"
             bg="white"

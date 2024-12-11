@@ -49,9 +49,13 @@ function Conversation({ children, onClick, profilePicture }) {
           height: "32px",
           objectFit: "contain",
         }}
+
       />
+
       <span>{children}</span>
+
     </div>
+
   );
 }
 
@@ -213,6 +217,7 @@ function Chat() {
                   <div
                     style={{
                       cursor: "pointer",
+
                     }}
                     className="d-flex border border-1 rounded px-4 py-2"
                     onClick={() => {
@@ -233,7 +238,7 @@ function Chat() {
               <Form.Control
                 type="text"
                 placeholder="Name..."
-                onChange={(ev) => {}}
+                onChange={(ev) => { }}
               />
             </div>
           )}
@@ -248,7 +253,7 @@ function Chat() {
         </Modal.Footer>
       </Modal>
       <div className="d-flex h-100">
-        <div className="d-flex flex-column border-end border-1 pe-4 me-4 gap-2">
+        <div className="d-flex flex-column border-end border-1 pe-4 me-4 gap-4"  >
           {conversations.map((conversation, index) => (
             <Conversation
               onClick={() => {
@@ -257,11 +262,16 @@ function Chat() {
               }}
               profilePicture={conversation.profilePicture}
               key={conversation.id}
+
             >
               {conversation.title}
+
             </Conversation>
+
           ))}
           <hr />
+
+
           <Button onClick={() => openNewConversationModal()}>
             Start new conversation...
           </Button>
@@ -288,12 +298,12 @@ function Chat() {
                   }}
                 />
                 <div className="d-flex flex-column">
-                <h5 className="m-0">
-                  {conversations[selectedConversation].title}
-                </h5>
-                <h6 className="m-0">
-                  {conversations[selectedConversation].role}
-                </h6>
+                  <h5 className="m-0">
+                    {conversations[selectedConversation].title}
+                  </h5>
+                  <h6 className="m-0">
+                    {conversations[selectedConversation].role}
+                  </h6>
                 </div>
               </div>
               <div
@@ -303,8 +313,8 @@ function Chat() {
                   setIsChatAtBottom(
                     Math.abs(
                       ev.currentTarget.scrollHeight -
-                        (ev.currentTarget.scrollTop +
-                          ev.currentTarget.clientHeight),
+                      (ev.currentTarget.scrollTop +
+                        ev.currentTarget.clientHeight),
                     ) <= 1,
                   );
                 }}
@@ -320,7 +330,7 @@ function Chat() {
                     key={msg.id}
                   >
                     {messages[index - 1] === undefined || (messages[index - 1] !== undefined &&
-                    messages[index - 1].sender.id !== msg.sender.id) ? (
+                      messages[index - 1].sender.id !== msg.sender.id) ? (
                       <h6
                         style={{
                           textAlign:
@@ -447,7 +457,7 @@ function Chat() {
             <h4>Select a conversation or start a new one</h4>
           </div>
         )}
-      </div>
+      </div >
     </>
   );
 }

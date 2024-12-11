@@ -161,6 +161,8 @@ const CreateJobs = () => {
                             <ErrorMessage name="location" component="div" className="text-danger" />
                         </div>
 
+
+
                         {/* Job Types */}
                         <div className="mb-3">
                             <label className="form-label">

@@ -188,37 +188,39 @@ function MenteeWelcome({ mentors_, events_ }) {
 
         {/* Sidebar Section */}
         <Col md={4} className="d-flex flex-column gap-4">
-          <div className="flex-grow-0 ms-auto" style={{ position: 'fixed', right: '15px' }}>
-            <div className="position-sticky" style={{ top: "20px" }}>
-              {/* First Sidebar Card */}
-              <Card
-                bg="white"
-                border="primary"
-                className="shadow-sm mb-4"
-                style={{ width: "100%", height: "130px" }}
-              >
-                <Card.Body>
-                  <Card.Title
-                    className="d-flex justify-content-between align-items-center"
-                    style={{ fontSize: "15px" }}
-                  >
-                    <u>Complete your first session</u>
-                    <MdOutlineKeyboardDoubleArrowRight
-                      size={"2em"}
-                      onClick={() => navigate("/sessions")}
-                    />
-                  </Card.Title>
-                  <Card.Text className="mt-2" style={{ fontSize: "13px" }}>
-                    <RiCopperCoinLine
-                      size={"2em"}
-                      style={{ color: "#f1dc2e", marginRight: "10px" }}
-                    />
-                    Unlock other milestones
-                  </Card.Text>
-                </Card.Body>
-              </Card>
-            </div>
+          <div className="flex-grow-0 ms-auto" style={{ right: '15px' }}>
+
             <Calendar profile={profile} />
+            <Card
+              text="primary"
+              bg="white"
+              border="primary"
+              className="mb-5 mt-5"
+              style={{ width: "320px", height: "160px", color: "#ffa426", boxShadow: '6px 6px 10px gray' }}
+            >
+              <Card.Body>
+                <Card.Title className="mt-3 py-0 mb-0"
+                  style={{ fontSize: "15px", textAlign: 'center' }}>Showcase wins, amplify your impact</Card.Title>
+                <Card.Text className="mx-3 mt-2" style={{ fontSize: "13px", textAlign: 'center' }}>
+                  Share profile, get more bookings
+                </Card.Text>
+                <div className="d-flex justify-content-center">
+                  <Button
+                    className="custom-hover-button"
+                    style={{
+                      backgroundColor: "white",
+                      color: "#0E003F",
+                      fontWeight: "bold",
+                      borderRadius: "10px",
+                      border: "1px solid #0E003F",
+
+                    }}
+                  >
+                    Copy Link
+                  </Button>
+                </div>
+              </Card.Body>
+            </Card>
           </div>
         </Col>
       </Row>
