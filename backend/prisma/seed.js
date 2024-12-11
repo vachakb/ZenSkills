@@ -44,6 +44,7 @@ const main = async () => {
         gender: "Male",
         location: "New Delhi",
         is_deleted: false,
+        credentialsVerified: true,
       },
     });
 
@@ -74,6 +75,7 @@ const main = async () => {
         gender: "Male",
         location: "New Delhi",
         is_deleted: false,
+        credentialsVerified: true,
       },
     });
 
