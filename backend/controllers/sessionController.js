@@ -771,3 +771,48 @@ exports.setSessionRoomId = async (req, res) => {
 
   res.sendStatus(200);
 };
+
+exports.getAcceptedSessions = async (req, res) => {
+  const where = {};
+
+  where.status = 'accepted';
+
+  if (req.user.role === "mentor") {
+    where.session = {
+      mentor: {
+        user_id: req.user.id,
+      },
+    };
+    where.user = {
+      isNot: null,
+    };
+  } else if (req.user.role === "mentee") {
+    where.user_id = req.user.id;
+  }
+
+  const bookings = await prisma.SessionBooking.findMany({
+    include: {
+      session: {
+        include: {
+          mentor: {
+            include: {
+              User: true,
+            },
+          },
+        },
+      },
+      user: true,
+    },
+    where: where,
+    orderBy: [
+      {
+        date: "asc",
+      },
+      {
+        start_time: "asc",
+      },
+    ],
+  });
+
+  res.json({ bookings });
+};

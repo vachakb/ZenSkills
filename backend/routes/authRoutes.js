@@ -54,8 +54,8 @@ router.post(
       role: req.body.role,
     });
   },
-  (_, res) => {
-    res.sendStatus(500);
+  (err, req, res, next) => {
+    res.status(500).json({ message: err });
   },
 );
 
@@ -92,8 +92,8 @@ router.get(
     action: "acceptToken",
     failWithError: true,
   }),
-  (_, res) => {
-    res.sendStatus(200);
+  (req, res) => {
+    res.json({ role: req.user.role });
   },
   (_, res) => {
     res.sendStatus(500);

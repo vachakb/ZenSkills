@@ -52,19 +52,19 @@ exports.login = new LocalStrategy(
       });
 
       if (!user) {
-        done(null, false);
+        done("User not found. Check email and role.", false);
         return;
       }
 
       if (await argon2.verify(user.password, password)) {
         //for blocking the mentor logging until the mentor is verified
-        if (role === 'mentor' && !user.credentialsVerified){
-          done(null, false);
+        if (role === "mentor" && !user.credentialsVerified) {
+          done("Credentials verification process still ongoing.", false);
           return;
         }
         done(null, user);
       } else {
-        done(null, false);
+        done("Wrong credentials.", false);
       }
     } catch (err) {
       done(err);
@@ -206,33 +206,63 @@ exports.uploadDocuments = async (req, res) => {
     data: {
       government_id: {
         create: {
-          filename: req.files["government_id"].originalname,
-          path: req.files["government_id"].path,
-          size: req.files["government_id"].size,
-          mimeType: req.files["government_id"].mimetype,
+          filename: req.files["government_id"][0].originalname,
+          path: req.files["government_id"][0].path,
+          size: req.files["government_id"][0].size,
+          mimeType: req.files["government_id"][0].mimetype,
         },
       },
       degree_certificate: {
         create: {
-          filename: req.files["degree_certificate"].originalname,
-          path: req.files["degree_certificate"].path,
-          size: req.files["degree_certificate"].size,
-          mimeType: req.files["degree_certificate"].mimetype,
+          filename: req.files["degree_certificate"][0].originalname,
+          path: req.files["degree_certificate"][0].path,
+          size: req.files["degree_certificate"][0].size,
+          mimeType: req.files["degree_certificate"][0].mimetype,
         },
       },
       additional_file: {
         create: {
-          filename: req.files["additional_file"].originalname,
-          path: req.files["additional_file"].path,
-          size: req.files["additional_file"].size,
-          mimeType: req.files["additional_file"].mimetype,
+          filename: req.files["additional_file"][0].originalname,
+          path: req.files["additional_file"][0].path,
+          size: req.files["additional_file"][0].size,
+          mimeType: req.files["additional_file"][0].mimetype,
         },
       },
       work_email: req.body.work_email,
-      linkedin: req.body.linkedin,
+      linkedin_profile: req.body.linkedin,
       additional_info: req.body.additional_info,
+      government_id_type: req.body.government_id_type,
+      user: {
+        connect: {
+          id: req.user.id,
+        },
+      },
     },
   });
 
-  res.sendStatus(200);
+  // Send verification email to the mentor's work email
+  await sendWorkEmail(req.body.work_email);
+  res
+    .status(201)
+    .json({ message: "Mentor verification submitted successfully" });
+};
+
+const sendWorkEmail = async (work_email) => {
+  const transporter = nodemailer.createTransport({
+    service: "gmail", // You can use your email provider
+    auth: {
+      user: process.env.EMAIL_USER, // Your email
+      pass: process.env.EMAIL_PASS, // Your email password or app-specific password
+    },
+  });
+
+  await transporter.sendMail({
+    from: '"Mentoring Platform" <no-reply@example.com>',
+    to: work_email,
+    subject: "Mentor Verification Submitted",
+    html: `
+      <h2>Mentor Verification Submitted</h2>
+      <p>Your mentor verification details have been submitted successfully. Please wait until your credentials are verified by the admin.</p>
+      <p>We will get back to you within 48 hours</p>`,
+  });
 };

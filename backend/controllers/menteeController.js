@@ -35,7 +35,7 @@ async function getMenteeProfile(req, res) {
 
 async function editProfile(req, res) {
   const userId = req.user.id;
-  const { name, email, location, language, phone_number, bio, title, occupation, interests } = req.body;
+  const { name, bio, title, occupation, interests } = req.body;
 
   try {
     // Fetch the current mentee profile
@@ -65,10 +65,6 @@ async function editProfile(req, res) {
     // Prepare the data for updating the user details
     const userData = {
       name: name !== undefined ? name : currentMentee.User.name,
-      email: email !== undefined ? email : currentMentee.User.email,
-      phone_number: phone_number !== undefined ? phone_number : currentMentee.User.phone_number,
-      location: location !== undefined ? location : currentMentee.User.location,
-      language: language !== undefined ? language : currentMentee.User.language,
     };
 
     // Update the user details

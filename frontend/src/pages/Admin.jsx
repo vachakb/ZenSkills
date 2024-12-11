@@ -355,15 +355,15 @@ const AdminPage = () => {
       <h2 className="text-center m-3 fw-bold">Admin Dashboard</h2>
       <Navbar bg="light" expand="md">
         <Nav>
-          <Nav.Link onClick={() => setActiveTab("mentors")} active={activeTab === "mentors"}>
+          {/* <Nav.Link onClick={() => setActiveTab("mentors")} active={activeTab === "mentors"}>
             Mentors
           </Nav.Link>
           <Nav.Link onClick={() => setActiveTab("workshops")} active={activeTab === "workshops"}>
             Workshops
           </Nav.Link>
           <Nav.Link onClick={() => setActiveTab("applications")} active={activeTab === "applications"}>
-            Job Applications
-          </Nav.Link>
+            Job Applications */}
+          {/* </Nav.Link> */}
           <Nav.Link onClick={() => setActiveTab("verifyMentors")} active={activeTab === "verifyMentors"}>
             Verify Mentors
           </Nav.Link>
@@ -372,9 +372,9 @@ const AdminPage = () => {
 
       <Row>
         <Col>
-          {activeTab === "mentors" && renderTabContent("mentors")}
+          {/* {activeTab === "mentors" && renderTabContent("mentors")}
           {activeTab === "workshops" && renderTabContent("workshops")}
-          {activeTab === "applications" && renderTabContent("applications")}
+          {activeTab === "applications" && renderTabContent("applications")} */}
           {activeTab === "verifyMentors" && (
             <div style={{ padding: "20px" }}>
               <h4>Verify Mentors</h4>

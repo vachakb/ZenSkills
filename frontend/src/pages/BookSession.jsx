@@ -57,6 +57,17 @@ function BookSession() {
     );
   }
 
+  const generateNext14Days = () => {
+    const days = [];
+    const today = DateTime.local();
+    for (let i = 0; i < 14; i++) {
+      days.push(today.plus({ days: i }));
+    }
+    return days;
+  };
+
+  const next14Days = generateNext14Days();
+
   return (
     <div className="d-flex h-100 position-relative">
       <img
@@ -111,6 +122,29 @@ function BookSession() {
             </div>
           ))}
         </div>
+        {/* <div className="d-flex gap-2 my-4">
+          {next14Days.map((day) => (
+            <div
+              key={day.toISODate()}
+              style={{
+                cursor: "pointer",
+                boxShadow:
+                  day.toISODate() === selectedDay
+                    ? "rgba(0, 0, 0, 0.16) 0px 1px 4px, rgba(14, 0, 63, 0.52) 0px 0px 0px 3px"
+                    : "unset",
+              }}
+              className="d-flex flex-column align-items-center p-4 rounded border border-1 gap-4"
+              onClick={() => {
+                setSelectedDay(day.toISODate());
+                setSelectedSlot(undefined);
+              }}
+            >
+              <h5>{day.toFormat("ccc")}</h5>
+              <h5>{day.toFormat("dd/MM")}</h5>
+              <h5>{session.timeSlots[day.toISODate()]?.filter(timeSlot => timeSlot.available).length || 0}</h5>
+            </div>
+          ))}
+        </div> */}
         <div className="d-flex gap-4 flex-wrap">
           {selectedDay &&
             session.timeSlots[selectedDay].map((value, index) => (
