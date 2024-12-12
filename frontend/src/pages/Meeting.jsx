@@ -624,7 +624,13 @@ function Room({ meetingId, roomType, isHost, onMeetingEnded }) {
   const navigate = useNavigate();
 
   if (!localParticipant) {
-    setTimeout(() => navigate("/sessions"), 3000);
+    setTimeout(() => {
+      if (roomType === "one-on-one") {
+     navigate("/sessions")
+      } else {
+        navigate("/workshops")
+      }
+    }, 3000);
 
     return (
       <div className="d-flex flex-column justify-content-center align-items-center vw-100 vh-100">
@@ -675,7 +681,7 @@ function Room({ meetingId, roomType, isHost, onMeetingEnded }) {
 }
 
 function Meeting() {
-  const { token, roomId, sessionId, roomType, isHost } = useLocation().state;
+  const { token, roomId, sessionId, workshopId, roomType, isHost } = useLocation().state;
 
   const [name, setName] = useState("");
 
@@ -686,7 +692,9 @@ function Meeting() {
   const [micEnabled, setMicEnabled] = useState(false);
 
   const completeMeeting = () => {
-    updateBookingStatus(sessionId, "completed").then((res) => console.log(res.data)).catch(err => console.error(err));
+    if (roomType === "one-on-one") {
+      updateBookingStatus(sessionId, "completed").then((res) => console.log(res.data)).catch(err => console.error(err));
+    }
   };
 
   return (

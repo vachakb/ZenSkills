@@ -65,18 +65,23 @@ exports.editProfile = async (req, res) => {
   const { name, bio, title, occupation, skills, profilePictureId } = req.body;
 
   try {
+    const data = {
+      name,
+    };
+
+    if (profilePictureId) {
+      data.profilePicture = {
+        connect: {
+          id: profilePictureId,
+        },
+      };
+    }
+
     const user = await prisma.User.update({
       where: {
         id: req.user.id,
       },
-      data: {
-        name,
-        profilePicture: {
-          connect: {
-            id: profilePictureId,
-          },
-        },
-      },
+      data,
     });
 
     if (req.user.role === "mentee") {
