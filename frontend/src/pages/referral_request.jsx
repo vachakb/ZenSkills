@@ -252,10 +252,9 @@ const ReferralRequests = () => {
                       }}
                     >
                       {mentee.profileIcon} {mentee.User.name}
-                      <div className="mt-2">
+                            {/* <div className="mt-2">
                         {renderStars(referral?.rating || 0)}{" "}
-                        {/* Show stars based on referral's rating */}
-                      </div>
+                        </div> */}
                     </ListGroup.Item>
                   );
                 })}
