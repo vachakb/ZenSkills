@@ -21,6 +21,7 @@ const passport = require("passport");
 const workshopRoutes = require("./routes/workshopRoutes");
 const adminRoutes = require("./routes/adminRoutes");
 const communityRoutes = require("./routes/communityRoutes");
+const eventRoutes = require("./routes/eventRoutes");
 
 const app = express();
 
@@ -61,6 +62,7 @@ app.use("/api/jobs", jobRoutes);
 app.use("/api/meetings", meetingRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/community", communityRoutes);
+app.use("/api/event",eventRoutes);
 
 require("express-ws")(app);
 const chatRoutes = require("./routes/chatRoutes");

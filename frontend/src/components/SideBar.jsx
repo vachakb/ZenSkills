@@ -8,6 +8,7 @@ import { FaRegClock } from "react-icons/fa6";
 import { BiMessageDetail } from "react-icons/bi";
 import { MdWorkOutline } from "react-icons/md";
 import { BsPeople } from "react-icons/bs";
+import { PiCertificate } from "react-icons/pi";
 import classNames from "classnames";
 import { useLocation } from "react-router-dom";  // To track current route
 import ProfileMenu from "./profileMenu";
@@ -105,7 +106,14 @@ function SideBar(props) {
         </Nav.Link>
 
         {/* Profile link */}
-        <div className="mt-auto"></div>
+        <Nav.Link
+          href={profile?.role === "mentor" ? "/referral_request" : "/referrals"}
+          className="d-flex flex-column align-items-center mb-2"
+          style={{ color: "white", fontSize: "10px" }}
+        >
+          <PiCertificate color="white" size={"2.3em"} className="mb-1" />
+          <span>Referrals</span>
+        </Nav.Link>
 
       </Nav>
     </Navbar>

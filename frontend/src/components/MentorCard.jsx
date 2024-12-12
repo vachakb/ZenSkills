@@ -59,7 +59,7 @@ export default function MentorCard({ mentor, width_ }) {
               className="me-2"
             />
             <div className="text-truncate-2" title={mentor.currentPost}>
-              {mentor.currentPost}
+              {mentor.title} at {mentor.company}
             </div>
           </div>
 
