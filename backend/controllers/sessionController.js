@@ -13,6 +13,18 @@ const dayOfWeek = [
   "SATURDAY",
 ];
 
+const getNext14Dates = () => {
+  const dates = [];
+  const today = DateTime.local().setZone("Asia/Kolkata");
+
+  for (let i = 0; i < 14; i++) {
+    dates.push(today.plus({ days: i }));
+  }
+
+  return dates;
+};
+
+
 exports.getAllAvailableSessions = async (req, res) => {
   const { mentorId } = req.params;
 
@@ -95,6 +107,9 @@ exports.createSession = async (req, res) => {
       },
     });
 
+    const next14Dates = getNext14Dates();
+    console.log(next14Dates);
+
     // const timeSlots = [];
 
     // for (const timeSlot of availability) {
@@ -131,12 +146,11 @@ exports.createSession = async (req, res) => {
         },
         SessionBooking: {
           create: timeSlots
-            .map((timeSlot) => {
+            .map((timeSlot,index) => {
               const startTime = DateTime.fromFormat(timeSlot.from, "HH:mm");
               const endTime = DateTime.fromFormat(timeSlot.to, "HH:mm");
-              const date = DateTime.now().set({
-                weekday: dayOfWeek.indexOf(timeSlot.day),
-              });
+              const date = next14Dates[index % 14];
+              console.log(date);
 
               const bookings = [];
               let currentTime = startTime;
@@ -444,7 +458,7 @@ exports.updateBookingStatus = async (req, res) => {
     } else if (status === "rejected") {
       updatedBooking = await prisma.SessionBooking.update({
         where: { id: bookingId },
-        data: { status, user_id: null },
+        data: { status },
       });
     } else if (status === "cancelled" && booking.status === "accepted") {
       if (booking.session.mentor.User.googleRefreshToken) {
