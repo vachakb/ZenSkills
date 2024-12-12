@@ -3,20 +3,22 @@ import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import { axiosInstance } from "../apis/commons";
 import { useSearchParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 
-const API_URL = "http://localhost:5000/";
+const API_URL = "http://localhost:5000";
 
-const JobApplicationModal = ({ id }) => {
+const JobApplicationModal = () => {
 
   // const [params] = useSearchParams();
   // const id = params.get("jobId");
+  const {jobId}= useParams();
 
   console.log("modal is being opened")
   const initialValues = {
     name: "",
     email: "",
     phone: "",
-    resume: null,
+    // resume: null,
     coverLetter: "",
   };
 
@@ -33,13 +35,18 @@ const JobApplicationModal = ({ id }) => {
   });
 
   const handleSubmit = async (values) => {
-    const response = await axiosInstance.post(`${API_URL}/api/jobs/${id}/apply`, {
+    const response = await axiosInstance.post(`${API_URL}/api/jobs/${jobId}/apply`, {
       name: values.name,
       email: values.email,
       phone: values.phone,
 
       coverLetter: values.coverLetter,
     });
+    if(response.status === 200){
+      alert("Application submitted successfully")
+    }else{
+      alert("Failed to submit application")
+    }
   }
 
 
