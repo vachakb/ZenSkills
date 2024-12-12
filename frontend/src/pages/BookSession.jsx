@@ -7,7 +7,7 @@ import { LuClock3 } from "react-icons/lu";
 import useProfile from "../hooks/useProfile";
 
 function BookSession() {
-  const dayOfWeek = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+  const dayOfWeek = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
 
   const { availableSessionId } = useParams();
 
@@ -65,7 +65,6 @@ function BookSession() {
   // console.log(next7Days);
 
 
-
   // const next14Days = generateNext14Days();
   
   // const next14Days = generateNext14Days();
@@ -103,8 +102,12 @@ function BookSession() {
         className="d-flex flex-column flex-grow-1"
       >
         <div className="d-flex gap-2 my-4">
-          {Object.keys(session.timeSlots).map((key) => (
-            console.log(key),
+          {Object.keys(session.timeSlots).sort((a,b) => {
+            const dayA = DateTime.now().plus({ days: ((dayOfWeek.indexOf(a) + 1) - DateTime.now().weekday+7)%7 }).startOf('day').day
+            const dayB = DateTime.now().plus({ days: ((dayOfWeek.indexOf(b) + 1) - DateTime.now().weekday+7)%7 }).startOf('day').day
+
+            return dayA - dayB;
+          }).map((key) => (
             <div
               style={{
                 cursor: "pointer",
@@ -120,7 +123,7 @@ function BookSession() {
               }}
             >
               <h5>{key.substring(0, 3)}</h5>
-              <h5>{DateTime.now().plus({ days: (dayOfWeek.indexOf(key) - DateTime.now().weekday+7)%7 }).startOf('day').toFormat("dd/MM")}</h5>
+              <h5>{DateTime.now().plus({ days: ((dayOfWeek.indexOf(key) + 1) - DateTime.now().weekday+7)%7 }).startOf('day').toFormat("dd/MM")}</h5>
               <h5>{session.timeSlots[key].filter(timeSlot => timeSlot.available).length}</h5>
             </div>
           ))}
