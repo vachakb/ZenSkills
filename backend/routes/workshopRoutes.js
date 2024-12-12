@@ -1,17 +1,17 @@
 const express = require("express");
 const {
-    getAllWorkshops,
-    getWorkshopById,
-    createWorkshop,
-    bookWorkshop,
-    updateWorkshop,
-    deleteWorkshop,
-    markAttendance,
-    getWorkshopAttendance,
-  
+  getAllWorkshops,
+  getWorkshopById,
+  createWorkshop,
+  bookWorkshop,
+  updateWorkshop,
+  deleteWorkshop,
+  markAttendance,
+  getWorkshopAttendance,
 
-    getUserRegisteredWorkshops,
-  } = require("../controllers/workshopController");
+  getUserRegisteredWorkshops,
+  setWorkshopRoomId,
+} = require("../controllers/workshopController");
 
 const router = express.Router();
 
@@ -40,5 +40,7 @@ router.post("/:id/attendance", markAttendance);
 router.get("/:id/attendance", getWorkshopAttendance);
 
 router.get("/registered/:userId", getUserRegisteredWorkshops);
+
+router.put("/:id/room", setWorkshopRoomId);
 
 module.exports = router;

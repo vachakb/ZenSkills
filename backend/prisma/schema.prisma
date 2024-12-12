@@ -266,6 +266,7 @@ model workshops {
   deadline          DateTime
   visibility        visibility        @default(Public)
   WorkshopBooking   WorkshopBooking[]
+  room_id    String?
 
   @@index([created_by])
 }

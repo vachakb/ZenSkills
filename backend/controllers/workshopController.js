@@ -11,6 +11,7 @@ const getAllWorkshops = async (req, res) => {
           },
         },
         workshop_image: true,
+        WorkshopBooking: true,
       },
     });
 
@@ -68,10 +69,6 @@ const createWorkshop = async (req, res) => {
       deadline,
       visibility,
     } = req.body;
-    const user = await prisma.User.findUnique({
-      include: { mentor: true },
-      where: { id: userId },
-    });
 
     const newWorkshop = await prisma.workshops.create({
       data: {
@@ -84,7 +81,7 @@ const createWorkshop = async (req, res) => {
             id: workshop_image,
           },
         },
-        mentor: { connect: { id: user.mentor.id } },
+        mentor: { connect: { user_id: req.user.id } },
         max_participants,
         deadline: new Date(deadline),
         visibility,
@@ -245,8 +242,6 @@ const getWorkshopAttendance = async (req, res) => {
 // Controller to book a workshop
 const bookWorkshop = async (req, res) => {
   const { id: workshopId } = req.params;
-  const { userId } = req.body;
-  console.log(req.body);
 
   try {
     // Check if the workshop exists
@@ -263,7 +258,7 @@ const bookWorkshop = async (req, res) => {
       where: {
         workshop_id_user_id: {
           workshop_id: workshopId,
-          user_id: userId,
+          user_id: req.user.id,
         },
       },
     });
@@ -278,7 +273,7 @@ const bookWorkshop = async (req, res) => {
     const newBooking = await prisma.WorkshopBooking.create({
       data: {
         workshop_id: workshopId,
-        user_id: userId,
+        user_id: req.user.id,
       },
     });
 
@@ -308,6 +303,18 @@ const getUserRegisteredWorkshops = async (req, res) => {
   }
 };
 
+const setWorkshopRoomId = async (req, res) => {
+  const { id } = req.params;
+  const { room_id } = req.body;
+
+  await prisma.workshops.update({
+    where: { id },
+    data: { room_id },
+  });
+
+  res.sendStatus(200);
+};
+
 module.exports = {
   getAllWorkshops,
   getWorkshopById,
@@ -317,5 +324,6 @@ module.exports = {
   getWorkshopAttendance,
   markAttendance,
   bookWorkshop,
-  getUserRegisteredWorkshops
+  getUserRegisteredWorkshops,
+  setWorkshopRoomId,
 };
