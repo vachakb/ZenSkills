@@ -327,8 +327,16 @@ const getAllMentees = async (req, res) => {
     const mentees = await prisma.mentee.findMany({
       include: {
         User: true,
+        ratings: true,
       },
       where: {
+        ratings: {
+          every: {
+            from: {
+              user_id: req.user.id,
+            },
+          },
+        },
         user_id: {
           in: userIds,
         },
