@@ -118,6 +118,7 @@ const CreateWorkshop = () => {
                                         {({ field, form }) => (
                                             <DateTimePicker
                                                 label="Select date and time"
+                                                disablePast
 
                                                 value={field.value || null} // Bind Formik's field value
                                                 onChange={(value) => form.setFieldValue("date", value)} // Update Formik's state
@@ -216,6 +217,7 @@ const CreateWorkshop = () => {
                                         {({ field, form }) => (
                                             <DateTimePicker
                                                 label="Select deadline"
+                                                disablePast
 
                                                 value={field.value || null} // Bind Formik's field value
                                                 onChange={(value) => form.setFieldValue("deadline", value)} // Update Formik's state

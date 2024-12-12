@@ -128,16 +128,16 @@ function RegisterBio() {
                     isValid={
                       isMentor
                         ? formikProps.touched.expertise &&
-                          !formikProps.errors.expertise
+                        !formikProps.errors.expertise
                         : formikProps.touched.interests &&
-                          !formikProps.errors.interests
+                        !formikProps.errors.interests
                     }
                     isInvalid={
                       isMentor
                         ? formikProps.touched.expertise &&
-                          !!formikProps.errors.expertise
+                        !!formikProps.errors.expertise
                         : formikProps.touched.interests &&
-                          !!formikProps.errors.interests
+                        !!formikProps.errors.interests
                     }
                     error={
                       isMentor
