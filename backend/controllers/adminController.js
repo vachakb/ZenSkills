@@ -1,5 +1,32 @@
 const prisma = require("../models/prismaClient");
 
+exports.getMentorsToVerify = async (req, res) => {
+  try {
+    const mentors = await prisma.User.findMany({
+      include: {
+        MentorVerification: {
+          include: {
+            government_id: true,
+            degree_certificate: true,
+            additional_file: true,
+          },
+        },
+      },
+      where: {
+        credentialsVerified: false,
+        MentorVerification: {
+          isNot: null,
+        },
+      },
+    });
+
+    res.json({ mentors });
+  } catch (error) {
+    console.error("Error fetching all mentors:", error);
+    res.status(500).json({ error: "Error fetching all mentors" });
+  }
+};
+
 exports.getMentorDetails = async (req, res) => {
   const { userId } = req.params;
 
@@ -48,5 +75,22 @@ exports.verifyMentor = async (req, res) => {
   } catch (error) {
     console.error("Error verifying mentor:", error);
     res.status(500).json({ error: "Error verifying mentor" });
+  }
+};
+
+exports.deleteMentor = async (req, res) => {
+  const { userId } = req.params;
+
+  try {
+    await prisma.User.delete({
+      where: {
+        id: userId,
+      },
+    });
+
+    res.sendStatus(200);
+  } catch (error) {
+    console.error(error);
+    res.sendStatus(500);
   }
 };
