@@ -5,7 +5,8 @@ const { getJobDetails,
     createJob,
     updateJob,
     deleteJob,
-    applyJob 
+    applyJob,
+    refer,
 } = require("../controllers/jobController");
 const router = express.Router();
 
@@ -26,4 +27,6 @@ router.delete("/:jobId", deleteJob);
 
 // Endpoint to apply for a job
 router.post("/:jobId/apply", applyJob);
+
+router.post("/refer",refer);
 module.exports = router;
