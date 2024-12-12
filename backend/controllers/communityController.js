@@ -24,6 +24,7 @@ exports.getAllQuestions = async (req, res) => {
       take: parseInt(limit),
       where: whereClause,
       include: {
+        question_tag: true,
         user: {
           select: {
             id: true,
@@ -47,13 +48,14 @@ exports.getAllQuestions = async (req, res) => {
 
 exports.postQuestion = async (req, res) => {
   console.log(req);
-  const { inputQuestion } = req.body;
+  const { inputQuestion, tag } = req.body;
   const userId = req.user.id;
   try {
     const newQuestion = await prisma.communityQuestion.create({
       data: {
         question: inputQuestion,
         q_user_id: userId,
+        question_tag: tag,
         answers: 0,
       },
     });
@@ -67,12 +69,15 @@ exports.postQuestion = async (req, res) => {
 
 exports.updateQuestion = async (req, res) => {
   const { questionId } = req.params;
-  const { question } = req.body;
+  const { question, tag } = req.body;
 
   try {
     const updatedQuestion = await prisma.communityQuestion.update({
       where: { id: questionId },
-      data: { question },
+      data: { 
+        question,
+        question_tag: tag,
+      },
     });
 
     res.status(200).json(updatedQuestion);
@@ -120,6 +125,7 @@ exports.getQuestionById = async (req, res) => {
     const question = await prisma.CommunityQuestion.findUnique({
       where: { id: questionId },
       include: {
+        question_tag: true,
         user: {
           select: {
             id: true,

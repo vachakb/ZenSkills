@@ -103,6 +103,8 @@ model tags {
   children      tags[]   @relation("TagHierarchy")
   mentees       mentee[] @relation("MenteeTags")
   mentors       mentor[] @relation("MentorTags")
+
+  CommunityQuestion CommunityQuestion[] @relation("QuestionTags")
 }
 
 model tempuser {
@@ -497,6 +499,8 @@ model CommunityQuestion {
   answers     Int
   q_user_id     String
   user        User @relation(fields: [q_user_id], references: [id]) 
+  question_tag    tags[]            @relation("QuestionTags")
+
 
   CommunityAnswer CommunityAnswer[]
 }
