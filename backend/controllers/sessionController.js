@@ -442,9 +442,20 @@ exports.updateBookingStatus = async (req, res) => {
         });
       }
     } else if (status === "rejected") {
+      const booking = await prisma.SessionBooking.findUnique({
+        where: { id: bookingId },
+      });
+
       updatedBooking = await prisma.SessionBooking.update({
         where: { id: bookingId },
-        data: { status, user_id: null },
+        data: { status: "pending", user_id: null },
+      });
+
+      delete booking.id;
+      booking.status = "rejected";
+
+      await prisma.SessionBooking.create({
+        data: booking,
       });
     } else if (status === "cancelled" && booking.status === "accepted") {
       if (booking.session.mentor.User.googleRefreshToken) {
@@ -775,7 +786,7 @@ exports.setSessionRoomId = async (req, res) => {
 exports.getAcceptedSessions = async (req, res) => {
   const where = {};
 
-  where.status = 'accepted';
+  where.status = "accepted";
 
   if (req.user.role === "mentor") {
     where.session = {
