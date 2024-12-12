@@ -57,16 +57,18 @@ function BookSession() {
     );
   }
 
-  const generateNext14Days = () => {
-    const days = [];
-    const today = DateTime.local();
-    for (let i = 0; i < 14; i++) {
-      days.push(today.plus({ days: i }));
-    }
-    return days;
+  const generateNext7Days = () => {
+    const today = DateTime.local().startOf('day'); // Start of today
+    return Array.from({ length: 7 }, (_, i) => today.plus({ days: i }));
   };
+  const next7Days = generateNext7Days();
+  // console.log(next7Days);
 
-  const next14Days = generateNext14Days();
+
+
+  // const next14Days = generateNext14Days();
+  
+  // const next14Days = generateNext14Days();
 
   return (
     <div className="d-flex h-100 position-relative">
@@ -102,6 +104,7 @@ function BookSession() {
       >
         <div className="d-flex gap-2 my-4">
           {Object.keys(session.timeSlots).map((key) => (
+            console.log(key),
             <div
               style={{
                 cursor: "pointer",
@@ -117,7 +120,7 @@ function BookSession() {
               }}
             >
               <h5>{key.substring(0, 3)}</h5>
-              <h5>{DateTime.now().minus({ days: (DateTime.now().weekday - (dayOfWeek.indexOf(key) + 1)) }).startOf('day').toFormat("dd/MM")}</h5>
+              <h5>{DateTime.now().plus({ days: (dayOfWeek.indexOf(key) - DateTime.now().weekday+7)%7 }).startOf('day').toFormat("dd/MM")}</h5>
               <h5>{session.timeSlots[key].filter(timeSlot => timeSlot.available).length}</h5>
             </div>
           ))}
