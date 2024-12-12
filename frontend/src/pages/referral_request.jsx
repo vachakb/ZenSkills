@@ -34,11 +34,11 @@ const ReferralRequests = () => {
   };
 
   const handleOpenModal = (mentee) => {
-    const existingReferral = referrals.find((ref) => ref.id === mentee.id);
+    const existingMentee = mentees.find((_mentee) => _mentee.id === mentee.id);
     setModalData({
       ...mentee,
-      rating: existingReferral?.rating || "",
-      comment: existingReferral?.comment || "",
+      rating: existingMentee?.ratings[0]?.rating || "",
+      comment: existingMentee?.ratings[0]?.comment || "",
     });
   };
 
@@ -252,9 +252,9 @@ const ReferralRequests = () => {
                       }}
                     >
                       {mentee.profileIcon} {mentee.User.name}
-                            {/* <div className="mt-2">
-                        {renderStars(referral?.rating || 0)}{" "}
-                        </div> */}
+                            <div className="mt-2">
+                        {renderStars(mentee?.ratings[0]?.rating || 0)}{" "}
+                        </div>
                     </ListGroup.Item>
                   );
                 })}

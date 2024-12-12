@@ -61,6 +61,7 @@ export default function Community() {
   let [selectedTags, setSelectedTags] = useState([]);
   let [filterVisibility, setFilterVisibility] = useState(false);
   let [inputQuestion, setInputQuestion] = useState("");
+  const [selectedQuestionTag, setSelectedQuestionTag] = useState();
 
   function handlePageChange(selectedItem) {
     setCurrentPage(selectedItem.selected);
@@ -117,7 +118,7 @@ export default function Community() {
     // post question`
     try {
       console.log(inputQuestion)
-      const response = await axiosInstance.post(`${API_URL}/api/community/questions`, {inputQuestion});
+      const response = await axiosInstance.post(`${API_URL}/api/community/questions`, {inputQuestion, tag: selectedQuestionTag});
       
       if (response.status === 201 || response.status === 200) {
         console.log('Request completed successfully:', response.data);
@@ -216,7 +217,17 @@ export default function Community() {
       {/* col col-sm-12 col-md-6 col-lg-4 col-xl-3 col-xxl-2 */}
       {/* questions */}
       <div className="row g-2">
-        {questions.map((question) => {
+        {questions.filter(question => {
+          if (selectedTags.length == 0) {
+            return true;
+          }
+
+          if (!question.question_tag || question.question_tag.length == 0) {
+            return false;
+          }
+
+          return selectedTags.some(value => value === question.question_tag[0].tag_name);
+        }).map((question) => {
           return (
             <div className="col-12" onClick={() => {
               navigate("/community/" + question.id);
@@ -227,6 +238,7 @@ export default function Community() {
                 key={question.id}
               >
                 <p className="fw-medium fs-5">{question.question}</p>
+                { question.question_tag && question.question_tag.length > 0 && <p className="fs-6">Tag: {question.question_tag[0].tag_name}</p> }
                 <div className="ml-auto">
                   <div className="d-flex justify-content-between">
                     <p className="fw-light">
@@ -335,6 +347,12 @@ export default function Community() {
                 onChange={(e) => setInputQuestion(e.target.value)}
                 placeholder="Type your query..."
               />
+              <select className="form-control mb-2" onChange={ev => {
+                const value = ev.currentTarget.value;
+                setSelectedQuestionTag(value)
+              }}>
+                {technicalTags.map(value => <option value={value}>{value}</option>)}
+              </select>
               <button
                 className="btn btn-primary w-100"
                 onClick={handleQuestionSubmit}
