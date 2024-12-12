@@ -45,6 +45,7 @@ model User {
   @@unique(name: "account_id", [email, role])
   CommunityQuestion CommunityQuestion[]
   CommunityAnswer CommunityAnswer[]
+  EventBooking EventBooking[]
 }
 
 model mentee {
@@ -93,6 +94,8 @@ model mentor {
   requestedReferrals Referral[]
 
   menteeRatings MenteeRating[]
+
+  Event Event[]
 }
 
 model tags {
@@ -397,6 +400,8 @@ model Image {
   mimeType String
   workshop workshops?
   user     User?
+
+  Event Event[]
 }
 
 enum BookingStatus {
@@ -515,4 +520,39 @@ model CommunityAnswer {
   a_user_id     String
   user        User @relation(fields: [a_user_id], references: [id]) 
   community        CommunityQuestion @relation(fields: [communityQuestion_id], references: [id]) 
+}
+
+model Event {
+  id String @id @default(uuid())
+  title String
+  description String
+  date DateTime
+  no_of_days  Int
+  location String
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  created_by String
+  mentor mentor @relation(fields: [created_by], references: [id], onDelete: Cascade)
+
+  event_image_id String @unique
+  event_image Image @relation(fields: [event_image_id], references: [id], onDelete: Cascade)
+
+  visibility visibility @default(Public)
+
+  EventBooking EventBooking[]
+}
+model EventBooking {
+  id String @id @default(uuid())
+  event_id String
+  user_id String
+  attended Boolean @default(false) 
+  created_at DateTime @default(now())
+
+  event Event @relation(fields: [event_id], references: [id])
+  user User @relation(fields: [user_id], references: [id])
+
+  @@unique([event_id, user_id])
+  @@index([event_id])
+  @@index([user_id])
 }
