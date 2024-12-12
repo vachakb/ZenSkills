@@ -8,6 +8,8 @@ const {
     deleteWorkshop,
     markAttendance,
     getWorkshopAttendance,
+  
+
   } = require("../controllers/workshopController");
 
 const router = express.Router();
@@ -35,5 +37,6 @@ router.post("/:id/attendance", markAttendance);
 
 // Endpoint to get workshop attendance
 router.get("/:id/attendance", getWorkshopAttendance);
+
 
 module.exports = router;
