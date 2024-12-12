@@ -4,6 +4,8 @@ const LocalStrategy = require("passport-local");
 const argon2 = require("argon2");
 const { google } = require("googleapis");
 
+const path = require("path");
+
 const multer = require("multer");
 const upload = multer({ dest: "uploads/files/" });
 
@@ -245,6 +247,25 @@ exports.uploadDocuments = async (req, res) => {
   res
     .status(201)
     .json({ message: "Mentor verification submitted successfully" });
+};
+
+exports.getDocument = async (req, res) => {
+  const { id } = req.params;
+
+  const document = await prisma.document.findUnique({
+    where: {
+      id,
+    },
+  });
+
+  if (!document) {
+    return res.sendStatus(404);
+  }
+
+  const startPath = path.join(__dirname, "..");
+  const fullPath = path.join(startPath, document.path);
+
+  res.download(fullPath, document.filename);
 };
 
 const sendWorkEmail = async (work_email) => {

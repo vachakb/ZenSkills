@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
-import { Dropdown, Button, Card } from "react-bootstrap";
+import { Dropdown, Button, Card, Spinner } from "react-bootstrap";
 import { useLocation, useNavigate } from "react-router-dom";
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
@@ -11,43 +11,66 @@ import { heIL } from "@mui/x-date-pickers/locales";
 import { MdHeight } from "react-icons/md";
 import { createWorkshop } from "../apis/workshops";
 import { uploadImage } from "../apis/commons";
+import { getMentorsList, createReferral } from "../apis/mentors";
 
 const Referrals = () => {
     const navigate = useNavigate();
+
     const validationSchema = Yup.object({
-        title: Yup.string().required("Job title is required"),
-        description: Yup.string().required("Job description is required"),
-        date: Yup.date().required("Please enter workshop date and time"),
-        duration: Yup.number()
-            .required("Workshop duration is required")
-            .positive("Duration must be positive")
-            .integer("Duration must be a whole number"),
-        workshop_image: Yup.mixed().required("Please enter an image"),
-        max_participants: Yup.number()
-            .required("Please enter maximum number of participants")
-            .positive("No. of participants must be positive")
-            .integer("No. of participants must be a whole number"),
-        deadline: Yup.date().required("Please enter a deadline"),
-        visibility: Yup
-            .string()
-            .oneOf(["Private", "Public", "Mentors Only"], "This is a required field")
-            .required("This is a required field"),
-    });
+        mentor: Yup.mixed().required("This field is required"),
+        job_url: Yup.string().required("This field is required"),
+        description: Yup.string().required("This field is required"),
+        reason: Yup.string().required("This field is required"),
+        resume: Yup.mixed().required("This field is required")
+      });
+
+    const [mentors, setMentors] = useState([]);
+
+    const [filteredMentors, setFilteredMentors] = useState([]);
+
+    const [isLoading, setIsLoading] = useState(true);
+
+    const onLoad = async () => {
+        setIsLoading(true)
+        const mentorsRes = await getMentorsList();
+        setMentors(mentorsRes.data.mentors);
+        setFilteredMentors(mentorsRes.data.mentors);
+        setIsLoading(false)
+    }
+
+    useEffect(() => {
+        onLoad();
+    }, []);
+
+
+    if (isLoading) {
+        return (
+          <div className="d-flex h-100 w-100 justify-content-center align-items-center">
+            <Spinner />
+          </div>
+        );
+      }
 
     return (
         <div style={{ maxWidth: "90%" }} className="border p-3 rounded mx-auto">
             <Formik
                 initialValues={{
-                    title: "",
+                    mentor: null,
+                    job_url: "",
                     description: "",
-                    date: "",
-                    duration: "",
-                    workshop_image: "",
-                    max_participants: "",
-                    visibility: "",
-                    deadline: "",
+                    reason: "",
+                    resume: null
                 }}
                 validationSchema={validationSchema}
+        onSubmit={(data) => {
+            const formData = new FormData();
+            formData.append("mentor_id", data.mentor.id);
+            formData.append("job_url", data.job_url);
+            formData.append("description", data.description);
+            formData.append("reason", data.reason);
+            formData.append("resume", data.resume);
+            createReferral(formData).then(() => navigate("/mentee_welcome")).catch(err => console.error(err));
+        }}
             /* onSubmit={async (data) => {
                  try {
                      const imageFile = data.workshop_image;
@@ -75,17 +98,29 @@ const Referrals = () => {
                         <h2 className="form-title">Ask for referral</h2>
                         <div className="mb-3 mt-3">
                             <label htmlFor="title" className="form-label">
+                                <div style={{ height: "100px" }} className="d-flex flex-column overflow-auto">
+                                    {filteredMentors.map(mentor => <p className="m-0 px-2 py-1 me-auto" style={{ cursor: "pointer", border: mentor.id === formikProps.values.mentor?.id ? "2px solid green" : "unset", borderRadius: "12px" }} onClick={() => {
+
+                                        if (formikProps.values.mentor?.id === mentor.id) {
+                                            formikProps.setFieldValue("mentor", null);
+                                        } else {
+                                            formikProps.setFieldValue("mentor", mentor);
+                                        }
+                                    }}>{mentor.User.name}</p>)}
+                                </div>
                                 Search a mentor <span className="text-danger">*</span>
                             </label>
-                            <Field
+                            <input
                                 type="text"
-                                id="title"
-                                name="title"
                                 className="form-control"
                                 placeholder="Enter name or company name"
+                                onChange={(ev) => {
+                                    const value = ev.currentTarget.value;
+                                    setFilteredMentors(mentors.filter(mentor => mentor.User.name.toLowerCase().startsWith(value.toLowerCase())));
+                                }}
                             />
                             <ErrorMessage
-                                name="title"
+                                name="mentor"
                                 component="div"
                                 className="text-danger"
                             />
@@ -97,13 +132,13 @@ const Referrals = () => {
                             </label>
                             <Field
                                 type="text"
-                                id="title"
-                                name="title"
+                                id="job_url"
+                                name="job_url"
                                 className="form-control"
                                 placeholder="Enter URL"
                             />
                             <ErrorMessage
-                                name="title"
+                                name="job_url"
                                 component="div"
                                 className="text-danger"
                             />
@@ -138,24 +173,24 @@ const Referrals = () => {
                                 accept="image/*"
                                 onChange={async (ev) => {
                                     if (ev.target.files.length > 0) {
-                                        formikProps.setFieldValue("degree", ev.target.files[0]);
+                                        formikProps.setFieldValue("resume", ev.target.files[0]);
                                     }
                                 }}
                             />
                             <div className="mb-3">
-                                <label htmlFor="description" className="form-label">
+                                <label htmlFor="reason" className="form-label">
                                     Why should the mentor refer you?{" "}
                                     <span className="text-danger">*</span>
                                 </label>
                                 <Field
                                     as="textarea"
-                                    id="description"
-                                    name="description"
+                                    id="reason"
+                                    name="reason"
                                     className="form-control"
-                                    placeholder="Type description here..."
+                                    placeholder="Type reason here..."
                                 />
                                 <ErrorMessage
-                                    name="description"
+                                    name="reason"
                                     component="div"
                                     className="text-danger"
                                 />
