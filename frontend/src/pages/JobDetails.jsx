@@ -15,6 +15,7 @@ const JobDetails = () => {
     setIsLoading(true);
     try {
       const response = await fetchJobDetails(jobId);
+      console.log(response.data)
       setJob(response.data);
     } catch (error) {
       console.error("Error fetching job details", error);
@@ -64,20 +65,20 @@ const JobDetails = () => {
       <p>{job.moreDetails.jobDescription.overview}</p>
       <ul className="list-group mb-4">
         {job.moreDetails.jobDescription.responsibilities.map(
-          (item, index) => (
-            <li className="list-group-item" key={index}>
+          (item, index) =>{ 
+            return <li className="list-group-item" key={index}>
               {item}
-            </li>
-          )
+            </li>}
+          
         )}
       </ul>
 
-      <h3>Qualifications</h3>
-      <ul className="list-group mb-4">
+      {/* <h3>Qualifications</h3> */}
+      {/* <ul className="list-group mb-4">
         <li className="list-group-item">
           {job.moreDetails.qualifications}
         </li>
-      </ul>
+      </ul> */}
 
       {/* <div className="row">
         <div className="col-md-6">
@@ -122,21 +123,21 @@ const JobDetails = () => {
 
       <h3 className="mt-4">Perks and Benefits</h3>
       <ul className="list-group mb-4">
-        {job.moreDetails.perksAndBenefits.map((perk, index) => (
-          <li className="list-group-item" key={index}>
-            {perk}
-          </li>
-        ))}
+        {job.moreDetails.perksAndBenefits.map((perk, index) => {
+          return <li className="list-group-item" key={index}>
+          {perk}
+        </li>
+        })}
       </ul>
 
       <h3>Application Details</h3>
       <ul className="list-group mb-4">
         {job.moreDetails.applicationDetails.process.map(
-          (step, index) => (
-            <li className="list-group-item" key={index}>
+          (step, index) => 
+            {return <li className="list-group-item" key={index}>
               {step}
-            </li>
-          )
+            </li>}
+          
         )}
       </ul>
       <p>
