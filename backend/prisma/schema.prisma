@@ -490,6 +490,8 @@ model MenteeRating {
   mentee mentee @relation(fields: [mentee_id], references: [id], onDelete: Cascade)
   from_id String
   from mentor @relation(fields: [from_id], references: [id], onDelete: Cascade)
+
+  @@unique(name: "rating_id", [mentee_id, from_id])
 }
 
 model CommunityQuestion {

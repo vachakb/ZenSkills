@@ -218,6 +218,19 @@ const getAllReferrals = async (req, res) => {
 
   try {
     const referrals = await prisma.referral.findMany({
+      include: {
+        mentee: {
+          include: {
+            User: true,
+          },
+        },
+        mentor: {
+          include: {
+            User: true,
+          },
+        },
+        resume: true,
+      },
       where,
     });
 
@@ -379,15 +392,39 @@ const createRating = async (req, res) => {
 };
 
 const updateRating = async (req, res) => {
-  const { rating_id, rating, comment } = req.body;
+  const { mentee_id, rating, comment } = req.body;
 
   try {
-    await prisma.menteeRating.update({
+    console.log(req.user.id);
+    const mentor = await prisma.mentor.findUnique({
       where: {
-        id: rating_id,
+        user_id: req.user.id,
       },
-      data: {
-        rating,
+    });
+
+    await prisma.menteeRating.upsert({
+      where: {
+        rating_id: {
+          mentee_id,
+          from_id: mentor.id,
+        },
+      },
+      create: {
+        rating: parseInt(rating),
+        comment,
+        mentee: {
+          connect: {
+            id: mentee_id,
+          },
+        },
+        from: {
+          connect: {
+            id: mentor.id,
+          },
+        },
+      },
+      update: {
+        rating: parseInt(rating),
         comment,
       },
     });

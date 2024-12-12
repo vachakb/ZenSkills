@@ -194,4 +194,6 @@ const documentsUpload = upload.fields([
 
 router.post("/file", documentsUpload, authController.uploadDocuments);
 
+router.get("/file/:id", authController.getDocument);
+
 module.exports = router;
