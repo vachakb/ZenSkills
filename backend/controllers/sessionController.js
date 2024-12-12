@@ -456,7 +456,7 @@ exports.updateBookingStatus = async (req, res) => {
     } else if (status === "rejected") {
       updatedBooking = await prisma.SessionBooking.update({
         where: { id: bookingId },
-        data: { status },
+        data: { status, user_id: null },
       });
     } else if (status === "cancelled" && booking.status === "accepted") {
       if (booking.session.mentor.User.googleRefreshToken) {
