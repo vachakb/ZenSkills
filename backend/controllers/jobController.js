@@ -369,6 +369,67 @@ const applyJob = async (req, res) => {
   }
 };
 
+const refer = async (req, res) => {
+  const user_id = "a64bf567-cb35-411f-a238-ba4dc0531ab8";
+  // const mentor = await prisma.User.findUnique({
+  //   where:{
+  //     id: user_id,
+  //   },
+  //   data: {
+  //     include : {
+  //       mentor: true,
+  //     }
+  //   }
+  // })
+  // const { jobId } = req.params;
+  const { name, email,company_email, phone_number, cover_letter, resume_url } = req.body;
+
+  try {
+    // Create job application
+    // const application = await prisma.jobApplication.create({
+    //   data: {
+    //     job_id: jobId,
+    //     uid: req.user.id,
+    //     name,
+    //     company_email,
+    //     phone_number,
+    //     email,
+    //     cover_letter,
+    //     resume_url,
+    //   },
+    // });
+
+    // Send email to mentor
+    const transporter = nodemailer.createTransport({
+      service: "gmail",
+      auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS,
+      },
+    });
+
+    const mailOptions = {
+      from: process.env.EMAIL_USER,
+      to: company_email,
+      subject: `🌟 New Referral Received via ZenSkills`,
+      html: getJobApplicationEmailTemplate("Referral", "ZenSkills", {
+        name,
+        email,
+        phone_number,
+        cover_letter,
+        resume_url,
+      }),
+    };
+
+    await transporter.sendMail(mailOptions);
+    console.log("Email sent to mentee");
+    res.status(200).json({ message: "Referral submitted successfully" });
+  } catch (error) {
+    console.error("Error referring the job:", error);
+    res.status(500).json({ error: "Failed to refer the job" });
+  }
+};
+
 module.exports = {
   getJobDetails,
   getJobs,
@@ -376,4 +437,5 @@ module.exports = {
   updateJob,
   deleteJob,
   applyJob,
+  refer,
 };

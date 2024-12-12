@@ -62,10 +62,7 @@ function MenteeProfile() {
     education: [],
     isMentor: false,
   });
-  const radios = [
-    { name: "Overview", value: "1" },
-    { name: "Milestones", value: "2" },
-  ];
+
 
   // Fetch profile data from backend
   useEffect(() => {
@@ -109,8 +106,8 @@ function MenteeProfile() {
           className="col-lg"
           style={{
             flex: "1",
-            marginRight: "10px", 
-      
+            marginRight: "10px",
+
           }}
         >
           <ProfileCard profile={profile} />
@@ -137,9 +134,9 @@ function MenteeProfile() {
             </ButtonGroup>
           </div>
           <div className="mt-3">
-            {radioValue === "1" && <UserInfo profile={profile} />}
-            {radioValue === "2" && <Milestones data={timelineData}/> }
-            
+            <UserInfo profile={profile} />
+
+
           </div>
         </div>
 
@@ -149,7 +146,7 @@ function MenteeProfile() {
           style={{
             flex: "0 0 50%", // Sidebar width is 22% of the parent container
             maxWidth: "500px",
-            marginRight:'30px' // Optional max width for sidebar
+            marginRight: '30px' // Optional max width for sidebar
           }}
         >
           <div
@@ -160,7 +157,7 @@ function MenteeProfile() {
             }}
           >
             <Statistics />
-          
+
             <Achievements />
           </div>
         </div>

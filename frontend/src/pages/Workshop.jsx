@@ -433,7 +433,7 @@ const WorkshopsPage = ({ demoTags }) => {
               className={`nav-link ${activeTab === "upcoming" ? "active" : ""}`}
               onClick={() => setActiveTab("upcoming")}
             >
-              Upcoming
+              All workshops
             </button>
           </li>
           <li className="nav-item">

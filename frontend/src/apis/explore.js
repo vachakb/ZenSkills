@@ -70,5 +70,5 @@ export async function fetchJobs(
 
 // particular job
 export async function fetchJobDetails(jobId) {
-  return await axiosInstance.get(`/jobs/${jobId}`);
+  return await axiosInstance.get(`http://localhost:5000/api/jobs/${jobId}`);
 }

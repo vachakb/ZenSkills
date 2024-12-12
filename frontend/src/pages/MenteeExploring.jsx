@@ -92,9 +92,9 @@ function MenteeExploring() {
 
   const radios = [
     { name: "Overview", value: "1" },
-    { name: "Milestones", value: "2" },
-    { name: "Reviews", value: "3" },
-    { name: "Resources", value: "4" },
+
+    { name: "Reviews", value: "2" },
+    { name: "Resources", value: "3" },
   ];
 
   const getButtonStyle = (value) => {
@@ -176,9 +176,8 @@ function MenteeExploring() {
           </div>
           <div className="mt-3" style={{ width: "100%" }}>
             {radioValue === "1" && <UserInfo profile={profile} />}
-            {radioValue === "2" && <Milestones data={timelineData} />}
-            {radioValue === "3" && <ReviewsTab mentorId={mentorId} />}
-            {radioValue === "4" && <ResourcesTab />}
+            {radioValue === "2" && <ReviewsTab mentorId={mentorId} />}
+            {radioValue === "3" && <ResourcesTab />}
           </div>
         </div>
 

@@ -89,7 +89,7 @@ function UserProfile({ _isEditing }) {
         profilePicture: null,
         profilePictureId: null,
       }}
-      onSubmit={async (data) =>  {
+      onSubmit={async (data) => {
         try {
           if (data.profilePicture) {
             const uploadRes = await uploadImage(data.profilePicture);
@@ -100,7 +100,7 @@ function UserProfile({ _isEditing }) {
           await editUserProfile(data)
           refetchProfile();
           setIsEditing(false);
-        } catch ( err ) {
+        } catch (err) {
           console.error(err)
         }
       }}
@@ -125,32 +125,18 @@ function UserProfile({ _isEditing }) {
                 style={{ width: "100%", borderBottom: "1px solid grey" }}
               >
                 <ButtonGroup className="d-flex flex-row justify-content-start">
-                  {radios.map((radio, idx) => (
-                    <ToggleButton
-                      key={idx}
-                      id={`radio-${idx}`}
-                      type="radio"
-                      variant="light"
-                      name="radio"
-                      value={radio.value}
-                      checked={radioValue === radio.value}
-                      onChange={(e) => setRadioValue(e.currentTarget.value)}
-                      style={getButtonStyle(radio.value)}
-                    >
-                      {radio.name}
-                    </ToggleButton>
-                  ))}
+
                 </ButtonGroup>
               </div>
               <div className="mt-3">
-                {radioValue === "1" && (
-                  <UserInfo
-                    profile={profile}
-                    isEditing={isEditing}
-                    formikProps={formikProps}
-                  />
-                )}
-                {radioValue === "2" && <Milestones data={timelineData} />}
+
+                <UserInfo
+                  profile={profile}
+                  isEditing={isEditing}
+                  formikProps={formikProps}
+                />
+
+
               </div>
             </div>
 
