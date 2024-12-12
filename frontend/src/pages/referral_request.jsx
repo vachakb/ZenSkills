@@ -220,48 +220,6 @@ const ReferralRequests = () => {
           </Row>
         </Tab>
 
-        {/* Make a Referral Tab */}
-        <Tab eventKey="makeReferral" title="Make a Referral">
-          <Row className="mt-4">
-            <Col>
-              <h5 className="text-center text-primary">Mentees List</h5>
-              {/* Search Bar */}
-              <Form.Control
-                type="text"
-                placeholder="Search Mentees"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="mb-3"
-              />
-              <ListGroup>
-                {filteredMentees.map((mentee) => {
-                  const referral = referrals.find(
-                    (ref) => ref.id === mentee.id,
-                  );
-                  return (
-                    <ListGroup.Item
-                      key={mentee.id}
-                      action
-                      onClick={() => handleOpenModal(mentee)}
-                      className="mb-2 shadow-sm p-3 rounded-lg"
-                      style={{
-                        cursor: "pointer",
-                        backgroundColor: "#f8f9fa",
-                        borderRadius: "10px",
-                        transition: "all 0.3s ease",
-                      }}
-                    >
-                      {mentee.profileIcon} {mentee.User.name}
-                            <div className="mt-2">
-                        {renderStars(mentee?.ratings[0]?.rating || 0)}{" "}
-                        </div>
-                    </ListGroup.Item>
-                  );
-                })}
-              </ListGroup>
-            </Col>
-          </Row>
-        </Tab>
       </Tabs>
 
       {/* Modal for Rating and Comment */}
