@@ -217,7 +217,17 @@ export default function Community() {
       {/* col col-sm-12 col-md-6 col-lg-4 col-xl-3 col-xxl-2 */}
       {/* questions */}
       <div className="row g-2">
-        {questions.map((question) => {
+        {questions.filter(question => {
+          if (selectedTags.length == 0) {
+            return true;
+          }
+
+          if (!question.question_tag || question.question_tag.length == 0) {
+            return false;
+          }
+
+          return selectedTags.some(value => value === question.question_tag[0].tag_name);
+        }).map((question) => {
           return (
             <div className="col-12" onClick={() => {
               navigate("/community/" + question.id);
