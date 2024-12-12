@@ -19,6 +19,335 @@ import {
   updateReferralStatus,
 } from "../apis/mentors";
 import { API_URL } from "../apis/commons";
+import { Formik, Form as FormikForm, Field, ErrorMessage } from "formik";
+import Select from "../components/Select";
+import * as Yup from "yup";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
+import { createJob } from "../apis/job";
+import states from "../misc/states";
+
+const CreateJobModal = ({
+          handleChange,
+          handleBlur,
+          handleSubmit,
+          setFieldValue,
+          values,
+          errors,
+          touched,
+        }) => {
+  return (
+
+          <FormikForm noValidate onSubmit={handleSubmit} style={{ maxWidth: "90%" }} className="mx-auto">
+
+            {/* Job Title */}
+            <div className="mb-3">
+              <label htmlFor="title" className="form-label">
+                Job title <span className="text-danger">*</span>
+              </label>
+              <Field
+                type="text"
+                id="title"
+                name="title"
+                className="form-control"
+                placeholder="Enter job title here"
+              />
+              <ErrorMessage
+                name="title"
+                component="div"
+                className="text-danger"
+              />
+            </div>
+
+            {/* Job Description */}
+            <div className="mb-3">
+              <label htmlFor="description" className="form-label">
+                Job description <span className="text-danger">*</span>
+              </label>
+              <Field
+                as="textarea"
+                id="description"
+                name="description"
+                className="form-control"
+                placeholder="Type description here..."
+              />
+              <ErrorMessage
+                name="description"
+                component="div"
+                className="text-danger"
+              />
+            </div>
+            <div className="mb-3">
+              <label htmlFor="company_details" className="form-label">
+                Company Details <span className="text-danger">*</span>
+              </label>
+              <Field
+                as="textarea"
+                id="company_details"
+                name="company_details"
+                className="form-control"
+                placeholder="Type company details here..."
+              />
+              <ErrorMessage
+                name="company_details"
+                component="div"
+                className="text-danger"
+              />
+            </div>
+
+            {/* Company Name */}
+            <div className="mb-3">
+              <label htmlFor="company_name" className="form-label">
+                Company name <span className="text-danger">*</span>
+              </label>
+              <Field
+                type="text"
+                id="company_name"
+                name="company_name"
+                className="form-control"
+                placeholder="Enter company name here"
+              />
+              <ErrorMessage
+                name="company_name"
+                component="div"
+                className="text-danger"
+              />
+            </div>
+
+            {/* Location */}
+            <div className="mb-3">
+              <div className="mb-3">
+                <Select
+                  name="location"
+                  value={values.location} // Ensure this is the correct prop for value
+                  options={states} // Ensure states is an array of { value, label }
+                  placeholder="Select a location"
+                  label="Location"
+                  required
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                />
+                <ErrorMessage
+                  name="location"
+                  component="div"
+                  className="text-danger"
+                />
+              </div>
+
+              <ErrorMessage
+                name="location"
+                component="div"
+                className="text-danger"
+              />
+            </div>
+
+            {/* Job Types */}
+            <div className="mb-3">
+              <label className="form-label">
+                Job Type 1 <span className="text-danger">*</span>
+              </label>
+              <div>
+                <label className="form-check-label me-3">
+                  <Field
+                    type="radio"
+                    name="job_type1"
+                    value="FullTime"
+                    className="form-check-input me-1"
+                  />
+                  Full Time
+                </label>
+                <label className="form-check-label">
+                  <Field
+                    type="radio"
+                    name="job_type1"
+                    value="PartTime"
+                    className="form-check-input me-1"
+                  />
+                  Part Time
+                </label>
+              </div>
+              <ErrorMessage
+                name="job_type1"
+                component="div"
+                className="text-danger"
+              />
+            </div>
+
+            <div className="mb-3">
+              <label className="form-label">
+                Job Type 2 <span className="text-danger">*</span>
+              </label>
+              <div>
+                <label className="form-check-label me-3">
+                  <Field
+                    type="radio"
+                    name="job_type2"
+                    value="Onsite"
+                    className="form-check-input me-1"
+                  />
+                  On site
+                </label>
+                <label className="form-check-label">
+                  <Field
+                    type="radio"
+                    name="job_type2"
+                    value="Remote"
+                    className="form-check-input me-1"
+                  />
+                  Remote
+                </label>
+              </div>
+              <ErrorMessage
+                name="job_type2"
+                component="div"
+                className="text-danger"
+              />
+            </div>
+
+            <div className="mb-3">
+              <label className="form-label">
+                Job Type 3 <span className="text-danger">*</span>
+              </label>
+              <div>
+                {["Internship", "Government", "Freelance", "Contract"].map(
+                  (type) => (
+                    <label className="form-check-label me-3" key={type}>
+                      <input
+                        type="checkbox"
+                        name="job_type3"
+                        value={type}
+                        className="form-check-input me-1"
+                        checked={values.job_type3.includes(type)}
+                        onChange={(e) => {
+                          const { checked } = e.target;
+                          const updatedArray = checked
+                            ? [...values.job_type3, type]
+                            : values.job_type3.filter((item) => item !== type);
+                          setFieldValue("job_type3", updatedArray);
+                        }}
+                      />
+                      {type}
+                    </label>
+                  ),
+                )}
+              </div>
+              <ErrorMessage
+                name="job_type3"
+                component="div"
+                className="text-danger"
+              />
+            </div>
+            <div className="mb-3">
+              <label htmlFor="qualifications" className="form-label">
+                Qualifications <span className="text-danger">*</span>
+              </label>
+              <Field
+                as="textarea"
+                id="qualifications"
+                name="qualifications"
+                className="form-control"
+                placeholder="Enter qualifications"
+              />
+              <ErrorMessage
+                name="qualifications"
+                component="div"
+                className="text-danger"
+              />
+            </div>
+            <div className="mb-3">
+              <label htmlFor="benefits" className="form-label">
+                Benefits <span className="text-danger">*</span>
+              </label>
+              <Field
+                as="textarea"
+                id="benefits"
+                name="benefits"
+                className="form-control"
+                placeholder="Enter benefits"
+              />
+              <ErrorMessage
+                name="benefits"
+                component="div"
+                className="text-danger"
+              />
+            </div>
+            <div className="mb-3">
+              <label htmlFor="app_details" className="form-label">
+                Application Details <span className="text-danger">*</span>
+              </label>
+              <Field
+                as="textarea"
+                id="app_details"
+                name="app_details"
+                className="form-control"
+                placeholder="Enter application details"
+              />
+              <ErrorMessage
+                name="description"
+                component="div"
+                className="text-danger"
+              />
+            </div>
+            {/* Deadline */}
+            <LocalizationProvider dateAdapter={AdapterDayjs}>
+              <div className="mb-3">
+                <label htmlFor="deadline" className="form-label">
+                  Deadline <span className="text-danger">*</span>
+                </label>
+                <div>
+                  <Field name="deadline">
+                    {({ field, form }) => (
+                      <DateTimePicker
+                        label="Select deadline"
+                        value={field.value || null} // Bind Formik's field value
+                        onChange={(value) =>
+                          form.setFieldValue("deadline", value)
+                        } // Update Formik's state
+                        renderInput={(params) => (
+                          <>
+                            <input
+                              {...params.inputProps}
+                              id="deadline"
+                              className="form-control"
+                              placeholder="Select deadline"
+                            />
+                            {form.errors.deadline && form.touched.deadline && (
+                              <div className="text-danger">
+                                {form.errors.deadline}
+                              </div>
+                            )}
+                          </>
+                        )}
+                      />
+                    )}
+                  </Field>
+                </div>
+              </div>
+            </LocalizationProvider>
+
+            {/* Salary */}
+            <div className="mb-3">
+              <label htmlFor="salary" className="form-label">
+                Salary <span className="text-danger">*</span>
+              </label>
+              <Field
+                type="number"
+                id="salary"
+                name="salary"
+                className="form-control"
+                placeholder="Enter salary (0 if unpaid)"
+              />
+              <ErrorMessage
+                name="salary"
+                component="div"
+                className="text-danger"
+              />
+            </div>
+            {/* Submit Button */}
+          </FormikForm>
+  );
+};
 
 const ReferralRequests = () => {
   const [selectedReferral, setSelectedReferral] = useState(null);
@@ -36,9 +365,7 @@ const ReferralRequests = () => {
   const handleOpenModal = (mentee) => {
     const existingMentee = mentees.find((_mentee) => _mentee.id === mentee.id);
     setModalData({
-      ...mentee,
-      rating: existingMentee?.ratings[0]?.rating || "",
-      comment: existingMentee?.ratings[0]?.comment || "",
+      mentee,
     });
   };
 
@@ -104,6 +431,36 @@ const ReferralRequests = () => {
       </div>
     );
   }
+
+  const jobsValidationSchema = Yup.object({
+    title: Yup.string().required("Job title is required"),
+    description: Yup.string().required("Job description is required"),
+    company_name: Yup.string().required("Company name is required"),
+    company_details: Yup.string().required("Company details are required"),
+    job_type1: Yup.string()
+      .oneOf(["FullTime", "PartTime"], "Please select a valid option")
+      .required("This field is required"),
+    job_type2: Yup.string()
+      .oneOf(["Onsite", "Remote"], "Please select a valid option")
+      .required("This field is required"),
+    job_type3: Yup.array()
+      .of(
+        Yup.string().oneOf([
+          "Internship",
+          "Government",
+          "Freelance",
+          "Contract",
+        ]),
+      )
+      .min(1, "Please select at least one option")
+      .required("This field is required"),
+    location: Yup.string().required("Please select a location"),
+    qualifications: Yup.string().required("Please enter qualifications"),
+    benefits: Yup.string().required("Please enter benefits"),
+    app_details: Yup.string().required("Please enter application details"),
+    deadline: Yup.date().required("Please enter a deadline"),
+    salary: Yup.number().required("Salary is required"),
+  });
 
   return (
     <Container fluid>
@@ -220,48 +577,103 @@ const ReferralRequests = () => {
           </Row>
         </Tab>
 
+        {/* Make a Referral Tab */}
+        <Tab eventKey="makeReferral" title="Make a Referral">
+          <Row className="mt-4">
+            <Col>
+              <h5 className="text-center text-primary">Mentees List</h5>
+              {/* Search Bar */}
+              <Form.Control
+                type="text"
+                placeholder="Search Mentees"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="mb-3"
+              />
+              <ListGroup>
+                {filteredMentees.map((mentee) => {
+                  const referral = referrals.find(
+                    (ref) => ref.id === mentee.id,
+                  );
+                  return (
+                    <ListGroup.Item
+                      key={mentee.id}
+                      action
+                      onClick={() => handleOpenModal(mentee)}
+                      className="mb-2 shadow-sm p-3 rounded-lg"
+                      style={{
+                        cursor: "pointer",
+                        backgroundColor: "#f8f9fa",
+                        borderRadius: "10px",
+                        transition: "all 0.3s ease",
+                      }}
+                    >
+                      {mentee.profileIcon} {mentee.User.name}
+                      <div className="mt-2"></div>
+                    </ListGroup.Item>
+                  );
+                })}
+              </ListGroup>
+            </Col>
+          </Row>
+        </Tab>
       </Tabs>
 
       {/* Modal for Rating and Comment */}
       {modalData && (
-        <Modal show onHide={() => setModalData(null)}>
+        <Modal show onHide={() => setModalData(null)} size="lg">
           <Modal.Header closeButton>
-            <Modal.Title>Rate & Comment for {modalData.name}</Modal.Title>
+            <Modal.Title>Send job application</Modal.Title>
           </Modal.Header>
           <Modal.Body>
-            <Form>
-              <Form.Group className="mb-3">
-                <Form.Label>Star Rating (1-5)</Form.Label>
-                <Form.Control
-                  type="number"
-                  min="1"
-                  max="5"
-                  value={modalData.rating}
-                  onChange={(e) =>
-                    setModalData((prev) => ({
-                      ...prev,
-                      rating: e.target.value,
-                    }))
-                  }
-                  className="form-control-lg"
-                />
-              </Form.Group>
-              <Form.Group className="mb-3">
-                <Form.Label>Comment</Form.Label>
-                <Form.Control
-                  as="textarea"
-                  rows={3}
-                  value={modalData.comment}
-                  onChange={(e) =>
-                    setModalData((prev) => ({
-                      ...prev,
-                      comment: e.target.value,
-                    }))
-                  }
-                  className="form-control-lg"
-                />
-              </Form.Group>
-            </Form>
+   <Formik
+        initialValues={{
+          title: "",
+          description: "",
+          company_name: "",
+          company_details: "",
+          location: "",
+          job_type1: "",
+          job_type2: "",
+          job_type3: [],
+          qualifications: "",
+          benefits: "",
+          app_details: "",
+          deadline: null,
+          salary: "",
+        }}
+        validationSchema={jobsValidationSchema}
+        onSubmit={async (values) => {
+          console.log(values);
+          try {
+            const payload = {
+              ...values,
+              work_schedule: values.job_type1,
+              work_location: values.job_type2,
+              employment_categories: values.job_type3,
+              deadline: values.deadline
+                ? new Date(values.deadline).toISOString()
+                : null,
+              salary: values.salary.toString(),
+            };
+
+            delete payload.job_type1;
+            delete payload.job_type2;
+            delete payload.job_type3;
+
+            console.log("Final Payload:", payload);
+
+            await createJob(payload);
+            setModalData(null)
+          } catch (err) {
+            console.error("Submission Error:", err);
+          }
+        }}
+      >
+        {(formikProps) => (
+            <CreateJobModal {...formikProps} />
+        )}
+      </Formik>
           </Modal.Body>
           <Modal.Footer>
             <Button variant="secondary" onClick={() => setModalData(null)}>
