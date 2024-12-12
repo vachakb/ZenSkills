@@ -46,10 +46,9 @@ export default function Question() {
   async function getAnswers() {
     // call api for questions/blogs
     try{
-      const responce = await axiosInstance.get(`${API_URL}/api/community/answers`, {
+      const responce = await axiosInstance.get(`${API_URL}/api/community/answers/${questionId}`, {
         params: {
-          questionId:questionId
-          // , currentPage, limit
+          currentPage, limit
         }
       });
       setAnswers(responce.data)
@@ -63,18 +62,19 @@ export default function Question() {
     try{
       const response = await axiosInstance.post(`${API_URL}/api/community/questions/${questionId}/answer`, {
         answer:comment
-      })
+      });
+      setComment("")
     }catch(error){
-
+      console.log("error posting answer: ", error);
     }
   }
 
   async function handleSubmit() {
     // posting comment
     console.log("submit clicked")
-    postAnswer()
+    await postAnswer()
     console.log("posted")
-    getAnswers()
+    await getAnswers()
     console.log(answers)
   }
 
