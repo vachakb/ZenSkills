@@ -130,6 +130,7 @@ exports.getQuestionById = async (req, res) => {
     });
 
     if (!question) {
+      console.log("sending to ")
       return res.status(404).json({ error: "Question not found" });
     }
 
