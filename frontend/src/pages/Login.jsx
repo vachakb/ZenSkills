@@ -37,7 +37,7 @@ function Login() {
             navigate("/register/1");
           }
         })
-        .catch(console.error(err));
+        .catch((err) => alert(err.response.data.message));
     },
     onError: () => {
       console.log("Login Failed");
