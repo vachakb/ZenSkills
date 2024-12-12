@@ -3,13 +3,20 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import ReactPaginate from "react-paginate";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import { getAllWorkshops } from "../apis/workshops";
+import {
+  getAllWorkshops,
+  bookWorkshop,
+  getUserRegisteredWorkshops,
+  setWorkshopRoomId,
+} from "../apis/workshops";
 import { formatDateTime } from "../misc/formatDateTime";
 import { format } from "date-fns";
 import { FiPlusCircle } from "react-icons/fi";
 import { Button, Modal } from "react-bootstrap";
 import useProfile from "../hooks/useProfile";
 import { API_URL } from "../apis/commons";
+import demoMentorImage from "../assets/mentorImage.png";
+import { createRoom, getToken } from "../apis/meeting";
 // TODO Make calls using axios
 
 const WorkshopsPage = ({ demoTags }) => {
@@ -126,7 +133,8 @@ const WorkshopsPage = ({ demoTags }) => {
   const [currentPage, setCurrentPage] = useState(0);
   const [totalPages, setTotalPages] = useState(1);
   const itemsPerPage = 6;
-  const [newWorkshops, setNewWorkshops] = useState([]);
+  const [registeredWorkshops, setRegisteredWorkshops] = useState([]);
+
   const [allTags, setAllTags] = useState(demoTags);
   const [selectedTags, setSelectedTags] = useState([]);
   const [filterDropdownVisibility, setFilterDropdownVisibility] =
@@ -144,7 +152,7 @@ const WorkshopsPage = ({ demoTags }) => {
       };
       reader.readAsDataURL(file);
     }
-  }
+  };
 
   const { profile } = useProfile();
 
@@ -155,16 +163,66 @@ const WorkshopsPage = ({ demoTags }) => {
   const fetchWorkshops = async (page, query, status) => {
     try {
       const response = await getAllWorkshops();
-      console.log("API Response:", response.data);
-      const filteredWorkshops = response.data.workshops.filter(
-        (workshop) =>
-          workshop.title.toLowerCase().includes(query.toLowerCase()) &&
-          (status === "" || (status === "myworkshops" && workshop.mentor.User.id === profile.id) || workshop.status === status)
+      let filteredWorkshops = response.data.workshops.filter((workshop) =>
+        workshop.title.toLowerCase().includes(query.toLowerCase()),
       );
+
+      filteredWorkshops.map((workshop) => {
+        workshop.owner = workshop.mentor.User.id === profile.id;
+        workshop.participant = workshop.WorkshopBooking.some(
+          (booking) => booking.user_id === profile.id,
+        );
+      });
+
+      if (activeTab === "myworkshops") {
+        filteredWorkshops = filteredWorkshops.filter(
+          (workshop) => workshop.owner || workshop.participant,
+        );
+      }
+
+      if (activeTab === "completed") {
+        filteredWorkshops = filteredWorkshops.filter(
+          (workshop) => workshop.status === "completed",
+        );
+      }
+      console.log(filteredWorkshops)
       setWorkshops(filteredWorkshops);
       setTotalPages(Math.ceil(filteredWorkshops.length / itemsPerPage));
     } catch (error) {
       console.error("Error fetching workshops:", error);
+    }
+  };
+
+  const joinSession = async (workshop) => {
+    const tokenRes = await getToken();
+    const token = tokenRes.data.token;
+
+    let roomId = workshop.room_id;
+
+    if (!roomId) {
+      const roomRes = await createRoom(token);
+      roomId = roomRes.data.roomId;
+      await setWorkshopRoomId(workshop.id, roomId);
+    }
+
+    navigate(`/meeting/${roomId}`, {
+      state: {
+        token,
+        roomId,
+        workshopId: workshop.id,
+        roomType: "workshop",
+        isHost: workshop.mentor.User.id === profile.id,
+      },
+    });
+  };
+
+  // Fetch registered workshops from the server
+  const fetchRegisteredWorkshops = async () => {
+    try {
+      const response = await getUserRegisteredWorkshops(profile.id);
+      setRegisteredWorkshops(response.data.registeredWorkshops);
+    } catch (error) {
+      console.error("Error fetching registered workshops:", error);
     }
   };
 
@@ -175,11 +233,27 @@ const WorkshopsPage = ({ demoTags }) => {
 
   useEffect(() => {
     fetchWorkshops(currentPage, search, activeTab === "all" ? "" : activeTab);
+    // fetchRegisteredWorkshops();
   }, [currentPage, search, activeTab]);
 
   const handleSearch = (e) => {
     setSearch(e.target.value);
     setCurrentPage(0); // Reset to the first page on search
+  };
+
+  const handleRegister = async (workshopId) => {
+    try {
+      const response = await bookWorkshop(workshopId, profile.id);
+      if (response.status === 200 || response.status === 201) {
+        alert("Successfully registered for the workshop!");
+        setRegisteredWorkshops([...registeredWorkshops, workshopId]);
+      } else {
+        alert("Failed to register for the workshop. Please try again.");
+      }
+    } catch (error) {
+      console.error("Error registering for the workshop:", error);
+      alert("Failed to register for the workshop. Please try again.");
+    }
   };
 
   const handlePageClick = (selected) => {
@@ -209,58 +283,65 @@ const WorkshopsPage = ({ demoTags }) => {
     setShowWorkshopDetails(false);
     setSelectedWorkshop(undefined);
   }
-  const updateWorkshopStatus = () => {
-    const now = new Date();
 
-    const updatedUpcoming = [];
-    const updatedCompleted = [];
-
-    workshops.forEach((workshop) => {
-      const workshopDate = new Date(workshop.date);
-
-      if (workshopDate > now) {
-        updatedUpcoming.push(workshop);
-      } else {
-        updatedCompleted.push(workshop);
-      }
-    });
-
-
-  };
-  useEffect(() => {
-    fetchWorkshops(currentPage, search, activeTab === "all" ? "" : activeTab);
-    getAllWorkshops();
-  }, [currentPage, search, activeTab]);
-
-  useEffect(() => {
-    updateWorkshopStatus();
-  }, [workshops]);
   return (
     <>
-      {selectedWorkshop !== undefined &&
+      {selectedWorkshop !== undefined && (
         <Modal show={showWorkshopDetails} onHide={handleCloseDetails} centered>
           <Modal.Header closeButton>
-            <Modal.Title>
-              Workshop Details
-            </Modal.Title>
+            <Modal.Title>Workshop Details</Modal.Title>
           </Modal.Header>
           <Modal.Body>
             <h5>Title: {workshops[selectedWorkshop].title}</h5>
             <h6>About: {workshops[selectedWorkshop].description}</h6>
-            <h6>Seats available: {workshops[selectedWorkshop].max_participants}</h6>
-            <h6>Date: {format(new Date(workshops[selectedWorkshop].date), "MMMM dd, yyyy")}</h6>
-            <h6>Time: {format(new Date(workshops[selectedWorkshop].date), "hh:mm a")}</h6>
-            <h6>Deadline: {format(new Date(workshops[selectedWorkshop].date), "MMMM dd, yyyy")}</h6>
+            <h6>
+              Seats available: {workshops[selectedWorkshop].max_participants}
+            </h6>
+            <h6>
+              Date:{" "}
+              {format(
+                new Date(workshops[selectedWorkshop].date),
+                "MMMM dd, yyyy",
+              )}
+            </h6>
+            <h6>
+              Time:{" "}
+              {format(new Date(workshops[selectedWorkshop].date), "hh:mm a")}
+            </h6>
+            <h6>
+              Deadline:{" "}
+              {format(
+                new Date(workshops[selectedWorkshop].date),
+                "MMMM dd, yyyy",
+              )}
+            </h6>
             <h6>Created by: {workshops[selectedWorkshop].mentor.User.name}</h6>
           </Modal.Body>
         </Modal>
-      }
+      )}
       <div className="container my-4">
         {/* Header Section */}
         <div className="d-flex flex-column flex-md-row justify-content-between align-items-center mb-4">
           <div className="d-flex align-items-center gap-2">
-            <h1 className="fw-bold col-12 col-md-auto mb-3 mb-md-0">Workshops</h1>
-            {profile.isMentor && <Button style={{ position: "absolute", right: "40px", bottom: "40px", fontSize: "2rem", borderRadius: "40px", height: "50px", paddingTop: "0px" }} onClick={() => navigate("/create_workshop")}>+</Button>}
+            <h1 className="fw-bold col-12 col-md-auto mb-3 mb-md-0">
+              Workshops
+            </h1>
+            {profile.isMentor && (
+              <Button
+                style={{
+                  position: "absolute",
+                  right: "40px",
+                  bottom: "40px",
+                  fontSize: "2rem",
+                  borderRadius: "40px",
+                  height: "50px",
+                  paddingTop: "0px",
+                }}
+                onClick={() => navigate("/create_workshop")}
+              >
+                +
+              </Button>
+            )}
           </div>
           <div className="row g-2 align-items-center">
             {/* Search Input */}
@@ -398,29 +479,55 @@ const WorkshopsPage = ({ demoTags }) => {
                 <div className="card-body d-flex flex-column gap-2">
                   <h5 className="card-title m-0">{workshop.title}</h5>
                   <p className="card-text m-0">
-                    <strong>Date:</strong> {format(new Date(workshop.date), "MMMM dd, yyyy")} <br />
-                    <strong>Time:</strong> {format(new Date(workshop.date), "hh:mm a")}
+                    <strong>Date:</strong>{" "}
+                    {format(new Date(workshop.date), "MMMM dd, yyyy")} <br />
+                    <strong>Time:</strong>{" "}
+                    {format(new Date(workshop.date), "hh:mm a")}
                   </p>
                   <div className="d-flex align-items-center">
                     <img
-                      src={workshop.organizer_profile_pic}
-                      alt={workshop.organizer_name}
+                      src={
+                        workshop.mentor.User.profilePictureId
+                          ? `${API_URL}/api/images/${workshop.mentor.User.profilePictureId}`
+                          : demoMentorImage
+                      }
                       className="rounded-circle me-2"
-                      style={{ width: "50px", height: "50px" }}
+                      style={{
+                        width: "32px",
+                        height: "32px",
+                        objectFit: "contain",
+                      }}
                     />
 
                     <div>
-                      <p className="m-0 fw-bold" onClick={() => navigate("/mentee_exploring/" + workshop.mentor.id)}>{workshop.mentor.User.name}</p>
+                      <p className="m-0 fw-bold">{workshop.mentor.User.name}</p>
                       <small className="text-muted">
                         {workshop?.organizer_position}
                       </small>
                     </div>
                   </div>
-                  <div className="ms-auto d-flex gap-2"><Button onClick={
-
-                    () => handleWorkshopClick(index)
-
-                  }>Details</Button><Button>Register</Button></div>
+                  <div className="ms-auto d-flex gap-2">
+                    {workshop.owner || workshop.participant ? (
+                      <Button
+                        onClick={() => {
+                          joinSession(workshop)
+                        }}
+                      >
+                        Join
+                      </Button>
+                    ) : (
+                      <Button
+                        onClick={() => {
+                          bookWorkshop(workshop.id);
+                        }}
+                      >
+                        Register
+                      </Button>
+                    )}
+                    <Button onClick={() => handleWorkshopClick(index)}>
+                      Details
+                    </Button>
+                  </div>
                 </div>
               </div>
             </div>
@@ -447,7 +554,7 @@ const WorkshopsPage = ({ demoTags }) => {
           breakLinkClassName={"page-link"}
           activeClassName={"active"}
         />
-      </div >
+      </div>
     </>
   );
 };

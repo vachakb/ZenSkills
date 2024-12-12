@@ -108,8 +108,8 @@ router.post(
   (req, res) => {
     res.json({ isRegistered: req.isRegistered });
   },
-  (_, res) => {
-    res.sendStatus(500);
+  (err, req, res, next) => {
+    res.status(500).json({ message: err });
   },
 );
 
