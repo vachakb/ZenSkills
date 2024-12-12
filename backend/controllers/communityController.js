@@ -3,7 +3,7 @@ const prisma = require("../models/prismaClient");
 exports.getAllQuestions = async (req, res) => {
   try {
     const { limit, currentPage, searchTerm } = req.query;
-
+    console.log(limit, currentPage, searchTerm)
     const offset = currentPage * limit;
 
     const whereClause = searchTerm
@@ -86,7 +86,6 @@ exports.updateQuestion = async (req, res) => {
     res.status(500).json({ error: "Error updating question" });
   }
 };
-
 
 
 exports.postAnswer = async (req, res) => {

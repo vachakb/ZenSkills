@@ -1,5 +1,9 @@
 const prisma = require("../models/prismaClient");
 
+exports.getMentors = async (req, res) => {
+  
+}
+
 exports.getMentorDetails = async (req, res) => {
   const { userId } = req.params;
 
