@@ -3,7 +3,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import ReactPaginate from "react-paginate";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import { getAllWorkshops, bookWorkshop, getUserRegisteredWorkshops } from "../apis/workshops";
+import { getAllWorkshops } from "../apis/workshops";
 import { formatDateTime } from "../misc/formatDateTime";
 import { format } from "date-fns";
 import { FiPlusCircle } from "react-icons/fi";
@@ -126,8 +126,7 @@ const WorkshopsPage = ({ demoTags }) => {
   const [currentPage, setCurrentPage] = useState(0);
   const [totalPages, setTotalPages] = useState(1);
   const itemsPerPage = 6;
-  const [registeredWorkshops, setRegisteredWorkshops] = useState([]);
-
+  const [newWorkshops, setNewWorkshops] = useState([]);
   const [allTags, setAllTags] = useState(demoTags);
   const [selectedTags, setSelectedTags] = useState([]);
   const [filterDropdownVisibility, setFilterDropdownVisibility] =
@@ -169,16 +168,6 @@ const WorkshopsPage = ({ demoTags }) => {
     }
   };
 
-  // Fetch registered workshops from the server
-  const fetchRegisteredWorkshops = async () => {
-    try {
-      const response = await getUserRegisteredWorkshops(profile.id);
-      setRegisteredWorkshops(response.data.registeredWorkshops);
-    } catch (error) {
-      console.error("Error fetching registered workshops:", error);
-    }
-  };
-
   useEffect(() => {
     setSearch("");
     setCurrentPage(0);
@@ -186,28 +175,11 @@ const WorkshopsPage = ({ demoTags }) => {
 
   useEffect(() => {
     fetchWorkshops(currentPage, search, activeTab === "all" ? "" : activeTab);
-    fetchRegisteredWorkshops();
   }, [currentPage, search, activeTab]);
 
   const handleSearch = (e) => {
     setSearch(e.target.value);
     setCurrentPage(0); // Reset to the first page on search
-  };
-
-  const handleRegister = async (workshopId) => {
-    try {
-      const response = await bookWorkshop(workshopId, profile.id);
-      if (response.status === 200 || response.status === 201) {
-        alert("Successfully registered for the workshop!");
-        setRegisteredWorkshops([...registeredWorkshops, workshopId]);
-      } else {
-        alert("Failed to register for the workshop. Please try again.");
-      }
-      fetchRegisteredWorkshops();
-    } catch (error) {
-      console.error("Error registering for the workshop:", error);
-      alert("Failed to register for the workshop. Please try again.");
-    }
   };
 
   const handlePageClick = (selected) => {
@@ -237,148 +209,169 @@ const WorkshopsPage = ({ demoTags }) => {
     setShowWorkshopDetails(false);
     setSelectedWorkshop(undefined);
   }
-  const WorkshopCard = ({ workshop }) => {
-    const isRegistered = registeredWorkshops.some(
-      (registeredWorkshop) => registeredWorkshop.id === workshop.id
-    );
+  const updateWorkshopStatus = () => {
+    const now = new Date();
 
-    return (
-      <>
-        {selectedWorkshop !== undefined &&
-          <Modal show={showWorkshopDetails} onHide={handleCloseDetails} centered>
-            <Modal.Header closeButton>
-              <Modal.Title>
-                Workshop Details
-              </Modal.Title>
-            </Modal.Header>
-            <Modal.Body>
-              <h5>Title: {workshops[selectedWorkshop].title}</h5>
-              <h6>About: {workshops[selectedWorkshop].description}</h6>
-              <h6>Seats available: {workshops[selectedWorkshop].max_participants}</h6>
-              <h6>Date: {format(new Date(workshops[selectedWorkshop].date), "MMMM dd, yyyy")}</h6>
-              <h6>Time: {format(new Date(workshops[selectedWorkshop].date), "hh:mm a")}</h6>
-              <h6>Deadline: {format(new Date(workshops[selectedWorkshop].date), "MMMM dd, yyyy")}</h6>
-              <h6>Created by: {workshops[selectedWorkshop].mentor.User.name}</h6>
-            </Modal.Body>
-          </Modal>
-        }
-        <div className="container my-4">
-          {/* Header Section */}
-          <div className="d-flex flex-column flex-md-row justify-content-between align-items-center mb-4">
-            <div className="d-flex align-items-center gap-2">
-              <h1 className="fw-bold col-12 col-md-auto mb-3 mb-md-0">Workshops</h1>
-              {profile.isMentor && <Button style={{ position: "absolute", right: "40px", bottom: "40px", fontSize: "2rem", borderRadius: "40px", height: "50px", paddingTop: "0px" }} onClick={() => navigate("/create_workshop")}>+</Button>}
+    const updatedUpcoming = [];
+    const updatedCompleted = [];
+
+    workshops.forEach((workshop) => {
+      const workshopDate = new Date(workshop.date);
+
+      if (workshopDate > now) {
+        updatedUpcoming.push(workshop);
+      } else {
+        updatedCompleted.push(workshop);
+      }
+    });
+
+
+  };
+  useEffect(() => {
+    fetchWorkshops(currentPage, search, activeTab === "all" ? "" : activeTab);
+    getAllWorkshops();
+  }, [currentPage, search, activeTab]);
+
+  useEffect(() => {
+    updateWorkshopStatus();
+  }, [workshops]);
+  return (
+    <>
+      {selectedWorkshop !== undefined &&
+        <Modal show={showWorkshopDetails} onHide={handleCloseDetails} centered>
+          <Modal.Header closeButton>
+            <Modal.Title>
+              Workshop Details
+            </Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <h5>Title: {workshops[selectedWorkshop].title}</h5>
+            <h6>About: {workshops[selectedWorkshop].description}</h6>
+            <h6>Seats available: {workshops[selectedWorkshop].max_participants}</h6>
+            <h6>Date: {format(new Date(workshops[selectedWorkshop].date), "MMMM dd, yyyy")}</h6>
+            <h6>Time: {format(new Date(workshops[selectedWorkshop].date), "hh:mm a")}</h6>
+            <h6>Deadline: {format(new Date(workshops[selectedWorkshop].date), "MMMM dd, yyyy")}</h6>
+            <h6>Created by: {workshops[selectedWorkshop].mentor.User.name}</h6>
+          </Modal.Body>
+        </Modal>
+      }
+      <div className="container my-4">
+        {/* Header Section */}
+        <div className="d-flex flex-column flex-md-row justify-content-between align-items-center mb-4">
+          <div className="d-flex align-items-center gap-2">
+            <h1 className="fw-bold col-12 col-md-auto mb-3 mb-md-0">Workshops</h1>
+            {profile.isMentor && <Button style={{ position: "absolute", right: "40px", bottom: "40px", fontSize: "2rem", borderRadius: "40px", height: "50px", paddingTop: "0px" }} onClick={() => navigate("/create_workshop")}>+</Button>}
+          </div>
+          <div className="row g-2 align-items-center">
+            {/* Search Input */}
+            <div className="col-12 col-md">
+              <input
+                type="text"
+                className="form-control"
+                placeholder="Search workshops..."
+                value={search}
+                onChange={handleSearch}
+              />
             </div>
-            <div className="row g-2 align-items-center">
-              {/* Search Input */}
-              <div className="col-12 col-md">
-                <input
-                  type="text"
-                  className="form-control"
-                  placeholder="Search workshops..."
-                  value={search}
-                  onChange={handleSearch}
-                />
-              </div>
 
-              {/* Filter Button */}
-              <div className="col-12 col-md-auto">
-                <button
-                  className="btn btn-primary w-100"
-                  onClick={toggleFilterDropdownVisibility}
-                >
-                  Filter
-                </button>
-              </div>
+            {/* Filter Button */}
+            <div className="col-12 col-md-auto">
+              <button
+                className="btn btn-primary w-100"
+                onClick={toggleFilterDropdownVisibility}
+              >
+                Filter
+              </button>
             </div>
           </div>
+        </div>
 
-          {filterDropdownVisibility && (
-            <div className="mb-4 border p-2">
-              <div className="d-flex justify-content-between">
-                <div>Select Tags</div>
+        {filterDropdownVisibility && (
+          <div className="mb-4 border p-2">
+            <div className="d-flex justify-content-between">
+              <div>Select Tags</div>
+              <button
+                className="btn-close"
+                aria-label="Close"
+                onClick={toggleFilterDropdownVisibility}
+              ></button>
+            </div>
+            {allTags.map((tag) => {
+              return (
                 <button
-                  className="btn-close"
-                  aria-label="Close"
-                  onClick={toggleFilterDropdownVisibility}
-                ></button>
-              </div>
-              {allTags.map((tag) => {
-                return (
+                  className={`btn btn-sm rounded-pill m-1`}
+                  style={{
+                    backgroundColor: selectedTags.includes(tag)
+                      ? "#07d100"
+                      : "rgb(233, 236, 239)",
+                  }}
+                  onClick={() => handleTagClick(tag)}
+                >
+                  {tag}
+                </button>
+              );
+            })}
+          </div>
+        )}
+
+        {selectedTags?.length !== 0 && (
+          <div className="">
+            Filters applied:
+            {selectedTags.map((tag) => {
+              return (
+                <div
+                  className="rounded-pill ps-2 m-1 d-inline-block"
+                  style={{ backgroundColor: "rgb(233, 236, 239)" }}
+                >
+                  <span>{tag}</span>
                   <button
-                    className={`btn btn-sm rounded-pill m-1`}
+                    type="button"
+                    className="btn"
                     style={{
-                      backgroundColor: selectedTags.includes(tag)
-                        ? "#07d100"
-                        : "rgb(233, 236, 239)",
+                      background: "",
+                      border: "none",
+                      fontSize: "1rem",
+                      cursor: "pointer",
+                      transition: "background-color 0.3s ease",
+                      borderRadius: "50%",
                     }}
                     onClick={() => handleTagClick(tag)}
                   >
-                    {tag}
+                    &times;
                   </button>
-                );
-              })}
-            </div>
-          )}
+                </div>
+              );
+            })}
+          </div>
+        )}
 
-          {selectedTags?.length !== 0 && (
-            <div className="">
-              Filters applied:
-              {selectedTags.map((tag) => {
-                return (
-                  <div
-                    className="rounded-pill ps-2 m-1 d-inline-block"
-                    style={{ backgroundColor: "rgb(233, 236, 239)" }}
-                  >
-                    <span>{tag}</span>
-                    <button
-                      type="button"
-                      className="btn"
-                      style={{
-                        background: "",
-                        border: "none",
-                        fontSize: "1rem",
-                        cursor: "pointer",
-                        transition: "background-color 0.3s ease",
-                        borderRadius: "50%",
-                      }}
-                      onClick={() => handleTagClick(tag)}
-                    >
-                      &times;
-                    </button>
-                  </div>
-                );
-              })}
-            </div>
-          )}
-
-          {/* Tabs for Filter */}
-          <ul className="nav nav-tabs mb-4" id="workshopTabs">
-            <li className="nav-item">
-              <button
-                className={`nav-link ${activeTab === "upcoming" ? "active" : ""}`}
-                onClick={() => setActiveTab("upcoming")}
-              >
-                Upcoming
-              </button>
-            </li>
-            <li className="nav-item">
-              <button
-                className={`nav-link ${activeTab === "completed" ? "active" : ""}`}
-                onClick={() => setActiveTab("completed")}
-              >
-                Completed
-              </button>
-            </li>
-            <li className="nav-item">
-              <button
-                className={`nav-link ${activeTab === "myworkshops" ? "active" : ""}`}
-                onClick={() => setActiveTab("myworkshops")}
-              >
-                My workshops
-              </button>
-            </li>
-            {/* <li className="nav-item">
+        {/* Tabs for Filter */}
+        <ul className="nav nav-tabs mb-4" id="workshopTabs">
+          <li className="nav-item">
+            <button
+              className={`nav-link ${activeTab === "upcoming" ? "active" : ""}`}
+              onClick={() => setActiveTab("upcoming")}
+            >
+              Upcoming
+            </button>
+          </li>
+          <li className="nav-item">
+            <button
+              className={`nav-link ${activeTab === "completed" ? "active" : ""}`}
+              onClick={() => setActiveTab("completed")}
+            >
+              Completed
+            </button>
+          </li>
+          <li className="nav-item">
+            <button
+              className={`nav-link ${activeTab === "myworkshops" ? "active" : ""}`}
+              onClick={() => setActiveTab("myworkshops")}
+            >
+              My workshops
+            </button>
+          </li>
+          {/* <li className="nav-item">
           <button
             className={`nav-link ${activeTab === "all" ? "active" : ""}`}
             onClick={() => setActiveTab("all")}
@@ -386,89 +379,77 @@ const WorkshopsPage = ({ demoTags }) => {
             All Workshops
           </button>
         </li> */}
-          </ul>
+        </ul>
 
-          {/* Workshop Cards */}
+        {/* Workshop Cards */}
+        <div className="row">
+          {workshops.map((workshop, index) => (
+            <div
+              style={{ cursor: "pointer" }}
+              className="col-md-4 mb-4"
+              key={workshop.id}
+            >
+              <div className="card shadow-sm">
+                <img
+                  src={`${API_URL}/api/images/${workshop.workshop_image_id}`}
+                  className="card-img-top"
+                  alt={workshop.title}
+                />
+                <div className="card-body d-flex flex-column gap-2">
+                  <h5 className="card-title m-0">{workshop.title}</h5>
+                  <p className="card-text m-0">
+                    <strong>Date:</strong> {format(new Date(workshop.date), "MMMM dd, yyyy")} <br />
+                    <strong>Time:</strong> {format(new Date(workshop.date), "hh:mm a")}
+                  </p>
+                  <div className="d-flex align-items-center">
+                    <img
+                      src={workshop.organizer_profile_pic}
+                      alt={workshop.organizer_name}
+                      className="rounded-circle me-2"
+                      style={{ width: "50px", height: "50px" }}
+                    />
 
-          <div className="row">
-            {workshops.map((workshop, index) => (
-              <div
-                style={{ cursor: "pointer" }}
-                className="col-md-4 mb-4"
-                key={workshop.id}
-              >
-                <div className="card shadow-sm">
-                  <img
-                    src={`${API_URL}/api/images/${workshop.workshop_image_id}`}
-                    className="card-img-top"
-                    alt={workshop.title}
-                  />
-                  <div className="card-body d-flex flex-column gap-2">
-                    <h5 className="card-title m-0">{workshop.title}</h5>
-                    <p className="card-text m-0">
-                      <strong>Date:</strong> {format(new Date(workshop.date), "MMMM dd, yyyy")} <br />
-                      <strong>Time:</strong> {format(new Date(workshop.date), "hh:mm a")}
-                    </p>
-                    <div className="d-flex align-items-center">
-                      <img
-                        src={workshop.organizer_profile_pic}
-                        alt={workshop.organizer_name}
-                        className="rounded-circle me-2"
-                        style={{ width: "50px", height: "50px" }}
-                      />
-
-                      <div>
-                        <p className="m-0 fw-bold">{workshop.mentor.User.name}</p>
-                        <small className="text-muted">
-                          {workshop?.organizer_position}
-                        </small>
-                      </div>
-                    </div>
-                    <div className="ms-auto d-flex gap-2"><Button onClick={
-
-                      () => handleWorkshopClick(index)
-
-                    }>Details</Button>
-                      {isRegistered ? (
-                        <Button variant="success" onClick={() => joinWorkshop(workshop.id)}>
-                          Join
-                        </Button>
-                      ) : (
-                        <Button variant="primary" onClick={() => registerForWorkshop(workshop.id)}>
-                          Register
-                        </Button>
-                      )}
+                    <div>
+                      <p className="m-0 fw-bold" onClick={() => navigate("/mentee_exploring/" + workshop.mentor.id)}>{workshop.mentor.User.name}</p>
+                      <small className="text-muted">
+                        {workshop?.organizer_position}
+                      </small>
                     </div>
                   </div>
+                  <div className="ms-auto d-flex gap-2"><Button onClick={
+
+                    () => handleWorkshopClick(index)
+
+                  }>Details</Button><Button>Register</Button></div>
                 </div>
               </div>
-            ))}
-          </div>
-
-          {/* Pagination */}
-          <ReactPaginate
-            previousLabel={"Previous"}
-            nextLabel={"Next"}
-            breakLabel={"..."}
-            pageCount={totalPages}
-            marginPagesDisplayed={2}
-            pageRangeDisplayed={3}
-            onPageChange={handlePageClick}
-            containerClassName={"pagination justify-content-center"}
-            pageClassName={"page-item"}
-            pageLinkClassName={"page-link"}
-            previousClassName={"page-item"}
-            previousLinkClassName={"page-link"}
-            nextClassName={"page-item"}
-            nextLinkClassName={"page-link"}
-            breakClassName={"page-item"}
-            breakLinkClassName={"page-link"}
-            activeClassName={"active"}
-          />
+            </div>
+          ))}
         </div>
-      </>
-    );
-  };
-}
+
+        {/* Pagination */}
+        <ReactPaginate
+          previousLabel={"Previous"}
+          nextLabel={"Next"}
+          breakLabel={"..."}
+          pageCount={totalPages}
+          marginPagesDisplayed={2}
+          pageRangeDisplayed={3}
+          onPageChange={handlePageClick}
+          containerClassName={"pagination justify-content-center"}
+          pageClassName={"page-item"}
+          pageLinkClassName={"page-link"}
+          previousClassName={"page-item"}
+          previousLinkClassName={"page-link"}
+          nextClassName={"page-item"}
+          nextLinkClassName={"page-link"}
+          breakClassName={"page-item"}
+          breakLinkClassName={"page-link"}
+          activeClassName={"active"}
+        />
+      </div >
+    </>
+  );
+};
 
 export default WorkshopsPage;
