@@ -74,7 +74,7 @@ const JobDetails = () => {
 
       <h3>Qualifications</h3>
       <ul className="list-group mb-4">
-        <li className="list-group-item" key={index}>
+        <li className="list-group-item">
           {job.moreDetails.qualifications}
         </li>
       </ul>

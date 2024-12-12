@@ -1,10 +1,17 @@
 import React from "react";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
+import { axiosInstance } from "../apis/commons";
+import { useSearchParams } from "react-router-dom";
 
-const JobApplicationModal = () => {
+const API_URL = "http://localhost:5000/";
 
-    console.log("modal is being opened")
+const JobApplicationModal = ({ id }) => {
+
+  // const [params] = useSearchParams();
+  // const id = params.get("jobId");
+
+  console.log("modal is being opened")
   const initialValues = {
     name: "",
     email: "",
@@ -25,10 +32,16 @@ const JobApplicationModal = () => {
     coverLetter: Yup.string().max(1000, "Cover letter cannot exceed 1000 characters"),
   });
 
-  const handleSubmit = (values) => {
-    console.log("Form Submitted:", values);
-    alert("Application Submitted Successfully!");
-  };
+  const handleSubmit = async (values) => {
+    const response = await axiosInstance.post(`${API_URL}/api/jobs/${id}/apply`, {
+      name: values.name,
+      email: values.email,
+      phone: values.phone,
+
+      coverLetter: values.coverLetter,
+    });
+  }
+
 
   return (
     <div
