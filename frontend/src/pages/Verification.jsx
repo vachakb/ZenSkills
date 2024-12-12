@@ -54,8 +54,8 @@ function Verification() {
           <Modal.Title>Success</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          Your verification request has been submitted successfully. Check your
-          inbox for a confirmation email.
+          Your verification request has been submitted successfully. We will verify
+          your credentials in 48 hours
         </Modal.Body>
         <Modal.Footer>
           <Button onClick={() => navigate("/login")}>Understood</Button>
