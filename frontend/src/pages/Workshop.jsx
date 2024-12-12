@@ -3,7 +3,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import ReactPaginate from "react-paginate";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import { getAllWorkshops } from "../apis/workshops";
+import { getAllWorkshops, bookWorkshop, getUserRegisteredWorkshops } from "../apis/workshops";
 import { formatDateTime } from "../misc/formatDateTime";
 import { format } from "date-fns";
 import { FiPlusCircle } from "react-icons/fi";
@@ -126,7 +126,7 @@ const WorkshopsPage = ({ demoTags }) => {
   const [currentPage, setCurrentPage] = useState(0);
   const [totalPages, setTotalPages] = useState(1);
   const itemsPerPage = 6;
-
+  const [registeredWorkshops, setRegisteredWorkshops] = useState([]);
 
   const [allTags, setAllTags] = useState(demoTags);
   const [selectedTags, setSelectedTags] = useState([]);
@@ -169,6 +169,16 @@ const WorkshopsPage = ({ demoTags }) => {
     }
   };
 
+  // Fetch registered workshops from the server
+  const fetchRegisteredWorkshops = async () => {
+    try {
+      const response = await getUserRegisteredWorkshops(profile.id);
+      setRegisteredWorkshops(response.data.registeredWorkshops);
+    } catch (error) {
+      console.error("Error fetching registered workshops:", error);
+    }
+  };
+
   useEffect(() => {
     setSearch("");
     setCurrentPage(0);
@@ -176,11 +186,27 @@ const WorkshopsPage = ({ demoTags }) => {
 
   useEffect(() => {
     fetchWorkshops(currentPage, search, activeTab === "all" ? "" : activeTab);
+    fetchRegisteredWorkshops();
   }, [currentPage, search, activeTab]);
 
   const handleSearch = (e) => {
     setSearch(e.target.value);
     setCurrentPage(0); // Reset to the first page on search
+  };
+
+  const handleRegister = async (workshopId) => {
+    try {
+      const response = await bookWorkshop(workshopId,profile.id);
+      if (response.status === 200 || response.status === 201) {
+        alert("Successfully registered for the workshop!");
+        setRegisteredWorkshops([...registeredWorkshops, workshopId]);
+      } else {
+        alert("Failed to register for the workshop. Please try again.");
+      }
+    } catch (error) {
+      console.error("Error registering for the workshop:", error);
+      alert("Failed to register for the workshop. Please try again.");
+    }
   };
 
   const handlePageClick = (selected) => {
@@ -396,7 +422,16 @@ const WorkshopsPage = ({ demoTags }) => {
 
                     () => handleWorkshopClick(index)
 
-                  }>Details</Button>{profile.isMentor && <Button>Register</Button>}</div>
+                  }>Details</Button>
+                  {!profile.isMentor && (
+                    console.log(workshop),
+                    registeredWorkshops.includes(workshop.id) ? (
+                      <Button onClick={() => navigate(`/workshops/${workshop.id}`)}>Join</Button>
+                    ) : (
+                      <Button onClick={() => handleRegister(workshop.id)}>Register</Button>
+                    )
+                  )}
+                  </div>
                 </div>
               </div>
             </div>

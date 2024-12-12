@@ -1,5 +1,5 @@
 const express = require("express");
-const { getMenteeProfile,editProfile } = require("../controllers/menteeController");
+const { getMenteeProfile,editProfile, getMenteeStats } = require("../controllers/menteeController");
 
 const router = express.Router();
 
