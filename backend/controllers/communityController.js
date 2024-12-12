@@ -3,7 +3,7 @@ const prisma = require("../models/prismaClient");
 exports.getAllQuestions = async (req, res) => {
   try {
     const { limit, currentPage, searchTerm } = req.query;
-
+    console.log(limit, currentPage, searchTerm);
     const offset = currentPage * limit;
 
     const whereClause = searchTerm
@@ -55,7 +55,16 @@ exports.postQuestion = async (req, res) => {
       data: {
         question: inputQuestion,
         q_user_id: userId,
-        question_tag: tag,
+        question_tag: {
+          connectOrCreate: {
+            where: {
+              tag_name: tag,
+            },
+            create: {
+              tag_name: tag,
+            },
+          },
+        },
         answers: 0,
       },
     });
@@ -74,7 +83,7 @@ exports.updateQuestion = async (req, res) => {
   try {
     const updatedQuestion = await prisma.communityQuestion.update({
       where: { id: questionId },
-      data: { 
+      data: {
         question,
         question_tag: tag,
       },
@@ -86,8 +95,6 @@ exports.updateQuestion = async (req, res) => {
     res.status(500).json({ error: "Error updating question" });
   }
 };
-
-
 
 exports.postAnswer = async (req, res) => {
   const { answer } = req.body;
@@ -136,7 +143,7 @@ exports.getQuestionById = async (req, res) => {
     });
 
     if (!question) {
-      console.log("sending to ")
+      console.log("sending to ");
       return res.status(404).json({ error: "Question not found" });
     }
 
@@ -164,7 +171,9 @@ exports.getAllAnswers = async (req, res) => {
     });
 
     if (!answers.length) {
-      return res.status(404).json({ error: "No answers found for this question" });
+      return res
+        .status(404)
+        .json({ error: "No answers found for this question" });
     }
 
     res.status(200).json(answers);
