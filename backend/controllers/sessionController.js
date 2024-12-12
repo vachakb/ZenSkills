@@ -13,18 +13,6 @@ const dayOfWeek = [
   "SATURDAY",
 ];
 
-const getNext14Dates = () => {
-  const dates = [];
-  const today = DateTime.local().setZone("Asia/Kolkata");
-
-  for (let i = 0; i < 14; i++) {
-    dates.push(today.plus({ days: i }));
-  }
-
-  return dates;
-};
-
-
 exports.getAllAvailableSessions = async (req, res) => {
   const { mentorId } = req.params;
 
@@ -107,9 +95,6 @@ exports.createSession = async (req, res) => {
       },
     });
 
-    const next14Dates = getNext14Dates();
-    console.log(next14Dates);
-
     // const timeSlots = [];
 
     // for (const timeSlot of availability) {
@@ -146,11 +131,12 @@ exports.createSession = async (req, res) => {
         },
         SessionBooking: {
           create: timeSlots
-            .map((timeSlot,index) => {
+            .map((timeSlot) => {
               const startTime = DateTime.fromFormat(timeSlot.from, "HH:mm");
               const endTime = DateTime.fromFormat(timeSlot.to, "HH:mm");
-              const date = next14Dates[index % 14];
-              console.log(date);
+              const date = DateTime.now().set({
+                weekday: dayOfWeek.indexOf(timeSlot.day),
+              });
 
               const bookings = [];
               let currentTime = startTime;
@@ -456,9 +442,20 @@ exports.updateBookingStatus = async (req, res) => {
         });
       }
     } else if (status === "rejected") {
+      const booking = await prisma.SessionBooking.findUnique({
+        where: { id: bookingId },
+      });
+
       updatedBooking = await prisma.SessionBooking.update({
         where: { id: bookingId },
-        data: { status },
+        data: { status: "pending", user_id: null },
+      });
+
+      delete booking.id;
+      booking.status = "rejected";
+
+      await prisma.SessionBooking.create({
+        data: booking,
       });
     } else if (status === "cancelled" && booking.status === "accepted") {
       if (booking.session.mentor.User.googleRefreshToken) {
@@ -789,7 +786,7 @@ exports.setSessionRoomId = async (req, res) => {
 exports.getAcceptedSessions = async (req, res) => {
   const where = {};
 
-  where.status = 'accepted';
+  where.status = "accepted";
 
   if (req.user.role === "mentor") {
     where.session = {
