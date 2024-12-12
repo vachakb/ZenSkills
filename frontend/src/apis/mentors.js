@@ -30,10 +30,40 @@ function createReview(mentorId, body) {
   return axiosInstance.post(`/mentors/reviews/${mentorId}`, body);
 }
 
+function getMentorsList() {
+  return axiosInstance.get("/mentors/list");
+}
+
+function createReferral(body) {
+  return axiosInstance.post("/mentors/referral", body);
+}
+
+function getAllReferrals() {
+  return axiosInstance.get("/mentors/referrals");
+}
+
+function updateReferralStatus(body) {
+  return axiosInstance.put("/mentors/referral", body);
+}
+
+function getAllMentees() {
+  return axiosInstance.get("/mentors/mentees");
+}
+
+function updateRating(body) {
+  return axiosInstance.put("/mentors/rating", body);
+}
+
 export {
   getAllMentors,
   getAllMentorTags,
   getMentorProfile,
   getAllReviews,
   createReview,
+  getMentorsList,
+  createReferral,
+  getAllReferrals,
+  updateReferralStatus,
+  getAllMentees,
+  updateRating,
 };

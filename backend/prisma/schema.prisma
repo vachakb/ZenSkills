@@ -103,6 +103,8 @@ model tags {
   children      tags[]   @relation("TagHierarchy")
   mentees       mentee[] @relation("MenteeTags")
   mentors       mentor[] @relation("MentorTags")
+
+  CommunityQuestion CommunityQuestion[] @relation("QuestionTags")
 }
 
 model tempuser {
@@ -488,6 +490,8 @@ model MenteeRating {
   mentee mentee @relation(fields: [mentee_id], references: [id], onDelete: Cascade)
   from_id String
   from mentor @relation(fields: [from_id], references: [id], onDelete: Cascade)
+
+  @@unique(name: "rating_id", [mentee_id, from_id])
 }
 
 model CommunityQuestion {
@@ -497,6 +501,8 @@ model CommunityQuestion {
   answers     Int
   q_user_id     String
   user        User @relation(fields: [q_user_id], references: [id]) 
+  question_tag    tags[]            @relation("QuestionTags")
+
 
   CommunityAnswer CommunityAnswer[]
 }

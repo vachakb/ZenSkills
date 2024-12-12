@@ -9,7 +9,7 @@ function App() {
   const mentors = [
     {
       id: "mentor_001",
-      name: "Alice Johnson",
+      name: "Arjun Mehta",
       rating: 4.8,
       currentPost: "DevOps Engineer at Amazon",
       noOfSessions: 25,
@@ -20,7 +20,7 @@ function App() {
     },
     {
       id: "mentor_002",
-      name: "Bob Martinez",
+      name: "Rohan Patel",
       rating: 4.2,
       currentPost: "DevOps Engineer at Amazon",
       noOfSessions: 15,
@@ -31,7 +31,7 @@ function App() {
     },
     {
       id: "mentor_003",
-      name: "Chloe Kim",
+      name: "Neha Sharma",
       rating: 4.9,
       currentPost: "Lead UX Designer at Adobe",
       noOfSessions: 30,
@@ -42,7 +42,7 @@ function App() {
     },
     {
       id: "mentor_004",
-      name: "David Patel",
+      name: "Ishita Verma",
       rating: 4.7,
       currentPost: "AI Researcher at OpenAI",
       noOfSessions: 40,
@@ -53,7 +53,7 @@ function App() {
     },
     {
       id: "mentor_005",
-      name: "Emily Wright",
+      name: "Rajesh Gupta",
       rating: 4.5,
       currentPost: "Blockchain Developer at IBM",
       noOfSessions: 18,
@@ -64,7 +64,7 @@ function App() {
     },
     {
       id: "mentor_001",
-      name: "Alice Johnson",
+      name: "Arjun Mehta",
       rating: 4.8,
       currentPost: "DevOps Engineer at Amazon",
       noOfSessions: 25,
@@ -75,7 +75,7 @@ function App() {
     },
     {
       id: "mentor_001",
-      name: "Alice Johnson",
+      name: "Arjun Mehta",
       rating: 4.8,
       currentPost: "DevOps Engineer at Amazon",
       noOfSessions: 25,
@@ -86,7 +86,7 @@ function App() {
     },
     {
       id: "mentor_001",
-      name: "Alice Johnson",
+      name: "Arjun Mehta",
       rating: 4.8,
       currentPost: "DevOps Engineer at Amazon",
       noOfSessions: 25,
@@ -99,76 +99,77 @@ function App() {
 
   let mentors2 = [
     {
-      name: "Alice Johnson",
+      name: "Anjali Singh",
       role: "Senior Developer",
       rating: 4.8,
       skill: "JavaScript, React, Node.js",
-      lang: "English",
+      lang: "Hindi",
     },
     {
-      name: "Bob Smith",
+      name: "Karan Desai",
       role: "Data Scientist",
       rating: 4.7,
       skill: "Python, Machine Learning, SQL",
       lang: "English",
     },
     {
-      name: "Carla Green",
+      name: "Priya Nair",
       role: "UX/UI Designer",
       rating: 4.6,
       skill: "Figma, Photoshop, Adobe XD",
-      lang: "Spanish",
+      lang: "Malayalam",
     },
     {
-      name: "David Lee",
+      name: "Aman Kapoor",
       role: "Full Stack Developer",
       rating: 4.9,
       skill: "React, Node.js, MongoDB",
       lang: "English",
     },
     {
-      name: "Eva Adams",
+      name: "Simran Kaur",
       role: "Product Manager",
       rating: 4.5,
       skill: "Agile, Scrum, Product Strategy",
-      lang: "French",
+      lang: "Punjabi",
     },
     {
-      name: "Alice Johnson",
+      name: "Neha Sharma",
       role: "Senior Developer",
       rating: 4.8,
       skill: "JavaScript, React, Node.js",
-      lang: "English",
+      lang: "Hindi",
     },
     {
-      name: "Bob Smith",
+      name: "Rohan Patel",
       role: "Data Scientist",
       rating: 4.7,
       skill: "Python, Machine Learning, SQL",
-      lang: "English",
+      lang: "Gujarati",
     },
     {
-      name: "Carla Green",
+      name: "Arjun Mehta",
       role: "UX/UI Designer",
       rating: 4.6,
       skill: "Figma, Photoshop, Adobe XD",
-      lang: "Spanish",
+      lang: "Hindi",
     },
     {
-      name: "David Lee",
+      name: "Ishita Verma",
       role: "Full Stack Developer",
       rating: 4.9,
       skill: "React, Node.js, MongoDB",
       lang: "English",
     },
     {
-      name: "Eva Adams",
+      name: "Rajesh Gupta",
       role: "Product Manager",
       rating: 4.5,
       skill: "Agile, Scrum, Product Strategy",
-      lang: "French",
+      lang: "Hindi",
     },
   ];
+
 
   // mentors2 = Array(100).fill(mentors2)
   for (let i = 0; i < 8; i++) {
@@ -275,22 +276,22 @@ function App() {
 
   const reviews = [
     {
-      writer: "Lokesh",
+      writer: "Ayush K",
       profession: "Marketing Mentor",
       content:
-        "We've seen a significant improvements in out online presence, thanks to your experience in digital maketing strategies. Your guidance on SEO and content strategy has been spot on!",
+        "We've seen a significant improvements in our online presence by applying your strategies, thanks to your experience in digital maketing strategies. Your MENTORSHIP on SEO and content strategy has been spot on!",
     },
     {
       writer: "Rahul Verma",
-      profession: "Technology Mentor",
+      profession: "CSE Student",
       content:
-        "Thank you for guiding us through the intricacies of software archutecture and cosding best practices. Your practical insights have truly elevated our team's development skills.",
+        "Thank you for guiding us through the intricacies of software archutecture and cosding best practices. Your practical insights have truly elevated our development skills.",
     },
     {
-      writer: "Lokesh",
-      profession: "Marketing Mentor",
+      writer: "Vacha Buch",
+      profession: "Software Engineer",
       content:
-        "We've seen a significant improvements in out online presence, thanks to your experience in digital maketing strategies. Your guidance on SEO and content strategy has been spot on!",
+        "We've seen a significant improvements in out agile efficiency, thanks to your experience in project strategies. Your guidance has proven crucial!",
     },
   ];
 
@@ -302,15 +303,15 @@ function App() {
     },
     {
       question: "How does ZenSkills platform work?",
-      answer: "answer 2",
+      answer: "The platform will give AI-based mentor recommendations whom you can choose to get mentored from.",
     },
     {
-      question: "Will I get a refund, if session gets canceled?",
-      answer: "answer 3",
+      question: "Who are the mentors on ZenSkills?",
+      answer: "They are industry verified mentors with subject matter expertise and work experience",
     },
     {
       question: "Can you videoChat in this platform?",
-      answer: "answer 4",
+      answer: "Yes, ZenSkills provides you with an in-built video session feature along with chat",
     },
   ];
 
@@ -435,7 +436,7 @@ function App() {
                 textDecorationColor: "var(--bs-warning)",
               }}
             >
-              Learn a new skill, launch a project, land your dream career.
+              Learn a new skill, connect with mentors, land your dream career.
             </p>
             <h1 className="fw-bold display-5 text-primary">
               New-Age Mentorship
@@ -482,19 +483,19 @@ function App() {
             <div className="row mt-4">
               <div className="col-6 text-center my-4">
                 <h5>&#128100;</h5>
-                <p className="m-0">89% Happy members</p>
+                <p className="m-0">96% Happy Mentees</p>
               </div>
               <div className="col-6 text-center my-4">
                 <h5>&#128218;</h5>
-                <p className="m-0">200K Qualified mentors</p>
+                <p className="m-0">2k+ Qualified mentors</p>
               </div>
               <div className="col-6 text-center my-4">
                 <h5>&#127760;</h5>
-                <p className="m-0">150 Countries</p>
+                <p className="m-0">20+ States</p>
               </div>
               <div className="col-6 text-center my-4">
                 <h5>&#128279;</h5>
-                <p className="m-0">2M+ Connections</p>
+                <p className="m-0">1M+ Connections</p>
               </div>
             </div>
           </div>
@@ -777,7 +778,7 @@ function App() {
               <span className="mx-3 fs-3">
                 <span className="fw-bold">ZenSkills</span>®
               </span>
-              <p className="m-3">Made at CVM with ❤️</p>
+              <p className="m-3">Made with ❤️ at CVM University</p>
             </div>
             <div className="col-md-3 fs-6 fw-lighter">
               <ul className="list-unstyled">
@@ -799,7 +800,7 @@ function App() {
               <p className="fw-bold fs-4">Address</p>
               <p className="fw-lighter fs-6">
                 G H Patel College of Engineering & Technology, Bakrol Gate,
-                VallabhVidya Nagar, Anand, Gujarat
+                Vallabh Vidyanagar, Anand, Gujarat
               </p>
               <div className="container text-center mt-5">
                 <ul className="list-unstyled d-flex justify-content-center">
