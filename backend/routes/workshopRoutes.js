@@ -8,6 +8,8 @@ const {
     deleteWorkshop,
     markAttendance,
     getWorkshopAttendance,
+  
+
     getUserRegisteredWorkshops,
   } = require("../controllers/workshopController");
 

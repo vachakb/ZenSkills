@@ -471,7 +471,11 @@ exports.updateBookingStatus = async (req, res) => {
       }
       updatedBooking = await prisma.SessionBooking.update({
         where: { id: bookingId },
-        data: { status },
+        data: { 
+          status,
+          user_id: null,
+          event_id: null,
+        },
       });
     } else if (status === "rescheduled") {
       if (!newStartTime || !newEndTime || !newDate) {
