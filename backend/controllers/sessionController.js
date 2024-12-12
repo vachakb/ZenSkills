@@ -134,9 +134,15 @@ exports.createSession = async (req, res) => {
             .map((timeSlot) => {
               const startTime = DateTime.fromFormat(timeSlot.from, "HH:mm");
               const endTime = DateTime.fromFormat(timeSlot.to, "HH:mm");
-              const date = DateTime.now().set({
-                weekday: dayOfWeek.indexOf(timeSlot.day),
-              });
+
+              const today = DateTime.now();
+              const dayIndex = dayOfWeek.indexOf(timeSlot.day);
+
+              let date = today.set({ weekday: dayIndex });
+
+              if (date < today) {
+                date = date.plus({ weeks: 1 });
+              }
 
               const bookings = [];
               let currentTime = startTime;
@@ -471,7 +477,7 @@ exports.updateBookingStatus = async (req, res) => {
       }
       updatedBooking = await prisma.SessionBooking.update({
         where: { id: bookingId },
-        data: { 
+        data: {
           status,
           user_id: null,
           event_id: null,
