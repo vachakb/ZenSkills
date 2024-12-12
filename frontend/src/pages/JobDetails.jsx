@@ -11,7 +11,7 @@ const JobDetails = () => {
 
   const [isLoading, setIsLoading] = useState(true);
 
-  const onLoad = async () =>  {
+  const onLoad = async () => {
     setIsLoading(true);
     try {
       const response = await fetchJobDetails(jobId);
@@ -27,7 +27,7 @@ const JobDetails = () => {
     onLoad();
   }, []);
 
-if (isLoading) {
+  if (isLoading) {
     return (
       <div className="d-flex h-100 w-100 justify-content-center align-items-center">
         <Spinner />
@@ -73,7 +73,13 @@ if (isLoading) {
       </ul>
 
       <h3>Qualifications</h3>
-      <div className="row">
+      <ul className="list-group mb-4">
+        <li className="list-group-item" key={index}>
+          {job.moreDetails.qualifications}
+        </li>
+      </ul>
+
+      {/* <div className="row">
         <div className="col-md-6">
           <h5>Required</h5>
           <ul className="list-group">
@@ -112,7 +118,7 @@ if (isLoading) {
             </li>
           </ul>
         </div>
-      </div>
+      </div> */}
 
       <h3 className="mt-4">Perks and Benefits</h3>
       <ul className="list-group mb-4">
