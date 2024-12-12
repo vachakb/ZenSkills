@@ -71,7 +71,7 @@ function MenteeWelcome({ mentors_, events_ }) {
     async function fetchData() {
       try {
         const [mentorsResponse, eventsResponse] = await Promise.all([
-          axios.get(`${API_URL}/api/mentors/recommandations`),
+          axios.post(`${API_URL}/api/mentors/recommendations`),
           // axios.get(`${API_URL}/api/events`),
         ]);
         setMentors(mentorsResponse.data.mentors || []);
@@ -173,7 +173,7 @@ function MenteeWelcome({ mentors_, events_ }) {
             className="gap-4 d-flex flex-wrap"
           >
             {mentors.length > 0 ? (
-              mentors.map((mentor) => <MentorCard key={mentor.mentor_id} mentor={mentor} width_={300}/>)
+              mentors.map((mentor) => <MentorCard key={mentor.mentor_id} mentor={mentor} width_={300} />)
             ) : (
               <p>No mentors available.</p>
             )}
