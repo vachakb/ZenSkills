@@ -13,18 +13,6 @@ const dayOfWeek = [
   "SATURDAY",
 ];
 
-const getNext7Dates = () => {
-  const dates = [];
-  const today = DateTime.local();
-
-  for (let i = 0; i < 7; i++) {
-    dates.push(today.plus({ days: i }));
-  }
-
-  return dates;
-};
-
-
 exports.getAllAvailableSessions = async (req, res) => {
   const { mentorId } = req.params;
 
@@ -133,8 +121,6 @@ exports.createSession = async (req, res) => {
       },
     });
 
-    const next7Dates = getNext7Dates();
-
     await prisma.MentorSession.create({
       data: {
         name: sessionName,
@@ -145,10 +131,12 @@ exports.createSession = async (req, res) => {
         },
         SessionBooking: {
           create: timeSlots
-            .map((timeSlot,index) => {
+            .map((timeSlot) => {
               const startTime = DateTime.fromFormat(timeSlot.from, "HH:mm");
               const endTime = DateTime.fromFormat(timeSlot.to, "HH:mm");
-              const date = next7Dates[index % 7];
+              const date = DateTime.now().set({
+                weekday: dayOfWeek.indexOf(timeSlot.day),
+              });
 
               const bookings = [];
               let currentTime = startTime;
