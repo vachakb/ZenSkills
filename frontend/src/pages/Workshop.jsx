@@ -196,7 +196,7 @@ const WorkshopsPage = ({ demoTags }) => {
 
   const handleRegister = async (workshopId) => {
     try {
-      const response = await bookWorkshop(workshopId,profile.id);
+      const response = await bookWorkshop(workshopId, profile.id);
       if (response.status === 200 || response.status === 201) {
         alert("Successfully registered for the workshop!");
         setRegisteredWorkshops([...registeredWorkshops, workshopId]);
@@ -301,164 +301,166 @@ const WorkshopsPage = ({ demoTags }) => {
             {allTags.map((tag) => {
               return (
                 <button
-                  className={`btn btn-sm rounded-pill m-1`}
+                  className={btn btn-sm rounded-pill m-1}
+                  style = {{
+              backgroundColor: selectedTags.includes(tag)
+                ? "#07d100"
+                : "rgb(233, 236, 239)",
+            }}
+            onClick={() => handleTagClick(tag)}
+                >
+            {tag}
+          </button>
+        );
+            })}
+      </div>
+        )}
+
+      {selectedTags?.length !== 0 && (
+        <div className="">
+          Filters applied:
+          {selectedTags.map((tag) => {
+            return (
+              <div
+                className="rounded-pill ps-2 m-1 d-inline-block"
+                style={{ backgroundColor: "rgb(233, 236, 239)" }}
+              >
+                <span>{tag}</span>
+                <button
+                  type="button"
+                  className="btn"
                   style={{
-                    backgroundColor: selectedTags.includes(tag)
-                      ? "#07d100"
-                      : "rgb(233, 236, 239)",
+                    background: "",
+                    border: "none",
+                    fontSize: "1rem",
+                    cursor: "pointer",
+                    transition: "background-color 0.3s ease",
+                    borderRadius: "50%",
                   }}
                   onClick={() => handleTagClick(tag)}
                 >
-                  {tag}
+                  &times;
                 </button>
-              );
-            })}
-          </div>
-        )}
+              </div>
+            );
+          })}
+        </div>
+      )}
 
-        {selectedTags?.length !== 0 && (
-          <div className="">
-            Filters applied:
-            {selectedTags.map((tag) => {
-              return (
-                <div
-                  className="rounded-pill ps-2 m-1 d-inline-block"
-                  style={{ backgroundColor: "rgb(233, 236, 239)" }}
-                >
-                  <span>{tag}</span>
-                  <button
-                    type="button"
-                    className="btn"
-                    style={{
-                      background: "",
-                      border: "none",
-                      fontSize: "1rem",
-                      cursor: "pointer",
-                      transition: "background-color 0.3s ease",
-                      borderRadius: "50%",
-                    }}
-                    onClick={() => handleTagClick(tag)}
-                  >
-                    &times;
-                  </button>
-                </div>
-              );
-            })}
-          </div>
-        )}
-
-        {/* Tabs for Filter */}
-        <ul className="nav nav-tabs mb-4" id="workshopTabs">
-          <li className="nav-item">
-            <button
-              className={`nav-link ${activeTab === "upcoming" ? "active" : ""}`}
-              onClick={() => setActiveTab("upcoming")}
-            >
-              Upcoming
-            </button>
-          </li>
-          <li className="nav-item">
-            <button
-              className={`nav-link ${activeTab === "completed" ? "active" : ""}`}
-              onClick={() => setActiveTab("completed")}
-            >
-              Completed
-            </button>
-          </li>
-          <li className="nav-item">
-            <button
-              className={`nav-link ${activeTab === "myworkshops" ? "active" : ""}`}
-              onClick={() => setActiveTab("myworkshops")}
-            >
-              My workshops
-            </button>
-          </li>
-          {/* <li className="nav-item">
+      {/* Tabs for Filter */}
+      <ul className="nav nav-tabs mb-4" id="workshopTabs">
+        <li className="nav-item">
           <button
-            className={`nav-link ${activeTab === "all" ? "active" : ""}`}
+            className={nav - link ${activeTab === "upcoming" ? "active" : ""}}
+          onClick={() => setActiveTab("upcoming")}
+            >
+          Upcoming
+        </button>
+      </li>
+      <li className="nav-item">
+        <button
+          className={nav - link ${activeTab === "completed" ? "active" : ""}}
+        onClick={() => setActiveTab("completed")}
+            >
+        Completed
+      </button>
+    </li >
+      <li className="nav-item">
+        <button
+          className={nav - link ${activeTab === "myworkshops" ? "active" : ""}}
+        onClick={() => setActiveTab("myworkshops")}
+            >
+        My workshops
+      </button>
+          </li >
+{/* <li className="nav-item">
+          <button
+            className={nav-link ${activeTab === "all" ? "active" : ""}}
             onClick={() => setActiveTab("all")}
           >
             All Workshops
           </button>
         </li> */}
-        </ul>
+        </ul >
 
-        {/* Workshop Cards */}
-        <div className="row">
-          {workshops.map((workshop, index) => (
-            <div
-              style={{ cursor: "pointer" }}
-              className="col-md-4 mb-4"
-              key={workshop.id}
-            >
-              <div className="card shadow-sm">
-                <img
-                  src={`${API_URL}/api/images/${workshop.workshop_image_id}`}
-                  className="card-img-top"
-                  alt={workshop.title}
+  {/* Workshop Cards */ }
+  < div className = "row" >
+  {
+    workshops.map((workshop, index) => (
+      <div
+        style={{ cursor: "pointer" }}
+        className="col-md-4 mb-4"
+        key={workshop.id}
+      >
+        <div className="card shadow-sm">
+          <img
+            src={${API_URL} /api/images/${workshop.workshop_image_id}}
+          className="card-img-top"
+          alt={workshop.title}
                 />
-                <div className="card-body d-flex flex-column gap-2">
-                  <h5 className="card-title m-0">{workshop.title}</h5>
-                  <p className="card-text m-0">
-                    <strong>Date:</strong> {format(new Date(workshop.date), "MMMM dd, yyyy")} <br />
-                    <strong>Time:</strong> {format(new Date(workshop.date), "hh:mm a")}
-                  </p>
-                  <div className="d-flex align-items-center">
-                    <img
-                      src={workshop.organizer_profile_pic}
-                      alt={workshop.organizer_name}
-                      className="rounded-circle me-2"
-                      style={{ width: "50px", height: "50px" }}
-                    />
+          <div className="card-body d-flex flex-column gap-2">
+            <h5 className="card-title m-0">{workshop.title}</h5>
+            <p className="card-text m-0">
+              <strong>Date:</strong> {format(new Date(workshop.date), "MMMM dd, yyyy")} <br />
+              <strong>Time:</strong> {format(new Date(workshop.date), "hh:mm a")}
+            </p>
+            <div className="d-flex align-items-center">
+              <img
+                src={workshop.organizer_profile_pic}
+                alt={workshop.organizer_name}
+                className="rounded-circle me-2"
+                style={{ width: "50px", height: "50px" }}
+              />
 
-                    <div>
-                      <p className="m-0 fw-bold">{workshop.mentor.User.name}</p>
-                      <small className="text-muted">
-                        {workshop?.organizer_position}
-                      </small>
-                    </div>
-                  </div>
-                  <div className="ms-auto d-flex gap-2"><Button onClick={
-
-                    () => handleWorkshopClick(index)
-
-                  }>Details</Button>
-                  {!profile.isMentor && (
-                    console.log(workshop),
-                    registeredWorkshops.includes(workshop.id) ? (
-                      <Button onClick={() => navigate(`/workshops/${workshop.id}`)}>Join</Button>
-                    ) : (
-                      <Button onClick={() => handleRegister(workshop.id)}>Register</Button>
-                    )
-                  )}
-                  </div>
-                </div>
+              <div>
+                <p className="m-0 fw-bold">{workshop.mentor.User.name}</p>
+                <small className="text-muted">
+                  {workshop?.organizer_position}
+                </small>
               </div>
             </div>
-          ))}
-        </div>
+            <div className="ms-auto d-flex gap-2"><Button onClick={
 
-        {/* Pagination */}
-        <ReactPaginate
-          previousLabel={"Previous"}
-          nextLabel={"Next"}
-          breakLabel={"..."}
-          pageCount={totalPages}
-          marginPagesDisplayed={2}
-          pageRangeDisplayed={3}
-          onPageChange={handlePageClick}
-          containerClassName={"pagination justify-content-center"}
-          pageClassName={"page-item"}
-          pageLinkClassName={"page-link"}
-          previousClassName={"page-item"}
-          previousLinkClassName={"page-link"}
-          nextClassName={"page-item"}
-          nextLinkClassName={"page-link"}
-          breakClassName={"page-item"}
-          breakLinkClassName={"page-link"}
-          activeClassName={"active"}
-        />
+              () => handleWorkshopClick(index)
+
+            }>Details</Button>
+              {!profile.isMentor && (
+                console.log(workshop),
+                registeredWorkshops.includes(workshop.id) ? (
+                  <Button onClick={() => navigate(/workshops/${ workshop.id })}>Join</Button>
+                ) : (
+                  <Button onClick={() => handleRegister(workshop.id)}>Register</Button>
+                )
+              )}
+            </div>
+          </div>
+        </div>
       </div>
+    ))
+  }
+        </div >
+
+  {/* Pagination */ }
+  < ReactPaginate
+previousLabel = { "Previous"}
+nextLabel = { "Next"}
+breakLabel = { "..."}
+pageCount = { totalPages }
+marginPagesDisplayed = { 2}
+pageRangeDisplayed = { 3}
+onPageChange = { handlePageClick }
+containerClassName = { "pagination justify-content-center"}
+pageClassName = { "page-item"}
+pageLinkClassName = { "page-link"}
+previousClassName = { "page-item"}
+previousLinkClassName = { "page-link"}
+nextClassName = { "page-item"}
+nextLinkClassName = { "page-link"}
+breakClassName = { "page-item"}
+breakLinkClassName = { "page-link"}
+activeClassName = { "active"}
+  />
+      </div >
     </>
   );
 };
