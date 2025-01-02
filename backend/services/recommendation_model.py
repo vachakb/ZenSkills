@@ -17,6 +17,36 @@ DB_CONFIG = {
     "port": "5432"
 }
 
+def get_role_id_by_user_id(user_id: str, role: str) -> str:
+    """
+    Fetch mentor_id or mentee_id using user_id based on the role.
+    """
+    logging.info(f"Fetching {role}_id for user ID: {user_id}")
+    conn = psycopg2.connect(**DB_CONFIG)
+    cursor = conn.cursor()
+    try:
+        if role == 'mentee':
+            query = 'SELECT id FROM "ZenSchema"."mentee" WHERE user_id = %s'
+        elif role == 'mentor':
+            query = 'SELECT id FROM "ZenSchema"."mentor" WHERE user_id = %s'
+        else:
+            raise ValueError("Role must be 'mentee' or 'mentor'.")
+
+        cursor.execute(query, (user_id,))
+        result = cursor.fetchone()
+        if result:
+            logging.info(f"Found {role}_id: {result[0]} for user_id: {user_id}")
+            return result[0]
+        else:
+            raise ValueError(f"No {role}_id found for user_id: {user_id}")
+    except Exception as e:
+        logging.error(f"Error fetching {role}_id: {e}")
+        raise
+    finally:
+        cursor.close()
+        conn.close()
+
+
 def get_interests_by_mentee_id(mentee_id: str) -> list:
     logging.info(f"Fetching interests for mentee ID: {mentee_id}")
     conn = psycopg2.connect(**DB_CONFIG)
@@ -31,9 +61,6 @@ def get_interests_by_mentee_id(mentee_id: str) -> list:
         """
         cursor.execute(query, (mentee_id,))
         interests = cursor.fetchall()
-        if not interests:
-            logging.warning(f"No interests found for mentee ID: {mentee_id}")
-        logging.info(f"Fetched interests for mentee ID {mentee_id}: {[interest[0] for interest in interests]}")
         return [interest[0] for interest in interests]
     except Exception as e:
         logging.error(f"Error fetching mentee interests: {e}")
@@ -42,8 +69,8 @@ def get_interests_by_mentee_id(mentee_id: str) -> list:
         cursor.close()
         conn.close()
 
+
 def get_expertise_by_mentor_id(mentor_id: str) -> list:
-    logging.info(f"Fetching expertise for mentor ID: {mentor_id}")
     conn = psycopg2.connect(**DB_CONFIG)
     cursor = conn.cursor()
     try:
@@ -56,9 +83,6 @@ def get_expertise_by_mentor_id(mentor_id: str) -> list:
         """
         cursor.execute(query, (mentor_id,))
         expertise = cursor.fetchall()
-        if not expertise:
-            logging.warning(f"No expertise found for mentor ID: {mentor_id}")
-        logging.info(f"Fetched expertise for mentor ID {mentor_id}: {[skill[0] for skill in expertise]}")
         return [skill[0] for skill in expertise]
     except Exception as e:
         logging.error(f"Error fetching mentor expertise: {e}")
@@ -67,10 +91,8 @@ def get_expertise_by_mentor_id(mentor_id: str) -> list:
         cursor.close()
         conn.close()
 
+
 def fetch_mentor_data():
-    """
-    Fetch all mentors' data including skills and experience.
-    """
     logging.info("Fetching mentor data from the database.")
     conn = psycopg2.connect(**DB_CONFIG)
     cursor = conn.cursor()
@@ -87,9 +109,6 @@ def fetch_mentor_data():
         """
         cursor.execute(query)
         mentors = cursor.fetchall()
-        if not mentors:
-            logging.warning("No mentor data found.")
-        logging.info(f"Fetched mentor data: {mentors}")
         return [
             {"mentor_id": mentor_id, "experience_years": experience_years, "skills": skills}
             for mentor_id, experience_years, skills in mentors
@@ -101,20 +120,14 @@ def fetch_mentor_data():
         cursor.close()
         conn.close()
 
+
 def fetch_all_tags():
-    """
-    Fetch all unique tags from the database.
-    """
-    logging.info("Fetching all tags from the database.")
     conn = psycopg2.connect(**DB_CONFIG)
     cursor = conn.cursor()
     try:
         query = 'SELECT tag_id, tag_name FROM "ZenSchema"."tags"'
         cursor.execute(query)
         tag_data = cursor.fetchall()
-        if not tag_data:
-            logging.warning("No tags found in the database.")
-        logging.info(f"Fetched all tags: {tag_data}")
         return {tag_id: tag_name for tag_id, tag_name in tag_data}
     except Exception as e:
         logging.error(f"Error fetching tags: {e}")
@@ -123,10 +136,8 @@ def fetch_all_tags():
         cursor.close()
         conn.close()
 
-def generate_recommendations(input_tags: list, top_n: int = 5):
-    """
-    Generates recommendations by matching input tags to mentors' skills.
-    """
+
+def generate_recommendations(input_tags: list, user_role: str, user_id: str, top_n: int = 5):
     logging.info(f"Generating recommendations for input tags: {input_tags}")
     try:
         all_tags = list(set(fetch_all_tags().values()))
@@ -136,26 +147,22 @@ def generate_recommendations(input_tags: list, top_n: int = 5):
             logging.warning("Insufficient data to generate recommendations.")
             return []
 
+        # Exclude the requesting mentor if the user is a mentor
+        if user_role == 'mentor':
+            mentor_list = [mentor for mentor in mentor_list if mentor["mentor_id"] != user_id]
+
         mlb = MultiLabelBinarizer(classes=all_tags)
         input_encoded = mlb.fit_transform([input_tags])
         mentor_encoded = mlb.transform([mentor["skills"] for mentor in mentor_list])
 
-        logging.info("Encoded input and mentor skills using MultiLabelBinarizer.")
-
         cos_sim_matrix = cosine_similarity(input_encoded, mentor_encoded)
-
-        logging.info(f"Calculated cosine similarity matrix: {cos_sim_matrix}")
 
         experience_years = [mentor["experience_years"] for mentor in mentor_list]
         scaler = MinMaxScaler()
         normalized_experience = scaler.fit_transform([[exp] for exp in experience_years])
 
-        logging.info(f"Normalized mentor experience: {normalized_experience}")
-
-        similarity_scores = cos_sim_matrix[0]
         recommendations = []
-
-        for idx, score in enumerate(similarity_scores):
+        for idx, score in enumerate(cos_sim_matrix[0]):
             if score > 0.5:
                 weighted_score = 0.7 * score + 0.3 * normalized_experience[idx][0]
                 recommendations.append({
@@ -163,31 +170,32 @@ def generate_recommendations(input_tags: list, top_n: int = 5):
                     "score": weighted_score
                 })
 
-        logging.info(f"Generated recommendations: {recommendations}")
         return sorted(recommendations, key=lambda x: x["score"], reverse=True)[:top_n]
     except Exception as e:
         logging.error(f"Error generating recommendations: {e}")
         raise
+
 
 if __name__ == "__main__":
     if len(sys.argv) < 3:
         print(json.dumps({"error": "Invalid usage"}))
         sys.exit(1)
 
-    user_type = sys.argv[1]  # 'mentee' or 'mentor'
+    user_type = sys.argv[1]
     user_id = sys.argv[2]
 
     try:
+        role_id = get_role_id_by_user_id(user_id, user_type)
+
         if user_type == 'mentee':
-            interests = get_interests_by_mentee_id(user_id)
-            recommendations = generate_recommendations(interests)
-            logging.info(f"Final recommendations for mentee ID {user_id}: {recommendations}")
+            interests = get_interests_by_mentee_id(role_id)
+            recommendations = generate_recommendations(interests, user_type, role_id)
             print(json.dumps({"recommendations": recommendations}, indent=4))
         elif user_type == 'mentor':
-            expertise = get_expertise_by_mentor_id(user_id)
-            recommendations = generate_recommendations(expertise)
-            logging.info(f"Final recommendations for mentor ID {user_id}: {recommendations}")
+            expertise = get_expertise_by_mentor_id(role_id)
+            recommendations = generate_recommendations(expertise, user_type, role_id)
             print(json.dumps({"recommendations": recommendations}, indent=4))
+
         else:
             raise ValueError("Invalid user type. Use 'mentee' or 'mentor'.")
     except Exception as e:
