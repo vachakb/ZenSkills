@@ -292,6 +292,8 @@ const applyJob = async (req, res) => {
       },
     });
 
+    console.log(job)
+
     const existingApplication = await prisma.jobApplication.findFirst({
       where: {
         job_id: jobId,
@@ -301,6 +303,8 @@ const applyJob = async (req, res) => {
         application_date: "desc",
       },
     });
+
+    console.log(existingApplication)
 
     // Limit reapplication to 15 days
     if (existingApplication) {
@@ -331,12 +335,14 @@ const applyJob = async (req, res) => {
         job_id: jobId,
         uid: req.user.id,
         name,
-        phone_number,
+        phone_number:"7284876366",
         email,
         cover_letter,
-        resume_url,
+        resume_url:"https://drive",
       },
     });
+
+    console.log(application)
 
     // Send email to mentor
     const transporter = nodemailer.createTransport({
@@ -347,6 +353,7 @@ const applyJob = async (req, res) => {
       },
     });
 
+    console.log(job.mentor.User.email);
     const mailOptions = {
       from: process.env.EMAIL_USER,
       to: job.mentor.User.email,
@@ -354,13 +361,13 @@ const applyJob = async (req, res) => {
       html: getJobApplicationEmailTemplate(job.title, job.company, {
         name,
         email,
-        phone_number,
+        phone_number:"7284876366",
         cover_letter,
-        resume_url,
+        resume_url:"https://drive",
       }),
     };
 
-    await transporter.sendMail(mailOptions);
+    // await transporter.sendMail(mailOptions);
     console.log("Email sent to mentor");
     res.status(200).json({ message: "Application submitted successfully" });
   } catch (error) {

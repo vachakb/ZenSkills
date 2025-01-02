@@ -22,9 +22,27 @@ import {
   PiChatFill,
   PiChatSlashFill,
   PiDoorOpenFill,
+  PiUserFill
 } from "react-icons/pi";
 import useProfile from "../hooks/useProfile";
 import { updateBookingStatus } from "../apis/session";
+
+function UserList({ open, participants }) {
+  return (
+    <div
+      style={{ display: open ? "flex" : "none", width: "20vw" }}
+      className="flex-column bg-white vh-100"
+    >
+      <div className="d-flex justify-content-center align-items-center position-relative p-2">
+        <h5 className="m-0">Users</h5>
+        <img className="position-absolute end-0 me-2" src="/close.svg" />
+      </div>
+      <div className="d-flex flex-column flex-grow-1 p-2 gap-2 overflow-auto">
+        {[...participants.values()].map((participant => <p>{participant.displayName}</p>))}
+      </div>
+    </div>
+  );
+}
 
 function Chat({ open, meetingId, localParticipantId }) {
   const { publish, messages } = usePubSub(meetingId);
@@ -320,6 +338,8 @@ function Controls({
   openChat,
   onToggleChat,
   isHost,
+  userListAvailable,
+  onToggleUsers,
   onMeetingEnded,
 }) {
   const { leave, end, toggleMic, toggleWebcam, localMicOn, localWebcamOn } =
@@ -346,6 +366,14 @@ function Controls({
         color="#E4E6E8"
         onClick={onToggleChat}
       />
+      { userListAvailable &&
+      <ControlButton
+        src={<PiUserFill />}
+        label="Users"
+        color="#E4E6E8"
+        onClick={onToggleUsers}
+      />
+      }
       <ControlButton
         src={<PiDoorOpenFill />}
         label={isHost ? "End" : "Leave"}
@@ -621,14 +649,16 @@ function Room({ meetingId, roomType, isHost, onMeetingEnded }) {
 
   const [openChat, setOpenChat] = useState(false);
 
+  const [openUserList, setOpenUserList] = useState(false);
+
   const navigate = useNavigate();
 
   if (!localParticipant) {
     setTimeout(() => {
       if (roomType === "one-on-one") {
-     navigate("/sessions")
+        navigate("/sessions");
       } else {
-        navigate("/workshops")
+        navigate("/workshops");
       }
     }, 3000);
 
@@ -638,33 +668,38 @@ function Room({ meetingId, roomType, isHost, onMeetingEnded }) {
         <h4>You will be redirected shortly...</h4>
       </div>
     );
-
-
   }
-
 
   return (
     <div
       style={{ backgroundColor: "#303438", overflow: "hidden" }}
       className="d-flex justify-content-center align-items-center vw-100 vh-100"
     >
+        <UserList
+
+        open={openUserList}
+        participants={participants} />
       <div className="d-flex flex-column h-100 p-4 flex-grow-1">
         <div className="d-flex flex-wrap justify-content-evenly align-items-center flex-grow-1 gap-4">
-          {[...participants.keys()].map((participantId) => (
-            <Participant
+          {[...participants.keys()].map((participantId) => {
+            const participantElement = <Participant
               participantId={participantId}
               isMainParticipant={
                 mainParticipant && participantId === mainParticipant.id
               }
               key={participantId}
-            />
-          ))}
+            />;
+
+            return participantElement;
+          })}
         </div>
         <Controls
           className="mt-auto mx-auto"
           openChat={openChat}
           onToggleChat={() => setOpenChat(!openChat)}
           isHost={isHost}
+          userListAvailable={roomType === "workshop"}
+          onToggleUsers={() => setOpenUserList(!openUserList)}
           onMeetingEnded={onMeetingEnded}
         />
         <h6 className="text-white text-center m-0 mt-2">
@@ -681,7 +716,8 @@ function Room({ meetingId, roomType, isHost, onMeetingEnded }) {
 }
 
 function Meeting() {
-  const { token, roomId, sessionId, workshopId, roomType, isHost } = useLocation().state;
+  const { token, roomId, sessionId, workshopId, roomType, isHost } =
+    useLocation().state;
 
   const [name, setName] = useState("");
 
@@ -693,7 +729,9 @@ function Meeting() {
 
   const completeMeeting = () => {
     if (roomType === "one-on-one") {
-      updateBookingStatus(sessionId, "completed").then((res) => console.log(res.data)).catch(err => console.error(err));
+      updateBookingStatus(sessionId, "completed")
+        .then((res) => console.log(res.data))
+        .catch((err) => console.error(err));
     }
   };
 
