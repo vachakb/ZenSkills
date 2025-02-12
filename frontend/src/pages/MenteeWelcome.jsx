@@ -71,8 +71,8 @@ function MenteeWelcome({ mentors_, events_ }) {
     async function fetchData() {
       try {
         const [mentorsResponse, eventsResponse] = await Promise.all([
-          axios.post(`${API_URL}/api/mentors/recommendations`),
-          // axios.get(`${API_URL}/api/events`),
+          axios.post(`${API_URL}/api/mentors/recommendations`, {}, { withCredentials: true }),
+          // axios.get(`${API_URL}/api/events`, { withCredentials: true }),
         ]);
         const fetchedMentors = mentorsResponse.data.mentors;
         setMentors(fetchedMentors && fetchedMentors.length > 0 ? fetchedMentors : mentors_);

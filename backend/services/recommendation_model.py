@@ -5,17 +5,48 @@ import sys
 from sklearn.preprocessing import MultiLabelBinarizer, MinMaxScaler
 from sklearn.metrics.pairwise import cosine_similarity
 
-# Configure logging
-logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
+from dotenv import load_dotenv
+import os
 
 # Database connection configuration
-DB_CONFIG = {
-    "dbname": "SIH",
-    "user": "postgres",
-    "password": "2580",
-    "host": "localhost",
-    "port": "5432"
-}
+# DB_CONFIG = {
+#     "dbname": "postgres",
+#     "user": "henil",
+#     "password": "root",
+#     "host": "localhost",
+#     "port": "5432"
+# }
+
+def get_db_config():
+    database_url = os.getenv("DATABASE_URL")
+    if not database_url:
+        raise ValueError("DATABASE_URL environment variable is not set")
+    
+    try:
+        # Parse database URL
+        user = database_url.split("://")[1].split(":")[0]
+        password = database_url.split("://")[1].split(":")[1].split("@")[0]
+        host = database_url.split("@")[1].split(":")[0]
+        port = database_url.split(":")[-1].split("/")[0]
+        dbname = database_url.split("/")[-1].split("?")[0]
+        
+        return {
+            "dbname": dbname,
+            "user": user,
+            "password": password,
+            "host": host,
+            "port": port
+        }
+    except Exception as e:
+        logging.error(f"Error parsing DATABASE_URL: {e}")
+        raise ValueError("Invalid DATABASE_URL format")
+
+try:
+    DB_CONFIG = get_db_config()
+    logging.info("Database configuration loaded successfully")
+except Exception as e:
+    logging.error(f"Failed to load database configuration: {e}")
+    sys.exit(1)
 
 def get_role_id_by_user_id(user_id: str, role: str) -> str:
     """
