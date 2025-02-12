@@ -22,7 +22,9 @@ import {
   PiChatFill,
   PiChatSlashFill,
   PiDoorOpenFill,
-  PiUserFill
+  PiUserFill,
+  PiRecord,
+  PiRecordFill
 } from "react-icons/pi";
 import useProfile from "../hooks/useProfile";
 import { updateBookingStatus } from "../apis/session";
@@ -328,7 +330,7 @@ function ControlButton({ src, label, color, onClick }) {
       >
         {src}
       </div>
-      <h5 className="text-white">{label}</h5>
+      <h5 style={{ whiteSpace: "pre-line" }} className="text-white text-break text-center">{label}</h5>
     </div>
   );
 }
@@ -342,7 +344,7 @@ function Controls({
   onToggleUsers,
   onMeetingEnded,
 }) {
-  const { leave, end, toggleMic, toggleWebcam, localMicOn, localWebcamOn } =
+  const { leave, end, toggleMic, toggleWebcam, localMicOn, localWebcamOn, startRecording, stopRecording, recordingState } =
     useMeeting();
 
   return (
@@ -365,6 +367,18 @@ function Controls({
         label="Chat"
         color="#E4E6E8"
         onClick={onToggleChat}
+      />
+      <ControlButton
+        src={recordingState === "RECORDING_STARTING" || recordingState === "RECORDING_STARTED" ? <PiRecordFill /> : <PiRecord />}
+        label={recordingState === "RECORDING_STARTING" || recordingState === "RECORDING_STARTED" ? "Stop\nrecording" : "Start\nrecording"}
+        color="#E4E6E8"
+        onClick={() => {
+          if (recordingState === "RECORDING_STARTING" || recordingState === "RECORDING_STARTED") {
+            stopRecording();
+          } else {
+            startRecording();
+          }
+        }}
       />
       { userListAvailable &&
       <ControlButton
