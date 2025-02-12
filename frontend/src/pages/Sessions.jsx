@@ -37,6 +37,7 @@ const Sessions = () => {
     getAllUserSessions(statusFilters.join(","))
       .then((res) => {
         setSessions(res.data.bookings);
+        console.log(res.data.bookings);
         setIsLoading(false);
       })
       .catch((err) => console.error(err));
@@ -78,42 +79,42 @@ const Sessions = () => {
 
   return (
     <Container className="d-flex flex-column gap-4">
-        <div className="d-flex align-items-center gap-2">
-          <h3 className="m-0">Sessions</h3>
-          { profile.isMentor && <Button onClick={() => navigate("/createsession_1")}>Create session</Button> }
-          <Button onClick={() => setShowFilters(!showFilters)}>Filters{ statusFilters.length > 0 && ` ${statusFilters.length}` }</Button>
-        </div>
-        { showFilters &&
+      <div className="d-flex align-items-center gap-2">
+        <h3 className="m-0">Sessions</h3>
+        {profile.isMentor && <Button onClick={() => navigate("/createsession_1")}>Create session</Button>}
+        <Button onClick={() => setShowFilters(!showFilters)}>Filters{statusFilters.length > 0 && ` ${statusFilters.length}`}</Button>
+      </div>
+      {showFilters &&
         <div className="d-flex gap-2">
           {statuses.map(status => (
             <Button style={{
-            backgroundColor: statusFilters.includes(status)
-                      ? "#07d100"
-                      : "rgb(233, 236, 239)",
-borderColor: statusFilters.includes(status)
-                      ? "#07d100"
-                      : "rgb(233, 236, 239)"
-            }} key={status} onClick={() =>  {
+              backgroundColor: statusFilters.includes(status)
+                ? "#07d100"
+                : "rgb(233, 236, 239)",
+              borderColor: statusFilters.includes(status)
+                ? "#07d100"
+                : "rgb(233, 236, 239)"
+            }} key={status} onClick={() => {
               if (statusFilters.includes(status)) {
                 setStatusFilters(statusFilters.filter(value => value !== status));
               } else {
                 setStatusFilters([...statusFilters, status])
               }
-               }}>{status}</Button>
+            }}>{status}</Button>
           ))}
         </div>
-        }
-          {isLoading ? (
-            <div className="text-center my-5">
-              <Spinner animation="border" variant="primary" />
-            </div>
-          ) : (
-            <div className="d-flex flex-column">
-              {sessions.map((session) => (
-                <SessionCard session={session} profile={profile} onAction={() => onLoad()} key={session.id} />
-              ))}
-            </div>
-          )}
+      }
+      {isLoading ? (
+        <div className="text-center my-5">
+          <Spinner animation="border" variant="primary" />
+        </div>
+      ) : (
+        <div className="d-flex flex-column">
+          {sessions.map((session) => (
+            <SessionCard session={session} profile={profile} onAction={() => onLoad()} key={session.id} />
+          ))}
+        </div>
+      )}
 
       {/* Shared Pagination */}
       {!isLoading && (

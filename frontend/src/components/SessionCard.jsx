@@ -38,6 +38,10 @@ const SessionCard = ({ session, profile, onAction }) => {
     let roomId = session.room_id;
 
     if (!roomId) {
+      if (!profile.isMentor) {
+        alert("The mentor has not created the session yet.");
+        window.location.reload(false);
+      }
       const roomRes = await createRoom(token);
       roomId = roomRes.data.roomId;
       await setSessionRoomId(session.id, roomId);

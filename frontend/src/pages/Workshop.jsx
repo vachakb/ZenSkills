@@ -470,15 +470,16 @@ const WorkshopsPage = ({ demoTags }) => {
               className="col-md-4 mb-4"
               key={workshop.id}
             >
-              <div className="card shadow-sm">
+              <div className="card shadow-sm h-100">
                 <img
                   src={`${API_URL}/api/images/${workshop.workshop_image_id}`}
                   className="card-img-top"
                   alt={workshop.title}
+                  style={{ height: "200px", objectFit: "cover" }}
                 />
                 <div className="card-body d-flex flex-column gap-2">
                   <h5 className="card-title m-0">{workshop.title}</h5>
-                  <p className="card-text m-0">
+                  <p className="card-text mb-2">
                     <strong>Date:</strong>{" "}
                     {format(new Date(workshop.date), "MMMM dd, yyyy")} <br />
                     <strong>Time:</strong>{" "}

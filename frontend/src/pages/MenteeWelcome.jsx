@@ -27,7 +27,7 @@ import { axiosInstance } from "../apis/commons";
 const API_URL = "http://localhost:5000";
 
 function MenteeWelcome({ mentors_, events_ }) {
-  const [mentors, setMentors] = useState([]);
+  const [mentors, setMentors] = useState(mentors_);
 
   const { profile, isProfileLoading } = useProfile();
 
@@ -74,10 +74,12 @@ function MenteeWelcome({ mentors_, events_ }) {
           axios.post(`${API_URL}/api/mentors/recommendations`, {}, { withCredentials: true }),
           // axios.get(`${API_URL}/api/events`, { withCredentials: true }),
         ]);
-        setMentors(mentorsResponse.data.mentors || []);
+        const fetchedMentors = mentorsResponse.data.mentors;
+        setMentors(fetchedMentors && fetchedMentors.length > 0 ? fetchedMentors : mentors_);
         // setEvents(eventsResponse.data.events || []);
       } catch (error) {
         console.error("Error fetching data: ", error);
+        setMentors(mentors_);
       }
     }
     fetchData();
@@ -170,10 +172,15 @@ function MenteeWelcome({ mentors_, events_ }) {
             </h6>
           </div>
           <div
-            className="gap-4 d-flex flex-wrap"
+            className="d-flex flex-wrap justify-content-start flex-row"
+            style={{
+              maxHeight: "500px",
+              columnGap: "70px",
+              rowGap: "20px"
+            }}
           >
             {mentors.length > 0 ? (
-              mentors.map((mentor) => <MentorCard key={mentor.mentor_id} mentor={mentor} width_={300} />)
+              mentors.map((mentor) => <MentorCard key={mentor.mentor_id} mentor={mentor} width_={250} />)
             ) : (
               <p>No mentors available.</p>
             )}
