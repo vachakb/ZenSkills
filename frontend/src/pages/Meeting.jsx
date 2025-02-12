@@ -46,7 +46,7 @@ function UserList({ open, participants }) {
   );
 }
 
-function Chat({ open, meetingId, localParticipantId }) {
+function Chat({ open, meetingId, localParticipantId, onClose }) {
   const { publish, messages } = usePubSub(meetingId);
 
   const { uploadBase64File, fetchBase64File } = useFile();
@@ -200,7 +200,7 @@ function Chat({ open, meetingId, localParticipantId }) {
     >
       <div className="d-flex justify-content-center align-items-center position-relative p-2">
         <h5 className="m-0">Chat</h5>
-        <img className="position-absolute end-0 me-2" src="/close.svg" />
+        <img style={{ cursor: "pointer" }} className="position-absolute end-0 me-2" src="/close.svg" onClick={onClose} />
       </div>
       <div className="d-flex flex-column flex-grow-1 border-top border-bottom p-2 gap-2 overflow-auto">
         {messages.map((value) => (
@@ -724,6 +724,7 @@ function Room({ meetingId, roomType, isHost, onMeetingEnded }) {
         open={openChat}
         meetingId={meetingId}
         localParticipantId={localParticipant.id}
+        onClose={() => setOpenChat(false)}
       />
     </div>
   );
