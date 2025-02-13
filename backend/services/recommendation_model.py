@@ -5,7 +5,6 @@ import sys
 from sklearn.preprocessing import MultiLabelBinarizer, MinMaxScaler
 from sklearn.metrics.pairwise import cosine_similarity
 
-from dotenv import load_dotenv
 import os
 
 # Database connection configuration
