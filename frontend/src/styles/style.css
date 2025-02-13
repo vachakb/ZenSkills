@@ -1,111 +1,108 @@
 #root {
-    display: flex;
-    flex-direction: column;
-    height: 100vh;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
 }
 
 /* TODO instead of doing this just generate a new bootstrap color with scss */
 .progress-bar {
-    background-color: #037f7d !important;
+  background-color: #037f7d !important;
 }
 
 .form-check-input:checked {
-    border-color: #037f7d !important;
-    background-color: #037f7d !important;
+  border-color: #037f7d !important;
+  background-color: #037f7d !important;
 }
 /* Add this CSS to your global styles or within the component */
 .full-page {
-    height: 100vh; /* Full viewport height */
-    display: flex;
-    align-items: flex-start; /* Vertically center */
-    justify-content: flex-start; /* Horizontally center */
-    background-color: #ffffff; /* Optional: Light background */
-    padding: 1rem;
-     /* Prevent edges clipping on small screens */
-  }
-  
-  .form-container {
-    border: 1px solid black; /* Optional border */
-    width: 98%;
-    height: 85%;
-   
+  height: 100vh; /* Full viewport height */
+  display: flex;
+  align-items: flex-start; /* Vertically center */
+  justify-content: flex-start; /* Horizontally center */
+  background-color: #ffffff; /* Optional: Light background */
+  padding: 1rem;
+  /* Prevent edges clipping on small screens */
+}
 
-    background: white; /* Background color for form */
-    border-radius: 8px; /* Rounded corners */
-    padding: 2rem; /* Spacing inside the form */
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow */
-  }
-  .session-form-container {
-    padding: 20px;
-    background-color: white;
-    border-radius: 8px;
-  }
-  
-  .form-title {
-    font-size: 1.5rem;
-    color: #343a40;
-    margin-bottom: 20px;
-  }
-  
-  .session-card {
-    border: 1px solid white;
-    border-radius: 8px;
-  }
-  
-  .edit-button {
-    float: right;
-    color: #007bff;
-  }
-  
-  .availability-section {
-    margin-top: 20px;
-  }
-  
-  .section-title {
-    font-size: 1.25rem;
-    margin-bottom: 10px;
-  }
-  
-  .section-description {
-    color: #6c757d;
-    font-size: 0.9rem;
-    margin-bottom: 20px;
-  }
-  
-  .day-container {
-    padding: 10px;
-    background: #ffffff;
-    border: 1px solid white;
-    border-radius: 8px;
-  }
-  
-  .slot-row {
-    margin-bottom: 10px;
-  }
-  
-  .add-slot-button {
-    margin-top: 10px;
-    color: #007bff;
-  }
-  
-  .form-footer {
-    display: flex;
-    justify-content: space-between;
-    margin-top: 20px;
-  }
-  
-  .back-button {
-    background-color: #6c757d;
-    border: none;
-  }
-  
-  .next-button {
-    background-color: #007bff;
-    border: none;
-  }
-  
-  
-  
+.form-container {
+  border: 1px solid black; /* Optional border */
+  width: 98%;
+  height: 85%;
+
+  background: white; /* Background color for form */
+  border-radius: 8px; /* Rounded corners */
+  padding: 2rem; /* Spacing inside the form */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+}
+.session-form-container {
+  padding: 20px;
+  background-color: white;
+  border-radius: 8px;
+}
+
+.form-title {
+  font-size: 1.5rem;
+  color: #343a40;
+  margin-bottom: 20px;
+}
+
+.session-card {
+  border: 1px solid white;
+  border-radius: 8px;
+}
+
+.edit-button {
+  float: right;
+  color: #007bff;
+}
+
+.availability-section {
+  margin-top: 20px;
+}
+
+.section-title {
+  font-size: 1.25rem;
+  margin-bottom: 10px;
+}
+
+.section-description {
+  color: #6c757d;
+  font-size: 0.9rem;
+  margin-bottom: 20px;
+}
+
+.day-container {
+  padding: 10px;
+  background: #ffffff;
+  border: 1px solid white;
+  border-radius: 8px;
+}
+
+.slot-row {
+  margin-bottom: 10px;
+}
+
+.add-slot-button {
+  margin-top: 10px;
+  color: #007bff;
+}
+
+.form-footer {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20px;
+}
+
+.back-button {
+  background-color: #6c757d;
+  border: none;
+}
+
+.next-button {
+  background-color: #007bff;
+  border: none;
+}
+
 /* For single-line truncation */
 .text-truncate {
   overflow: hidden;
@@ -119,4 +116,23 @@
   -webkit-line-clamp: 2; /* Number of lines */
   -webkit-box-orient: vertical;
   overflow: hidden;
+}
+
+.rounded-circle {
+  object-fit: cover;
+  border: 2px solid #f8f9fa;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.rounded-circle:hover {
+  border-color: #0d6efd;
+  transition: border-color 0.2s ease-in-out;
+}
+
+.hover-shadow:hover {
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+}
+
+.transition-shadow {
+  transition: box-shadow 0.3s ease-in-out;
 }
