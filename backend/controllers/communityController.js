@@ -2,25 +2,29 @@ const prisma = require("../models/prismaClient");
 
 exports.getAllQuestions = async (req, res) => {
   try {
-    const { limit, currentPage, searchTerm } = req.query;
-    console.log(limit, currentPage, searchTerm);
-    const offset = currentPage * limit;
+    const { page = 1, limit = 10, tags } = req.query;
+    const skip = (page - 1) * limit;
 
-    const whereClause = searchTerm
-      ? {
-          OR: [
-            { question: { contains: searchTerm, mode: "insensitive" } },
-            { user: { name: { contains: searchTerm, mode: "insensitive" } } },
-          ],
-        }
-      : {};
+    // Build where clause for filtering
+    const whereClause = {};
+    if (tags) {
+      whereClause.question_tag = {
+        some: {
+          tag_name: {
+            in: Array.isArray(tags) ? tags : [tags],
+          },
+        },
+      };
+    }
 
+    // Get total count for pagination
     const totalQuestions = await prisma.CommunityQuestion.count({
       where: whereClause,
     });
 
+    // Get questions with pagination
     const questions = await prisma.CommunityQuestion.findMany({
-      skip: parseInt(offset),
+      skip: parseInt(skip),
       take: parseInt(limit),
       where: whereClause,
       include: {
@@ -31,18 +35,28 @@ exports.getAllQuestions = async (req, res) => {
             name: true,
           },
         },
+        CommunityAnswer: {
+          select: {
+            id: true,
+          },
+        },
+      },
+      orderBy: {
+        created_at: "desc",
       },
     });
 
-    const totalPages = Math.ceil(totalQuestions / limit);
-
-    res.status(200).json({
+    res.json({
       questions,
-      totalPages,
+      pagination: {
+        total: totalQuestions,
+        page: parseInt(page),
+        pages: Math.ceil(totalQuestions / limit),
+      },
     });
   } catch (error) {
     console.error("Error getting questions:", error);
-    res.status(500).json({ error: "Error getting questions" });
+    res.status(500).json({ error: "Error fetching questions" });
   }
 };
 
