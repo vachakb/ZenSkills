@@ -85,6 +85,8 @@ exports.createSession = async (req, res) => {
     sessionDuration,
     selectedTopics,
     // availability,
+    type = type,
+    price = price,
   } = req.body;
 
   try {
@@ -126,6 +128,8 @@ exports.createSession = async (req, res) => {
         name: sessionName,
         description: eventDescription,
         durationMinutes: sessionDuration,
+        type: type,
+        price: price,
         topics: {
           connect: selectedTopics.map((topic) => ({ id: topic.id })),
         },
@@ -155,7 +159,7 @@ exports.createSession = async (req, res) => {
                 if (bookingEndTime > endTime) break;
 
                 bookings.push({
-                  status: "pending",
+                  status: "available",
                   start_time: currentTime.toJSDate(),
                   end_time: bookingEndTime.toJSDate(),
                   date: date.toJSDate(),
@@ -197,6 +201,7 @@ exports.bookSession = async (req, res) => {
         id: bookingId,
       },
       data: {
+        status: "pending",
         user: {
           connect: {
             id: req.user.id,

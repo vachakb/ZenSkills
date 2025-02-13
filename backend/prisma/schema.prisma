@@ -323,6 +323,14 @@ model MentorSession {
   mentor          mentor               @relation(fields: [mentor_id], references: [id])
 
   SessionBooking SessionBooking[]
+
+  type           SessionType           @default(free)
+  price          Float?                @default(0)
+}
+
+enum SessionType{
+  free
+  paid
 }
 
 model MentorSessionTopic {
@@ -412,13 +420,14 @@ enum BookingStatus {
   rescheduled
   cancelled
   completed
+  available
 }
 
 model SessionBooking {
   id         String        @id @default(uuid())
   session_id String
   user_id    String?
-  status     BookingStatus @default(pending)
+  status     BookingStatus @default(available)
   start_time DateTime
   end_time   DateTime
   date       DateTime
