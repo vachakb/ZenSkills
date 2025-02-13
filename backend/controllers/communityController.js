@@ -2,10 +2,9 @@ const prisma = require("../models/prismaClient");
 
 exports.getAllQuestions = async (req, res) => {
   try {
-    const { page = 1, limit = 10, tags } = req.query;
+    const { page = 1, limit = 10, tags, searchTerm } = req.query;
     const skip = (page - 1) * limit;
 
-    // Build where clause for filtering
     const whereClause = {};
     if (tags) {
       whereClause.question_tag = {
@@ -17,12 +16,17 @@ exports.getAllQuestions = async (req, res) => {
       };
     }
 
-    // Get total count for pagination
+    if (searchTerm) {
+      whereClause.question = {
+        contains: searchTerm,
+        mode: "insensitive", 
+      };
+    }
+
     const totalQuestions = await prisma.CommunityQuestion.count({
       where: whereClause,
     });
 
-    // Get questions with pagination
     const questions = await prisma.CommunityQuestion.findMany({
       skip: parseInt(skip),
       take: parseInt(limit),
@@ -33,6 +37,18 @@ exports.getAllQuestions = async (req, res) => {
           select: {
             id: true,
             name: true,
+            role: true,
+            // image: true,
+            mentor: {
+              select: {
+                mentor_job_title: true,
+              },
+            },
+            mentee: {
+              select: {
+                mentee_title: true,
+              },
+            },
           },
         },
         CommunityAnswer: {

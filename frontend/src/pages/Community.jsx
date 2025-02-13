@@ -73,29 +73,28 @@ export default function Community() {
     setAllTags(technicalTags);
   }, []);
 
+
+
   async function getQuestions() {
-    console.log("calling question")
     try {
-      console.log(limit, currentPage, searchTerm)
-      const responce = await axiosInstance.get(`${API_URL}/api/community/questions`, {
+      const response = await axiosInstance.get(`${API_URL}/api/community/questions`, {
         params: {
+          page: currentPage + 1,
           limit,
-          currentPage,
-          searchTerm
+          searchTerm: searchTerm.trim() 
         }
-      })
-      console.log("got questions")
-      console.log(responce)
-      setQuestions(responce.data.questions)
-      setTotalPages(responce.data.totalPages)
+      });
+
+      setQuestions(response.data.questions);
+      setTotalPages(response.data.pagination.pages);
     } catch (error) {
-      console.log("error extracting questions: ", error)
+      console.log("Error fetching questions:", error);
     }
   }
 
   useEffect(() => {
     getQuestions();
-  }, [currentPage]);
+  }, [currentPage, searchTerm]); 
 
   function searchBtnClickHandler() {
     setCurrentPage(0);
