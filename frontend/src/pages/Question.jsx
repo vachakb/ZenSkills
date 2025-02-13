@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import ReactPaginate from "react-paginate";
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams, useNavigate } from 'react-router-dom';
 import { axiosInstance } from "../apis/commons";
 import { useParams } from "react-router-dom";
 import axios from "axios";
@@ -9,6 +9,7 @@ const API_URL = "http://localhost:5000";
 const DEFAULT_AVATAR = "https://ui-avatars.com/api/?background=random&name=";
 
 export default function Question() {
+  const navigate = useNavigate();
   const { questionId } = useParams();
   console.log("question: ", questionId)
   const [comment, setComment] = useState("")
@@ -97,6 +98,15 @@ export default function Question() {
 
   return (
     <div className="p-2">
+      {/* back button */}
+      <button 
+        className="btn btn-outline-primary mb-3"
+        onClick={() => navigate('/community')}
+      >
+        <i className="fas fa-arrow-left me-2"></i>
+        Back to Community
+      </button>
+
       {/* question */}
       {question !== null && <div className="bg-body-secondary p-3 rounded">
         <p className="fw-bold fs-3">{question?.question}</p>
