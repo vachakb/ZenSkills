@@ -25,6 +25,7 @@ exports.createRoom = (req, res) => {
   const { token } = req.body;
 
   const url = `${process.env.VIDEOSDK_API_ENDPOINT}/rooms`;
+
   const options = {
     method: "POST",
     headers: { Authorization: token },
@@ -37,4 +38,52 @@ exports.createRoom = (req, res) => {
       res.json({ roomId });
     })
     .catch((error) => console.error("error", error));
+};
+
+exports.startRecording = (req, res) => {
+  const { token, roomId } = req.body;
+
+  const url = `${process.env.VIDEOSDK_API_ENDPOINT}/recordings/start`;
+
+  const options = {
+    method: "POST",
+    headers: { Authorization: token, "Content-Type": "application/json" },
+    body: JSON.stringify({
+      roomId,
+    }),
+  };
+
+  fetch(url, options)
+    .then((response) => response.json())
+    .then((result) => {
+      console.log(result);
+      res.sendStatus(200);
+    })
+    .catch((err) => {
+      console.error(err);
+      res.sendStatus(500);
+    });
+};
+
+exports.stopRecording = (req, res) => {
+  const { token, roomId } = req.body;
+
+  const url = `${process.env.VIDEOSDK_API_ENDPOINT}/recordings/stop`;
+
+  const options = {
+    method: "POST",
+    headers: { Authorization: token, "Content-Type": "application/json" },
+    body: JSON.stringify({
+      roomId,
+    }),
+  };
+
+  fetch(url, options)
+    .then(() => {
+      res.sendStatus(200);
+    })
+    .catch((err) => {
+      console.error(err);
+      res.sendStatus(500);
+    });
 };
