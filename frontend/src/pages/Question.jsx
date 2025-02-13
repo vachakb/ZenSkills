@@ -6,6 +6,7 @@ import { useParams } from "react-router-dom";
 import axios from "axios";
 
 const API_URL = "http://localhost:5000";
+const DEFAULT_AVATAR = "https://ui-avatars.com/api/?background=random&name=";
 
 export default function Question() {
   const { questionId } = useParams();
@@ -101,9 +102,15 @@ export default function Question() {
         <p className="fw-bold fs-3">{question?.question}</p>
         <div className="d-flex align-items-center my-2">
           <img
-            src="https://via.placeholder.com/50"
-            alt={`${question?.user?.name}'s image`}
+            src={question?.user?.image || `${DEFAULT_AVATAR}${encodeURIComponent(question?.user?.name || 'User')}`}
+            alt={`${question?.user?.name || 'User'}'s avatar`}
             className="rounded-circle"
+            width="40"
+            height="40"
+            onError={(e) => {
+              e.target.onerror = null;
+              e.target.src = `${DEFAULT_AVATAR}${encodeURIComponent('User')}`;
+            }}
           />
           <div className="d-flex flex-column justify-content-around">
             <div>
@@ -126,10 +133,14 @@ export default function Question() {
       {/* user answer */}
       <div className="m-2 d-flex gap-3">
         <img
-          src="https://via.placeholder.com/50"
-          alt={`user's image`}
+          src={`${DEFAULT_AVATAR}User`}
+          alt="User's avatar"
           className="rounded-circle"
-          style={{ width: "50px", height: "50px" }}
+          style={{ width: "40px", height: "40px" }}
+          onError={(e) => {
+            e.target.onerror = null;
+            e.target.src = `${DEFAULT_AVATAR}${encodeURIComponent('User')}`;
+          }}
         />
         <textarea
           placeholder="Write your answer here..."
@@ -170,9 +181,15 @@ export default function Question() {
               <div>
                 <div className="d-flex align-items-center m-2">
                   <img
-                    src="https://via.placeholder.com/50"
-                    alt={`${answer.user.name}'s image`}
+                    src={answer.user.image || `${DEFAULT_AVATAR}${encodeURIComponent(answer.user.name || 'User')}`}
+                    alt={`${answer.user.name || 'User'}'s avatar`}
                     className="rounded-circle"
+                    width="40"
+                    height="40"
+                    onError={(e) => {
+                      e.target.onerror = null;
+                      e.target.src = `${DEFAULT_AVATAR}${encodeURIComponent('User')}`;
+                    }}
                   />
                   <div className="d-flex flex-column justify-content-around">
                     <div>
