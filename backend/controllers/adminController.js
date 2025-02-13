@@ -146,3 +146,50 @@ exports.getUserAnalytics = async (req, res) => {
   }
 };
 
+// Session Analytics
+exports.getSessionAnalytics = async (req, res) => {
+  try {
+    const [totalSessions, completedSessions, upcomingSessions] =
+      await Promise.all([
+        prisma.sessionBooking.count(),
+        prisma.sessionBooking.count({
+          where: { status: "completed" },     //TODO: Change status enum 
+        }),
+        prisma.sessionBooking.count({
+          where: {
+            date: {
+              gte: new Date(),
+            },
+          },
+        }),
+      ]);
+
+    const recentSessions = await prisma.sessionBooking.findMany({
+      take: 5,
+      orderBy: { date: "desc" },
+      include: {
+        session: {
+          include: {
+            mentor: {
+              include: {
+                User: true,
+              },
+            },
+          },
+        },
+        user: true,
+      },
+    });
+
+    res.json({
+      totalSessions,
+      completedSessions,
+      upcomingSessions,
+      recentSessions,
+      completionRate: ((completedSessions / totalSessions) * 100).toFixed(2),
+    });
+  } catch (error) {
+    console.error("Error fetching session analytics:", error);
+    res.status(500).json({ error: "Error fetching session analytics" });
+  }
+};
