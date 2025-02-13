@@ -94,3 +94,55 @@ exports.deleteMentor = async (req, res) => {
     res.sendStatus(500);
   }
 };
+
+// User Analytics
+exports.getUserAnalytics = async (req, res) => {
+  try {
+    const [totalMentors, totalMentees, pendingVerifications, userGrowth] =
+      await Promise.all([
+        prisma.user.count({
+          where: { role: "mentor" },
+        }),
+        prisma.user.count({
+          where: { role: "mentee" },
+        }),
+        prisma.user.count({
+          where: {
+            role: "mentor",
+            credentialsVerified: false,
+          },
+        }),
+        prisma.user.count({
+          where: {
+            created_at: {
+              gte: new Date(new Date().setMonth(new Date().getMonth() - 1)),
+            },
+          },
+        }),
+      ]);
+
+    const monthlyGrowthData = await prisma.user.groupBy({
+      by: ["created_at"],
+      where: {
+        created_at: {
+          gte: new Date(new Date().setMonth(new Date().getMonth() - 12)),
+        },
+      },
+      _count: {
+        id: true,
+      },
+    });
+
+    res.json({
+      totalMentors,
+      totalMentees,
+      pendingVerifications,
+      monthlyGrowth: userGrowth,
+      monthlyGrowthData: monthlyGrowthData,
+    });
+  } catch (error) {
+    console.error("Error fetching user analytics:", error);
+    res.status(500).json({ error: "Error fetching user analytics" });
+  }
+};
+
