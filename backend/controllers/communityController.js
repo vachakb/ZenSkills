@@ -114,10 +114,16 @@ exports.postAnswer = async (req, res) => {
   const { answer } = req.body;
   const { questionId } = req.params;
   const userId = req.user.id;
+
+  // Check if answer is empty or contains only whitespace
+  if (!answer || answer.trim().length === 0) {
+    return res.status(400).json({ error: "Answer cannot be empty" });
+  }
+
   try {
     const newAnswer = await prisma.communityAnswer.create({
       data: {
-        answer,
+        answer: answer.trim(), // Remove leading/trailing whitespace
         communityQuestion_id: questionId,
         a_user_id: userId,
       },

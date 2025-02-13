@@ -12,6 +12,7 @@ export default function Question() {
   console.log("question: ", questionId)
   const [comment, setComment] = useState("")
   const [question, setQuestion] = useState(null)
+  const [showError, setShowError] = useState(false);
 
   function getTime(time) {
     const current = new Date();
@@ -39,43 +40,53 @@ export default function Question() {
     setQuestion((await axiosInstance.get(`${API_URL}/api/community/questions/${questionId}`)).data)
   }
 
-  useEffect(()=>{
+  useEffect(() => {
     getque()
   }, [])
 
   async function getAnswers() {
     // call api for questions/blogs
-    try{
+    try {
       const responce = await axiosInstance.get(`${API_URL}/api/community/answers/${questionId}`, {
         params: {
           currentPage, limit
         }
       });
       setAnswers(responce.data)
-    }catch(error){
+    } catch (error) {
       console.log("error on client: ", error);
     }
   }
 
   async function postAnswer() {
     console.log("posting")
-    try{
+    try {
       const response = await axiosInstance.post(`${API_URL}/api/community/questions/${questionId}/answer`, {
-        answer:comment
+        answer: comment
       });
       setComment("")
-    }catch(error){
+    } catch (error) {
       console.log("error posting answer: ", error);
     }
   }
 
   async function handleSubmit() {
-    // posting comment
+    // Show error state when submit is clicked
+    setShowError(true);
+
+    // Validate comment before posting
+    if (!comment || comment.trim().length === 0) {
+      alert('Answer cannot be empty');
+      return;
+    }
+
     console.log("submit clicked")
     await postAnswer()
     console.log("posted")
     await getAnswers()
     console.log(answers)
+    // Reset error state after successful submission
+    setShowError(false);
   }
 
   useEffect(() => {
@@ -86,7 +97,7 @@ export default function Question() {
   return (
     <div className="p-2">
       {/* question */}
-      {question!==null && <div className="bg-body-secondary p-3 rounded">
+      {question !== null && <div className="bg-body-secondary p-3 rounded">
         <p className="fw-bold fs-3">{question?.question}</p>
         <div className="d-flex align-items-center my-2">
           <img
@@ -125,25 +136,29 @@ export default function Question() {
           value={comment}
           onChange={(e) => setComment(e.target.value)}
           rows={1}
+          className={`form-control ${showError && !comment.trim() ? 'is-invalid' : ''}`}
           style={{
             width: '100%',
             padding: '5px 0',
             fontSize: '16px',
             border: 'none',
             borderBottom: '2px solid #ccc',
-            resize: 'none', // Prevent manual resizing
-            overflow: 'hidden', // Hide scrollbars
-            outline: 'none', // Remove focus outline
+            resize: 'none',
+            overflow: 'hidden',
+            outline: 'none',
           }}
           onInput={(e) => {
-            e.target.style.height = 'auto'; // Reset height to calculate scroll height
-            e.target.style.height = `${e.target.scrollHeight}px`; // Adjust to content
+            e.target.style.height = 'auto';
+            e.target.style.height = `${e.target.scrollHeight}px`;
           }}
         />
         <button
           className="btn btn-info border"
           onClick={handleSubmit}
-        >Submit</button>
+          disabled={!comment.trim()}
+        >
+          Submit
+        </button>
       </div>
 
       {/* answers */}
@@ -192,7 +207,7 @@ export default function Question() {
           breakLabel="..."
           pageCount={totalPages}
           forcePage={currentPage}
-          onPageChange={(selected)=>setCurrentPage(selected.selected)}
+          onPageChange={(selected) => setCurrentPage(selected.selected)}
           containerClassName={"pagination"}
           pageClassName={"page-item"}
           pageLinkClassName={"page-link"}
