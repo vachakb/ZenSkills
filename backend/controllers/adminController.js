@@ -193,3 +193,72 @@ exports.getSessionAnalytics = async (req, res) => {
     res.status(500).json({ error: "Error fetching session analytics" });
   }
 };
+
+// Workshop Analytics
+exports.getWorkshopAnalytics = async (req, res) => {
+  try {
+    // Get workshop statistics
+    const [totalWorkshops, activeWorkshops, participantCount] =
+      await Promise.all([
+        prisma.workshops.count(),
+        prisma.workshops.count({
+          where: {
+            date: {
+              gte: new Date(),
+            },
+            status: "upcoming",
+          },
+        }),
+        prisma.WorkshopBooking.count(),
+      ]);
+
+    // Get popular workshops
+    const popularWorkshops = await prisma.workshops.findMany({
+      take: 5,
+      include: {
+        mentor: {
+          include: {
+            User: true,
+          },
+        },
+        _count: {
+          select: {
+            WorkshopBooking: true, // Changed to match schema relation name
+          },
+        },
+      },
+      orderBy: {
+        WorkshopBooking: {
+          _count: "desc",
+        },
+      },
+    });
+
+    // Return workshop analytics
+    res.json({
+      statistics: {
+        totalWorkshops,
+        activeWorkshops,
+        totalParticipants: participantCount,
+        averageAttendance:
+          totalWorkshops > 0
+            ? (participantCount / totalWorkshops).toFixed(2)
+            : 0,
+      },
+      popularWorkshops: popularWorkshops.map((workshop) => ({
+        id: workshop.id,
+        title: workshop.title,
+        date: workshop.date,
+        participantCount: workshop._count.WorkshopBooking,
+        mentor: workshop.mentor?.User?.name || "N/A",
+        status: workshop.status,
+      })),
+    });
+  } catch (error) {
+    console.error("Error fetching workshop analytics:", error);
+    res.status(500).json({
+      error: "Error fetching workshop analytics",
+      details: error.message,
+    });
+  }
+};
