@@ -100,6 +100,19 @@ function ProfileMenu({ profile }) {
             >
               Update Time Slots
             </Button>}
+
+            {profile.isMentor && <Button
+              variant="outline-primary"
+              className="w-100 mb-2"
+              onClick={() => {
+
+                navigate("/mentorstats");
+
+              }}
+              style={{ borderRadius: "20px" }}
+            >
+              View Analytics
+            </Button>}
             <Button
               variant="outline-primary"
               className="w-100 mb-2"
