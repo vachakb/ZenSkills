@@ -167,7 +167,7 @@ const WorkshopsPage = ({ demoTags }) => {
         workshop.title.toLowerCase().includes(query.toLowerCase()),
       );
 
-      filteredWorkshops.map((workshop) => {
+      filteredWorkshops.forEach((workshop) => {
         workshop.owner = workshop.mentor.User.id === profile.id;
         workshop.participant = workshop.WorkshopBooking.some(
           (booking) => booking.user_id === profile.id,
@@ -232,9 +232,11 @@ const WorkshopsPage = ({ demoTags }) => {
   }, [activeTab]);
 
   useEffect(() => {
-    fetchWorkshops(currentPage, search, activeTab === "all" ? "" : activeTab);
+    if (profile) {
+      fetchWorkshops(currentPage, search, activeTab === "all" ? "" : activeTab);
+    }
     // fetchRegisteredWorkshops();
-  }, [currentPage, search, activeTab]);
+  }, [currentPage, search, activeTab, profile]);
 
   const handleSearch = (e) => {
     setSearch(e.target.value);
