@@ -1,13 +1,18 @@
 const { spawn } = require("child_process");
 const prisma = require("../models/prismaClient");
+const path = require("path");
 
 const getRecommendations = (req, res) => {
   const userType = req.user.role; // 'mentee' or 'mentor'
   const userId = req.user.id;
 
-  const pythonScriptPath = ".\\services\\recommendation_model.py";
+  const pythonScriptPath = path.join(
+    ".",
+    "services",
+    "recommendation_model.py",
+  );
 
-  const pythonProcess = spawn("python", [pythonScriptPath, userType, userId]);
+  const pythonProcess = spawn("python3", [pythonScriptPath, userType, userId]);
 
   pythonProcess.stdout.on("data", async (data) => {
     try {
