@@ -149,7 +149,17 @@ const sessionDistribution = async(req,res) => {
                 status: "rejected",
             },
         });
-        res.json({ completed, pending,rescheduled, rejected });
+        const cancelled = await prisma.SessionBooking.count({
+          where: {
+              session: {
+                  mentor: {
+                      user_id: userId,
+                  },
+              },
+              status: "cancelled",
+          },
+      });
+        res.json({ completed, pending, rescheduled, rejected, cancelled });
     } catch(error){
         console.error("Error fetching session distribution: ",error);
     }
