@@ -1,5 +1,6 @@
 const jwt = require("jsonwebtoken");
 const { default: fetch } = require("node-fetch");
+const prisma = require("../models/prismaClient");
 
 exports.getToken = (req, res) => {
   const { roomId } = req.body;
@@ -38,6 +39,44 @@ exports.createRoom = (req, res) => {
       res.json({ roomId });
     })
     .catch((error) => console.error("error", error));
+};
+
+exports.getAllRoomIds = async (req, res) => {
+  const sessions = await prisma.SessionBooking.findMany({
+    include: {
+      session: true,
+    },
+    where: {
+      user_id: req.user.id,
+      status: "completed",
+    },
+  });
+
+  res.json({ sessions });
+};
+
+exports.getMeetingRecording = (req, res) => {
+  const { roomId } = req.params;
+  const { token } = req.query;
+
+  const url = `${process.env.VIDEOSDK_API_ENDPOINT}/recordings`;
+
+  const searchParams = new URLSearchParams();
+  searchParams.set("roomId", roomId);
+  searchParams.set("perPage", 1000);
+
+  const options = {
+    method: "GET",
+    headers: { Authorization: token, "Content-Type": "application/json" },
+  };
+
+  fetch(url + "?" + searchParams.toString(), options)
+    .then((response) => response.json())
+    .then((result) => {
+      const recording = result.data[0].file;
+      res.json({ fileUrl: recording.fileUrl });
+    })
+    .catch((error) => console.error(error));
 };
 
 exports.startRecording = (req, res) => {
