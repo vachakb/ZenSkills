@@ -34,12 +34,12 @@ function SideBar(props) {
     >
       <Nav
         className="flex-column align-items-center justify-content-between w-100 mt-1"
-        style={{ width: "100%", height: "100%" }}
+        style={{ width: "100%", height: "75%" }}
       >
         {/* Home link - Conditional based on session */}
         <Nav.Link
           href={profile?.role === "mentor" ? "/mentor_welcome" : "/mentee_welcome"}
-          className="d-flex flex-column align-items-center mb-2"
+          className="d-flex flex-column align-items-center mb-0 "
           style={{ color: "white", fontSize: "10px" }}
         >
           <IoHomeOutline color="white" size={"2.3em"} className="mb-1" />
@@ -56,15 +56,15 @@ function SideBar(props) {
           <span>Explore</span>
         </Nav.Link>
 
-        {/* Workshops link */}
+        {/*
         <Nav.Link
-          href="/workshops"
+          // href="/workshops"//
           className="d-flex flex-column align-items-center mb-2"
           style={{ color: "white", fontSize: "10px" }}
         >
           <FaChalkboardTeacher color="white" size={"2.3em"} className="mb-1" />
           <span>Workshops</span>
-        </Nav.Link>
+        </Nav.Link>*/}
 
         {/* Sessions link */}
         <Nav.Link
@@ -86,34 +86,36 @@ function SideBar(props) {
           <span>Messages</span>
         </Nav.Link>
 
-        {/* Jobs link */}
+        {/* Jobs link 
         <Nav.Link
-          href="/jobs"
+          //href="/jobs"//
           className="d-flex flex-column align-items-center mb-2"
           style={{ color: "white", fontSize: "10px" }}
         >
           <MdWorkOutline color="white" size={"2.3em"} className="mb-1" />
           <span>Jobs</span>
         </Nav.Link>
-
+*/}
+        {/*}
         <Nav.Link
-          href="/community"
+          // href="/community"//
           className="d-flex flex-column align-items-center mb-2"
           style={{ color: "white", fontSize: "10px" }}
         >
           <BsPeople style={{ fontSize: "25px", color: "white" }} />
           <span>Community</span>
-        </Nav.Link>
+        </Nav.Link>*/}
 
-        {/* Profile link */}
+        {/* Profile link 
         <Nav.Link
-          href={profile?.role === "mentor" ? "/referral_request" : "/referrals"}
+          // href={profile?.role === "mentor" ? "/referral_request" : "/referrals"}//
           className="d-flex flex-column align-items-center mb-2"
           style={{ color: "white", fontSize: "10px" }}
         >
           <PiCertificate color="white" size={"2.3em"} className="mb-1" />
           <span>Referrals</span>
         </Nav.Link>
+        */}
 
       </Nav>
     </Navbar>

@@ -18,7 +18,7 @@ function Header({ onToggleSideBar, headerRef }) {
       className="bg-primary px-4 d-flex align-items-center"
       ref={headerRef}
     >
-      <Navbar.Brand href="/" className="text-white">
+      <Navbar.Brand href="/" className="text-white mx-5">
         ZenSkills
       </Navbar.Brand>
       <Nav className="ms-auto d-flex align-items-center gap-4">
@@ -42,7 +42,7 @@ function Header({ onToggleSideBar, headerRef }) {
             ]}
           />
 
-          {/* <Credits/> */}
+          {/* <Credits/> 
           <div
             // onClick={toggleMenu}
             className="d-flex align-items-center gap-2 bg-light bg-opacity-25 rounded p-1 px-2"
@@ -50,12 +50,12 @@ function Header({ onToggleSideBar, headerRef }) {
             data-bs-toggle="modal" data-bs-target="#credits-modal"
           >
             <FaCoins style={{ fontSize: '18px', color: 'white' }} />
-            {/* add api call here */}
+           
             <span>100</span>
           </div>
 
-          {/* credits modal */}
-          <CreditsModal id="credits-modal"/>
+        
+          <CreditsModal id="credits-modal" />
 
           <GiHamburgerMenu
             color="white"
@@ -63,7 +63,7 @@ function Header({ onToggleSideBar, headerRef }) {
             onClick={onToggleSideBar}
             className="d-md-none"
             style={{ cursor: "pointer" }}
-          />
+          />*/}
 
           <Nav.Link
             // href="/register"  // Link to user profile page
