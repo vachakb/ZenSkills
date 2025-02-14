@@ -42,7 +42,7 @@ function Header({ onToggleSideBar, headerRef }) {
             ]}
           />
 
-          {/* <Credits/> 
+
           <div
             // onClick={toggleMenu}
             className="d-flex align-items-center gap-2 bg-light bg-opacity-25 rounded p-1 px-2"
@@ -50,11 +50,11 @@ function Header({ onToggleSideBar, headerRef }) {
             data-bs-toggle="modal" data-bs-target="#credits-modal"
           >
             <FaCoins style={{ fontSize: '18px', color: 'white' }} />
-           
+
             <span>100</span>
           </div>
 
-        
+
           <CreditsModal id="credits-modal" />
 
           <GiHamburgerMenu
@@ -63,7 +63,7 @@ function Header({ onToggleSideBar, headerRef }) {
             onClick={onToggleSideBar}
             className="d-md-none"
             style={{ cursor: "pointer" }}
-          />*/}
+          />
 
           <Nav.Link
             // href="/register"  // Link to user profile page
