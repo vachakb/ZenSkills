@@ -117,3 +117,23 @@
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
+
+.modal-body .alert {
+  font-size: 0.9rem;
+  padding: 0.75rem;
+}
+
+.modal-body ul {
+  list-style-type: none;
+  padding-left: 0.5rem;
+}
+
+.modal-body ul li {
+  font-size: 0.8rem;
+  color: #666;
+  margin-bottom: 0.25rem;
+}
+
+.modal-body ul li:last-child {
+  margin-bottom: 0;
+}

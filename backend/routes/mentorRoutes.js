@@ -19,6 +19,7 @@ const {
 const {
   getRecommendations,
 } = require("../controllers/recommendationController");
+const { getAIRecommendations } = require('../controllers/aiRecommendationController');
 
 const multer = require("multer");
 const upload = multer({ dest: "uploads/files/" });
@@ -47,6 +48,9 @@ router.get("/reviews/:mentorId", getReviewsByMentorId);
 router.post("/reviews/:mentorId", addReview);
 
 router.post("/recommendations", getRecommendations);
+
+// AI Recommendation route
+router.post("/recommendations/extract-skills", getAIRecommendations);
 
 router.post(
   "/referral",
