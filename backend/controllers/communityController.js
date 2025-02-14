@@ -2,25 +2,33 @@ const prisma = require("../models/prismaClient");
 
 exports.getAllQuestions = async (req, res) => {
   try {
-    const { limit, currentPage, searchTerm } = req.query;
-    console.log(limit, currentPage, searchTerm);
-    const offset = currentPage * limit;
+    const { page = 1, limit = 10, tags, searchTerm } = req.query;
+    const skip = (page - 1) * limit;
 
-    const whereClause = searchTerm
-      ? {
-          OR: [
-            { question: { contains: searchTerm, mode: "insensitive" } },
-            { user: { name: { contains: searchTerm, mode: "insensitive" } } },
-          ],
-        }
-      : {};
+    const whereClause = {};
+    if (tags) {
+      whereClause.question_tag = {
+        some: {
+          tag_name: {
+            in: Array.isArray(tags) ? tags : [tags],
+          },
+        },
+      };
+    }
+
+    if (searchTerm) {
+      whereClause.question = {
+        contains: searchTerm,
+        mode: "insensitive", 
+      };
+    }
 
     const totalQuestions = await prisma.CommunityQuestion.count({
       where: whereClause,
     });
 
     const questions = await prisma.CommunityQuestion.findMany({
-      skip: parseInt(offset),
+      skip: parseInt(skip),
       take: parseInt(limit),
       where: whereClause,
       include: {
@@ -29,20 +37,42 @@ exports.getAllQuestions = async (req, res) => {
           select: {
             id: true,
             name: true,
+            role: true,
+            // image: true,
+            mentor: {
+              select: {
+                mentor_job_title: true,
+              },
+            },
+            mentee: {
+              select: {
+                mentee_title: true,
+              },
+            },
+          },
+        },
+        CommunityAnswer: {
+          select: {
+            id: true,
           },
         },
       },
+      orderBy: {
+        created_at: "desc",
+      },
     });
 
-    const totalPages = Math.ceil(totalQuestions / limit);
-
-    res.status(200).json({
+    res.json({
       questions,
-      totalPages,
+      pagination: {
+        total: totalQuestions,
+        page: parseInt(page),
+        pages: Math.ceil(totalQuestions / limit),
+      },
     });
   } catch (error) {
     console.error("Error getting questions:", error);
-    res.status(500).json({ error: "Error getting questions" });
+    res.status(500).json({ error: "Error fetching questions" });
   }
 };
 
@@ -100,10 +130,16 @@ exports.postAnswer = async (req, res) => {
   const { answer } = req.body;
   const { questionId } = req.params;
   const userId = req.user.id;
+
+  // Check if answer is empty or contains only whitespace
+  if (!answer || answer.trim().length === 0) {
+    return res.status(400).json({ error: "Answer cannot be empty" });
+  }
+
   try {
     const newAnswer = await prisma.communityAnswer.create({
       data: {
-        answer,
+        answer: answer.trim(), // Remove leading/trailing whitespace
         communityQuestion_id: questionId,
         a_user_id: userId,
       },

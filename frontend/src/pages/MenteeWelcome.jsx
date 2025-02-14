@@ -23,6 +23,7 @@ import axios from "axios";
 import useProfile from "../hooks/useProfile";
 import Calendar from "../components/Calendar";
 import { axiosInstance } from "../apis/commons";
+import { fetchMentors } from "../apis/explore";
 
 const API_URL = "http://localhost:5000";
 
@@ -70,12 +71,14 @@ function MenteeWelcome({ mentors_, events_ }) {
   useEffect(() => {
     async function fetchData() {
       try {
-        const [mentorsResponse, eventsResponse] = await Promise.all([
-          axios.post(`${API_URL}/api/mentors/recommendations`, {}, { withCredentials: true }),
-          // axios.get(`${API_URL}/api/events`, { withCredentials: true }),
-        ]);
-        const fetchedMentors = mentorsResponse.data.mentors;
-        setMentors(fetchedMentors && fetchedMentors.length > 0 ? fetchedMentors : mentors_);
+          /* const [mentorsResponse, eventsResponse] = await Promise.all([
+  *   axios.post(`${API_URL}/api/mentors/recommendations`, {}, { withCredentials: true }),
+  *   // axios.get(`${API_URL}/api/events`, { withCredentials: true }),
+  * ]);
+  * const fetchedMentors = mentorsResponse.data.mentors; */
+        const fetchedMentors = await fetchMentors(0, 1000, "", []);
+        setMentors(fetchedMentors.data.mentors)
+        // setMentors(fetchedMentors && fetchedMentors.length > 0 ? fetchedMentors : mentors_);
         // setEvents(eventsResponse.data.events || []);
       } catch (error) {
         console.error("Error fetching data: ", error);
@@ -180,7 +183,7 @@ function MenteeWelcome({ mentors_, events_ }) {
             }}
           >
             {mentors.length > 0 ? (
-              mentors.map((mentor) => <MentorCard key={mentor.mentor_id} mentor={mentor} width_={250} />)
+              mentors.map((mentor) => <MentorCard key={mentor.mentor_id} mentor={mentor} />)
             ) : (
               <p>No mentors available.</p>
             )}

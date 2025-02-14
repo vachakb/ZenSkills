@@ -6,8 +6,8 @@ import { fetchTags } from "../apis/explore";
 import { useNavigate } from "react-router-dom";
 import { axiosInstance } from "../apis/commons";
 
-
 const API_URL = "http://localhost:5000";
+const DEFAULT_AVATAR = "https://ui-avatars.com/api/?background=random&name=";
 
 export default function Community() {
   const navigate = useNavigate();
@@ -73,29 +73,28 @@ export default function Community() {
     setAllTags(technicalTags);
   }, []);
 
+
+
   async function getQuestions() {
-    console.log("calling question")
     try {
-      console.log(limit, currentPage, searchTerm)
-      const responce = await axiosInstance.get(`${API_URL}/api/community/questions`, {
+      const response = await axiosInstance.get(`${API_URL}/api/community/questions`, {
         params: {
+          page: currentPage + 1,
           limit,
-          currentPage,
-          searchTerm
+          searchTerm: searchTerm.trim() 
         }
-      })
-      console.log("got questions")
-      console.log(responce)
-      setQuestions(responce.data.questions)
-      setTotalPages(responce.data.totalPages)
+      });
+
+      setQuestions(response.data.questions);
+      setTotalPages(response.data.pagination.pages);
     } catch (error) {
-      console.log("error extracting questions: ", error)
+      console.log("Error fetching questions:", error);
     }
   }
 
   useEffect(() => {
     getQuestions();
-  }, [currentPage]);
+  }, [currentPage, searchTerm]); 
 
   function searchBtnClickHandler() {
     setCurrentPage(0);
@@ -118,8 +117,8 @@ export default function Community() {
     // post question`
     try {
       console.log(inputQuestion)
-      const response = await axiosInstance.post(`${API_URL}/api/community/questions`, {inputQuestion, tag: selectedQuestionTag});
-      
+      const response = await axiosInstance.post(`${API_URL}/api/community/questions`, { inputQuestion, tag: selectedQuestionTag });
+
       if (response.status === 201 || response.status === 200) {
         console.log('Request completed successfully:', response.data);
         alert('Question "' + inputQuestion + '" submitted successfully!');
@@ -135,8 +134,17 @@ export default function Community() {
   }
 
   return (
-    <div className="container">
-      <p className="text-center fs-2 text-primary">Community</p>
+    <div className="container py-4">
+      <div className="d-flex justify-content-between align-items-center mb-4">
+        <h1 className="text-primary mb-0">Community Discussion</h1>
+        <button
+          className="btn btn-primary px-4"
+          data-bs-toggle="modal"
+          data-bs-target="#askQuestionModal"
+        >
+          <i className="fas fa-plus me-2"></i>Ask Question
+        </button>
+      </div>
 
       {/* search/filter panel */}
       <div className="row mb-3 g-2">
@@ -214,9 +222,8 @@ export default function Community() {
         </div>
       )}
 
-      {/* col col-sm-12 col-md-6 col-lg-4 col-xl-3 col-xxl-2 */}
-      {/* questions */}
-      <div className="row g-2">
+      {/* Update the questions section */}
+      <div className="row g-4">
         {questions.filter(question => {
           if (selectedTags.length == 0) {
             return true;
@@ -229,41 +236,52 @@ export default function Community() {
           return selectedTags.some(value => value === question.question_tag[0].tag_name);
         }).map((question) => {
           return (
-            <div className="col-12" onClick={() => {
-              navigate("/community/" + question.id);
-            }} style={{ cursor: "pointer" }}>
+            <div className="col-12" key={question.id}>
               <div
-                className="p-3 h-100 border rounded d-flex flex-column justify-content-between bg-light"
-                onClick={() => postClickHandler(question.id)}
-                key={question.id}
+                className="card h-100 border-0 shadow-sm hover-shadow transition-shadow"
+                onClick={() => navigate("/community/" + question.id)}
+                style={{ cursor: "pointer" }}
               >
-                <p className="fw-medium fs-5">{question.question}</p>
-                { question.question_tag && question.question_tag.length > 0 && <p className="fs-6">Tag: {question.question_tag[0].tag_name}</p> }
-                <div className="ml-auto">
-                  <div className="d-flex justify-content-between">
-                    <p className="fw-light">
-                      {getTime(question.created_at)} ago
-                    </p>
-                    <p className="fw-light">{question.answers} answers</p>
-                  </div>
-                  <div className="d-flex align-items-center">
-                    <img
-                      src="https://via.placeholder.com/50"
-                      alt={`${question.user.username}'s image`}
-                      className="rounded-circle"
-                    />
-                    <div className="d-flex flex-column justify-content-around">
-                      <div>
-                        <span className="mx-2 fw-semibold">{question.user.username}</span>
-                        {question.user.role === "mentor" ? (
-                          <span className="bg-success rounded px-2 text-white">
-                            Mentor
-                          </span>
-                        ) : null}
-                      </div>
-                      <span className="fw-light mx-2">
-                        {question.user.profession}
+                <div className="card-body">
+                  <h5 className="card-title mb-3">{question.question}</h5>
+                  {question.question_tag && question.question_tag.length > 0 && (
+                    <div className="mb-3">
+                      <span className="badge bg-light text-primary border border-primary">
+                        {question.question_tag[0].tag_name}
                       </span>
+                    </div>
+                  )}
+                  <div className="d-flex justify-content-between align-items-center">
+                    <div className="d-flex align-items-center">
+                      <img
+                        src={question.user.image || `${DEFAULT_AVATAR}${encodeURIComponent(question.user.name || 'User')}`}
+                        alt={`${question.user.name || 'User'}'s avatar`}
+                        className="rounded-circle"
+                        width="40"
+                        height="40"
+                        onError={(e) => {
+                          e.target.onerror = null;
+                          e.target.src = `${DEFAULT_AVATAR}${encodeURIComponent('User')}`;
+                        }}
+                      />
+                      <div className="ms-2">
+                        <div className="d-flex align-items-center">
+                          <span className="fw-semibold">{question.user.username}</span>
+                          {question.user.role === "mentor" && (
+                            <span className="badge bg-success ms-2">Mentor</span>
+                          )}
+                        </div>
+                        <small className="text-muted">{question.user.profession}</small>
+                      </div>
+                    </div>
+                    <div className="text-end">
+                      <small className="text-muted d-block">
+                        {getTime(question.created_at)} ago
+                      </small>
+                      <small className="text-primary">
+                        <i className="fas fa-comment-alt me-1"></i>
+                        {question.answers} answers
+                      </small>
                     </div>
                   </div>
                 </div>
@@ -293,71 +311,46 @@ export default function Community() {
         />
       </div>
 
-      {/* ask question button */}
-      <button
-        className="btn btn-primary rounded-circle position-fixed shadow-lg"
-        data-bs-toggle="modal"
-        data-bs-target="#askQuestionModal"
-        style={{
-          bottom: "40px",
-          right: "40px",
-          width: "50px",
-          height: "50px",
-          fontSize: "1.5rem",
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-        }}
-      >
-        <i class="fas fa-plus"></i>
-      </button>
-
       {/* ask question modal */}
-      <div
-        className="modal fade"
-        id="askQuestionModal"
-        tabIndex="-1"
-        aria-labelledby="askQuestionModalLabel"
-        aria-hidden="true"
-      >
-        <div
-          className="modal-dialog modal-dialog-centered"
-          style={{ maxWidth: "400px" }}
-        >
+      <div className="modal fade" id="askQuestionModal" tabIndex="-1">
+        <div className="modal-dialog modal-dialog-centered">
           <div className="modal-content">
-            <div
-              className="modal-header border-0"
-              style={{ backgroundColor: "#f8f9fa" }}
-            >
-              <h5 className="modal-title" id="askQuestionModalLabel">
+            <div className="modal-header border-0 bg-light">
+              <h5 className="modal-title">
+                <i className="fas fa-question-circle text-primary me-2"></i>
                 Ask a Question
               </h5>
-              <button
-                type="button"
-                className="btn-close"
-                data-bs-dismiss="modal"
-                aria-label="Close"
-              ></button>
+              <button type="button" className="btn-close" data-bs-dismiss="modal"></button>
             </div>
-            <div className="modal-body">
-              <textarea
-                className="form-control mb-2"
-                rows="3"
-                value={inputQuestion}
-                onChange={(e) => setInputQuestion(e.target.value)}
-                placeholder="Type your query..."
-              />
-              <select className="form-control mb-2" onChange={ev => {
-                const value = ev.currentTarget.value;
-                setSelectedQuestionTag(value)
-              }}>
-                {technicalTags.map(value => <option value={value}>{value}</option>)}
-              </select>
+            <div className="modal-body p-4">
+              <div className="mb-3">
+                <label className="form-label">Your Question</label>
+                <textarea
+                  className="form-control"
+                  rows="4"
+                  value={inputQuestion}
+                  onChange={(e) => setInputQuestion(e.target.value)}
+                  placeholder="What would you like to ask?"
+                />
+              </div>
+              <div className="mb-3">
+                <label className="form-label">Select Topic</label>
+                <select
+                  className="form-select"
+                  onChange={ev => setSelectedQuestionTag(ev.currentTarget.value)}
+                  defaultValue=""
+                >
+                  <option value="" disabled>Choose a topic...</option>
+                  {technicalTags.map(value => (
+                    <option key={value} value={value}>{value}</option>
+                  ))}
+                </select>
+              </div>
               <button
                 className="btn btn-primary w-100"
                 onClick={handleQuestionSubmit}
               >
-                Send
+                Post Question
               </button>
             </div>
           </div>

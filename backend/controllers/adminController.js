@@ -94,3 +94,171 @@ exports.deleteMentor = async (req, res) => {
     res.sendStatus(500);
   }
 };
+
+// User Analytics
+exports.getUserAnalytics = async (req, res) => {
+  try {
+    const [totalMentors, totalMentees, pendingVerifications, userGrowth] =
+      await Promise.all([
+        prisma.user.count({
+          where: { role: "mentor" },
+        }),
+        prisma.user.count({
+          where: { role: "mentee" },
+        }),
+        prisma.user.count({
+          where: {
+            role: "mentor",
+            credentialsVerified: false,
+          },
+        }),
+        prisma.user.count({
+          where: {
+            created_at: {
+              gte: new Date(new Date().setMonth(new Date().getMonth() - 1)),
+            },
+          },
+        }),
+      ]);
+
+    const monthlyGrowthData = await prisma.user.groupBy({
+      by: ["created_at"],
+      where: {
+        created_at: {
+          gte: new Date(new Date().setMonth(new Date().getMonth() - 12)),
+        },
+      },
+      _count: {
+        id: true,
+      },
+    });
+
+    res.json({
+      totalMentors,
+      totalMentees,
+      pendingVerifications,
+      monthlyGrowth: userGrowth,
+      monthlyGrowthData: monthlyGrowthData,
+    });
+  } catch (error) {
+    console.error("Error fetching user analytics:", error);
+    res.status(500).json({ error: "Error fetching user analytics" });
+  }
+};
+
+// Session Analytics
+exports.getSessionAnalytics = async (req, res) => {
+  try {
+    const [totalSessions, completedSessions, upcomingSessions] =
+      await Promise.all([
+        prisma.sessionBooking.count(),
+        prisma.sessionBooking.count({
+          where: { status: "completed" },     //TODO: Change status enum 
+        }),
+        prisma.sessionBooking.count({
+          where: {
+            date: {
+              gte: new Date(),
+            },
+          },
+        }),
+      ]);
+
+    const recentSessions = await prisma.sessionBooking.findMany({
+      take: 5,
+      orderBy: { date: "desc" },
+      include: {
+        session: {
+          include: {
+            mentor: {
+              include: {
+                User: true,
+              },
+            },
+          },
+        },
+        user: true,
+      },
+    });
+
+    res.json({
+      totalSessions,
+      completedSessions,
+      upcomingSessions,
+      recentSessions,
+      completionRate: ((completedSessions / totalSessions) * 100).toFixed(2),
+    });
+  } catch (error) {
+    console.error("Error fetching session analytics:", error);
+    res.status(500).json({ error: "Error fetching session analytics" });
+  }
+};
+
+// Workshop Analytics
+exports.getWorkshopAnalytics = async (req, res) => {
+  try {
+    // Get workshop statistics
+    const [totalWorkshops, activeWorkshops, participantCount] =
+      await Promise.all([
+        prisma.workshops.count(),
+        prisma.workshops.count({
+          where: {
+            date: {
+              gte: new Date(),
+            },
+            status: "upcoming",
+          },
+        }),
+        prisma.WorkshopBooking.count(),
+      ]);
+
+    // Get popular workshops
+    const popularWorkshops = await prisma.workshops.findMany({
+      take: 5,
+      include: {
+        mentor: {
+          include: {
+            User: true,
+          },
+        },
+        _count: {
+          select: {
+            WorkshopBooking: true, // Changed to match schema relation name
+          },
+        },
+      },
+      orderBy: {
+        WorkshopBooking: {
+          _count: "desc",
+        },
+      },
+    });
+
+    // Return workshop analytics
+    res.json({
+      statistics: {
+        totalWorkshops,
+        activeWorkshops,
+        totalParticipants: participantCount,
+        averageAttendance:
+          totalWorkshops > 0
+            ? (participantCount / totalWorkshops).toFixed(2)
+            : 0,
+      },
+      popularWorkshops: popularWorkshops.map((workshop) => ({
+        id: workshop.id,
+        title: workshop.title,
+        date: workshop.date,
+        participantCount: workshop._count.WorkshopBooking,
+        mentor: workshop.mentor?.User?.name || "N/A",
+        status: workshop.status,
+      })),
+    });
+  } catch (error) {
+    console.error("Error fetching workshop analytics:", error);
+    res.status(500).json({
+      error: "Error fetching workshop analytics",
+      details: error.message,
+    });
+  }
+};
