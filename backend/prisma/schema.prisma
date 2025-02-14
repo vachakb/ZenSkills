@@ -586,4 +586,8 @@ model Transaction {
 enum TransactionType {
   PURCHASE
   EARN
+  SPENT
+  REFUND
+  RETURN
+  WITHDRAW
 }
