@@ -2,7 +2,7 @@ const prisma = require("../models/prismaClient");
 
 //controller to fetch total mentees mentored by mentor
 const totalMenteeMentored = async (req, res) => {
-    const userId = "e0124cb4-6a1e-41e4-a6dc-5d22adf1af21";
+    const userId = req.user.id;
     try {
       const totalMentees = await prisma.SessionBooking.findMany({
         where: {
@@ -24,7 +24,7 @@ const totalMenteeMentored = async (req, res) => {
   };
 
   const totalSessionsConducted = async(req,res) => {
-    const userId = "e0124cb4-6a1e-41e4-a6dc-5d22adf1af21";
+    const userId = req.user.id;
     try{
         const totalSessions = await prisma.SessionBooking.count({
             where: {
@@ -46,35 +46,40 @@ const totalMenteeMentored = async (req, res) => {
 
 //controller to fetch mentees mentored by mentor month-wise
 const menteesMentoredMonthWise = async (req, res) => {
-  const userId = "e0124cb4-6a1e-41e4-a6dc-5d22adf1af21";
+  const userId = req.user.id;
   try {
-    const menteesMonthWise = await prisma.SessionBooking.groupBy({
-      by: ["user_id", "date"],
+    // Fetch all completed sessions for the mentor
+    const sessions = await prisma.SessionBooking.findMany({
       where: {
         session: {
-          mentor:{
+          mentor: {
             user_id: userId,
           }
         },
+        status: "completed",
       },
-      _count: {
+      select: {
         user_id: true,
+        date: true,
       },
       orderBy: {
         date: "asc",
       },
+      distinct: ["user_id"], // Add this to get unique mentees only
     });
 
-    const formattedData = menteesMonthWise.reduce((acc, curr) => {
-      const month = curr.date.toISOString().slice(0, 7); // Extract YYYY-MM
+    // Create monthly data with unique mentees
+    const monthlyData = sessions.reduce((acc, session) => {
+      const month = session.date.toISOString().slice(0, 7); // YYYY-MM format
+      
       if (!acc[month]) {
         acc[month] = 0;
       }
-      acc[month] += curr._count.user_id;
+      acc[month] += 1; // Count each unique mentee once per month
       return acc;
     }, {});
 
-    res.json({ menteesMonthWise: formattedData });
+    res.json({ menteesMonthWise: monthlyData });
   } catch (error) {
     console.error("Error fetching mentees mentored month-wise:", error);
     res.status(500).json({ error: "Error fetching mentees mentored month-wise" });
@@ -83,7 +88,7 @@ const menteesMentoredMonthWise = async (req, res) => {
 
 //controller to fetch the mentor rating
 const mentorRating = async(req,res) => {
-    const userId = "e0124cb4-6a1e-41e4-a6dc-5d22adf1af21";
+    const userId = req.user.id;
     try{
         const rating = await prisma.mentor.findUnique({
             where: {
@@ -102,7 +107,7 @@ const mentorRating = async(req,res) => {
 
 //controller to fetch session distribution
 const sessionDistribution = async(req,res) => {
-    const userId = "e0124cb4-6a1e-41e4-a6dc-5d22adf1af21";
+    const userId = req.user.id;
     try{
         const completed = await prisma.SessionBooking.count({
             where: {
@@ -144,7 +149,17 @@ const sessionDistribution = async(req,res) => {
                 status: "rejected",
             },
         });
-        res.json({ completed, pending,rescheduled, rejected });
+        const cancelled = await prisma.SessionBooking.count({
+          where: {
+              session: {
+                  mentor: {
+                      user_id: userId,
+                  },
+              },
+              status: "cancelled",
+          },
+      });
+        res.json({ completed, pending, rescheduled, rejected, cancelled });
     } catch(error){
         console.error("Error fetching session distribution: ",error);
     }
@@ -152,7 +167,7 @@ const sessionDistribution = async(req,res) => {
 
 // Controller to fetch new mentees mentored by the mentor per month
 const newMenteesMentoredPerMonth = async (req, res) => {
-    const userId = "e0124cb4-6a1e-41e4-a6dc-5d22adf1af21";
+    const userId = req.user.id;
     try {
       const mentees = await prisma.SessionBooking.findMany({
         where: {

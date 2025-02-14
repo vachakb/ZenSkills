@@ -4,11 +4,9 @@ const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 const path = require("path");
 
-
 const API_KEY = process.env.API_KEY;
 const genAI = new GoogleGenerativeAI(API_KEY);
 const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash-8b" });
-
 
 async function fetchAllTags() {
   const tags = await prisma.tags.findMany({
@@ -32,7 +30,6 @@ const getAIRecommendations = async (req, res) => {
   }
 
   try {
-    
     const prompt = `Analyze the following problem and identify relevant technical skills needed.
     Return ONLY skills from the following categories, as a comma-separated list:
 
@@ -56,7 +53,6 @@ const getAIRecommendations = async (req, res) => {
 
     console.log("Prompt for Gemini API:", prompt);
 
-    
     const result = await model.generateContent(prompt);
     const candidates = result?.response?.candidates;
 
@@ -79,10 +75,9 @@ const getAIRecommendations = async (req, res) => {
     // const extractedSkills = ["Backend", "Node.js", "React"];
     console.log("Extracted Skills:", extractedSkills);
 
-    
     const predefinedSkills = await fetchAllTags();
     const matchedSkills = extractedSkills.filter((skill) =>
-      predefinedSkills.includes(skill)
+      predefinedSkills.includes(skill),
     );
 
     if (matchedSkills.length === 0) {
@@ -90,7 +85,7 @@ const getAIRecommendations = async (req, res) => {
         .status(404)
         .json({ error: "No matching skills found in predefined set." });
     }
-    
+
     const mentors = await prisma.mentor.findMany({
       where: {
         AND: [
@@ -126,7 +121,7 @@ const getAIRecommendations = async (req, res) => {
         _count: {
           select: {
             Review: true,
-            sessions: true, 
+            sessions: true,
           },
         },
       },
@@ -141,21 +136,20 @@ const getAIRecommendations = async (req, res) => {
       });
     }
     console.log("Matched Mentors:", mentors);
-    
+
     const formattedMentors = mentors.map((mentor) => ({
       experienceYears: mentor.experience_years,
       experienceMonths: mentor.experience_months,
       creditScore: mentor.credit_score,
       title: mentor.mentor_job_title,
       id: mentor.id,
-      name: mentor.User.name, 
+      name: mentor.User.name,
       noOfReviews: mentor._count.Review,
-      noOfSessions: mentor._count.sessions, 
+      noOfSessions: mentor._count.sessions,
       rating: mentor.rating || 0,
       company: mentor.company,
     }));
 
-    
     res.json({
       mentors: formattedMentors,
       totalMentorsCount: formattedMentors.length,
@@ -165,8 +159,6 @@ const getAIRecommendations = async (req, res) => {
     res.status(500).json({
       error: "Failed to process the message with AI service",
     });
-  } finally {
-    await prisma.$disconnect();
   }
 };
 

@@ -6,6 +6,7 @@ import "../../node_modules/bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.bundle.min.js";
 import "../styles/style.css";
 import "../styles/custom.scss";
+
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import Upcoming from "./Upcoming.jsx";
 import Register from "./Register.jsx";
@@ -50,6 +51,7 @@ import Verification from "./Verification.jsx";
 import UpdateTimeSlots from "./UpdateTimeSlots.jsx";
 import Referrals from "./Referrals.jsx";
 import ReferralRequests from "./referral_request.jsx";
+import MentorStats from "./MentorStats.jsx";
 
 
 const mentor = {
@@ -311,6 +313,10 @@ const router = createBrowserRouter([
       {
         path: "referral_request",
         element: <ReferralRequests />,
+      },
+      {
+        path: "mentorstats",
+        element: <MentorStats />,
       },
     ],
   }, {
