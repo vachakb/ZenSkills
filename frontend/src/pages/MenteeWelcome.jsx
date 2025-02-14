@@ -70,19 +70,15 @@ function MenteeWelcome({ mentors_, events_ }) {
   // Fetch mentors and events
   useEffect(() => {
     async function fetchData() {
-      try {
-          /* const [mentorsResponse, eventsResponse] = await Promise.all([
-  *   axios.post(`${API_URL}/api/mentors/recommendations`, {}, { withCredentials: true }),
-  *   // axios.get(`${API_URL}/api/events`, { withCredentials: true }),
-  * ]);
-  * const fetchedMentors = mentorsResponse.data.mentors; */
-        const fetchedMentors = await fetchMentors(0, 1000, "", []);
-        setMentors(fetchedMentors.data.mentors)
-        // setMentors(fetchedMentors && fetchedMentors.length > 0 ? fetchedMentors : mentors_);
+      try { 
+        const [mentorsResponse, eventsResponse] = await Promise.all([
+          axios.post(`${API_URL}/api/mentors/recommendations`, {}, { withCredentials: true }),
+          // axios.get(`${API_URL}/api/events`, { withCredentials: true }),
+        ]);
+        setMentors(mentorsResponse.data.mentors || []);
         // setEvents(eventsResponse.data.events || []);
       } catch (error) {
         console.error("Error fetching data: ", error);
-        setMentors(mentors_);
       }
     }
     fetchData();
