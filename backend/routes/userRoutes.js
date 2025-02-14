@@ -5,6 +5,7 @@ const {
   uploadImage,
   getImage,
   editProfile,
+  getCoins,
 } = require("../controllers/userController");
 const { getTags } = require("../controllers/mentorController");
 
@@ -26,5 +27,7 @@ router.put("/profile", editProfile);
 router.post("/image", upload.single("file"), uploadImage);
 
 router.get("/images/:id", getImage);
+
+router.get("/coins", getCoins);
 
 module.exports = router;
