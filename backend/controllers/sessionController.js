@@ -196,6 +196,75 @@ exports.bookSession = async (req, res) => {
   const { bookingId } = req.params;
 
   try {
+    const booking = await prisma.SessionBooking.findUnique({
+      where: { id: bookingId },
+      include: {
+        session: {
+          include: {
+            mentor: {
+              include: {
+                User: true,
+              },
+            },
+          },
+        },
+        user: true,
+      },
+    });
+
+    if (!booking) {
+      return res.status(404).json({ error: "Booking not found" });
+    }
+
+    const session = booking.session;
+    const mentor = session.mentor.User;
+    const user = await prisma.user.findUnique({
+      where: {
+        id: req.user.id,
+      }
+    })
+
+    if (session.price > 0) {
+      if (user.coins < session.price) {
+        return res.status(400).json({ 
+          error: "Insufficient coins", 
+          currentCoins: user.coins,
+          requiredCoins: session.price,
+          message: `You need ${session.price} coins to book this session. Your current balance is ${user.coins} coins.`
+        });
+      }
+
+      // Deduct coins from user and add to mentor
+      await prisma.user.update({
+        where: { id: user.id },
+        data: { coins: { decrement: session.price } },
+      });
+
+      await prisma.user.update({
+        where: { id: mentor.id },
+        data: { coins: { increment: session.price } },
+      });
+      // Add transaction for user
+      await prisma.Transaction.create({
+        data: {
+          amount: session.price,
+          type: "PURCHASE",
+          user_id: user.id,
+          session_id: session.id,
+        },
+      });
+
+      // Add transaction for mentor
+      await prisma.Transaction.create({
+        data: {
+          amount: session.price,
+          type: "EARN",
+          user_id: mentor.id,
+          session_id: session.id,
+        },
+      });
+    }
+
     await prisma.SessionBooking.update({
       where: {
         id: bookingId,
@@ -467,6 +536,20 @@ exports.updateBookingStatus = async (req, res) => {
       await prisma.SessionBooking.create({
         data: booking,
       });
+
+      // Refund coins to user and deduct from mentor
+      // if (booking.session.price > 0) {
+      //   await prisma.user.update({
+      //     where: { id: booking.user.id },
+      //     data: { coins: { increment: booking.session.price } },
+      //   });
+
+      //   await prisma.user.update({
+      //     where: { id: booking.session.mentor.User.id },
+      //     data: { coins: { decrement: booking.session.price } },
+      //   });
+      // }
+
     } else if (status === "cancelled" && booking.status === "accepted") {
       if (booking.session.mentor.User.googleRefreshToken) {
         // Delete event from mentor's Google Calendar
@@ -487,6 +570,18 @@ exports.updateBookingStatus = async (req, res) => {
           event_id: null,
         },
       });
+      // Refund coins to user and deduct from mentor
+      if (booking.session.price > 0) {
+        await prisma.user.update({
+          where: { id: booking.user.id },
+          data: { coins: { increment: booking.session.price } },
+        });
+
+        await prisma.user.update({
+          where: { id: booking.session.mentor.User.id },
+          data: { coins: { decrement: booking.session.price } },
+        });
+      }
     } else if (status === "rescheduled") {
       if (!newStartTime || !newEndTime || !newDate) {
         return res.status(400).json({

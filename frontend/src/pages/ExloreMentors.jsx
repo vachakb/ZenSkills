@@ -5,8 +5,9 @@ import axios from "axios";
 import { fetchTags, fetchMentors, fetchMentorsbyAI } from "../apis/explore";
 import classNames from "classnames";
 import "../styles/style.css"
+import { Modal } from 'bootstrap';
 
-export default function ExploreMentor({mentors_}) {
+export default function ExploreMentor({ mentors_ }) {
   const [mentors, setMentors] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [allTags, setAllTags] = useState([]);
@@ -16,6 +17,8 @@ export default function ExploreMentor({mentors_}) {
   const [totalPages, setTotalPages] = useState(0);
   const [filterDropdownVisibility, setFilterDropdownVisibility] =
     useState(false);
+  const [aiError, setAiError] = useState(""); // Add new state for AI error message
+  const [isLoading, setIsLoading] = useState(false); // Add new state after other useState declarations
   const itemsPerPage = 4;
 
   // Fetch tags and mentors
@@ -43,9 +46,39 @@ export default function ExploreMentor({mentors_}) {
   }
 
   async function handleAiFilterQuerySubmit() {
-    const response = await fetchMentorsbyAI(aiFilterQuery);
-    setMentors(response?.data?.mentors || []);
-    document.getElementById("aiFilterQueryModal").click(); // Close modal
+    try {
+      setIsLoading(true);
+      setAiError("");
+      const response = await fetchMentorsbyAI(aiFilterQuery);
+
+      if (response.data.mentors) {
+        setMentors(response.data.mentors);
+        setTotalPages(Math.ceil((response.data.totalMentorsCount || 0) / itemsPerPage));
+
+        // Close modal and remove backdrop
+        const modalElement = document.querySelector('#aiFilterQueryModal');
+        const modalInstance = Modal.getInstance(modalElement);
+        if (modalInstance) {
+          modalInstance.hide();
+          // Remove modal backdrop
+          const backdrop = document.querySelector('.modal-backdrop');
+          if (backdrop) {
+            backdrop.remove();
+          }
+          // Remove modal-open class from body
+          document.body.classList.remove('modal-open');
+          // Remove inline style from body
+          document.body.style.removeProperty('padding-right');
+        }
+
+        setAiFilterQuery('');
+      }
+    } catch (error) {
+      console.error("AI Recommendation Error:", error);
+      setAiError(error.message);
+    } finally {
+      setIsLoading(false);
+    }
   }
 
   function handlePageChange(selectedItem) {
@@ -55,14 +88,14 @@ export default function ExploreMentor({mentors_}) {
   // TODO handle this better
   function handleTagClick(tag) {
     for (let i = 0; i < selectedTags.length; i++) {
-           if (selectedTags[i].tag_id === tag.tag_id) {
-             const copyArr = [...selectedTags];
-             copyArr.splice(i, 1);
-              setSelectedTags(copyArr);
-              return
-          }
+      if (selectedTags[i].tag_id === tag.tag_id) {
+        const copyArr = [...selectedTags];
+        copyArr.splice(i, 1);
+        setSelectedTags(copyArr);
+        return
+      }
     }
-      setSelectedTags([...selectedTags, tag]);
+    setSelectedTags([...selectedTags, tag]);
   }
 
   return (
@@ -106,7 +139,7 @@ export default function ExploreMentor({mentors_}) {
               key={tag.tag_id}
               className={classNames({
                 "btn btn-sm rounded-pill m-1": true,
-                  "bg-success": selectedTags.some((selectedTag) => selectedTag.tag_id === tag.tag_id),
+                "bg-success": selectedTags.some((selectedTag) => selectedTag.tag_id === tag.tag_id),
                 "bg-secondary": !selectedTags.some((selectedTag) => selectedTag.tag_id === tag.tag_id)
               })}
               onClick={() => handleTagClick(tag)}
@@ -195,7 +228,7 @@ export default function ExploreMentor({mentors_}) {
             </div>
             <div className="modal-body">
               <div
-                className="p-3 mb-2"
+                className="p-3 mb-3"
                 style={{
                   backgroundColor: "#e9ecef",
                   borderRadius: "15px",
@@ -203,21 +236,46 @@ export default function ExploreMentor({mentors_}) {
                   textAlign: "left",
                 }}
               >
-                Hi! I'm here to help you find the best mentors. What are you
-                looking for?
+                Hi! I'm here to help you find the best mentors. Try queries like:
+                <ul className="mt-2 mb-0">
+                  <li>"I need help with React and Node.js development"</li>
+                  <li>"Looking for a mentor skilled in machine learning"</li>
+                  <li>"Need guidance in system design and architecture"</li>
+                </ul>
               </div>
+
               <textarea
-                className="form-control mb-2"
+                className="form-control mb-3"
                 rows="3"
                 value={aiFilterQuery}
                 onChange={(e) => setAiFilterQuery(e.target.value)}
                 placeholder="Type your query..."
+                disabled={isLoading}
               />
+
+              {aiError && (
+                <div
+                  className="alert alert-warning mb-3"
+                  role="alert"
+                >
+                  <i className="bi bi-exclamation-triangle me-2"></i>
+                  {aiError}
+                </div>
+              )}
+
               <button
-                className="btn btn-primary w-100"
+                className="btn btn-primary w-100 position-relative"
                 onClick={handleAiFilterQuerySubmit}
+                disabled={isLoading || !aiFilterQuery.trim()}
               >
-                Send
+                {isLoading ? (
+                  <>
+                    <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                    Finding mentors...
+                  </>
+                ) : (
+                  'Send'
+                )}
               </button>
             </div>
           </div>
