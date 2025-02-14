@@ -2,52 +2,27 @@ import psycopg2
 import json
 import logging
 import sys
-from sklearn.ensemble import RandomForestRegressor
 import numpy as np
 from sklearn.preprocessing import MultiLabelBinarizer, MinMaxScaler
 from sklearn.metrics.pairwise import cosine_similarity
-
+from sklearn.ensemble import RandomForestRegressor
+import faiss
+import pickle
 import os
 
-# Database connection configuration
-# DB_CONFIG = {
-#     "dbname": "postgres",
-#     "user": "henil",
-#     "password": "root",
-#     "host": "localhost",
-#     "port": "5432"
-# }
+# Configure logging (only INFO and above will be shown)
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s - %(levelname)s - %(message)s"
+)
 
-def get_db_config():
-    database_url = os.getenv("DATABASE_URL")
-    if not database_url:
-        raise ValueError("DATABASE_URL environment variable is not set")
-    
-    try:
-        # Parse database URL
-        user = database_url.split("://")[1].split(":")[0]
-        password = database_url.split("://")[1].split(":")[1].split("@")[0]
-        host = database_url.split("@")[1].split(":")[0]
-        port = database_url.split(":")[-1].split("/")[0]
-        dbname = database_url.split("/")[-1].split("?")[0]
-        
-        return {
-            "dbname": dbname,
-            "user": user,
-            "password": password,
-            "host": host,
-            "port": port
-        }
-    except Exception as e:
-        logging.error(f"Error parsing DATABASE_URL: {e}")
-        raise ValueError("Invalid DATABASE_URL format")
-
-try:
-    DB_CONFIG = get_db_config()
-    logging.info("Database configuration loaded successfully")
-except Exception as e:
-    logging.error(f"Failed to load database configuration: {e}")
-    sys.exit(1)
+DB_CONFIG = {
+    "dbname": "postgres",
+    "user": "henil",
+    "password": "root",
+    "host": "localhost",
+    "port": "5432"
+}
 
 def get_role_id_by_user_id(user_id: str, role: str) -> str:
     try:
@@ -252,11 +227,84 @@ def build_candidate_features(candidate, mlb, mentee_interest_vector, session_met
         similarity
     ]
 
-def generate_recommendations_rf(input_tags: list, role_id: str, current_language: str, top_n: int = 5, exclude_current: bool = False):
-    if not input_tags:
-        logging.info("No expertise provided; returning empty recommendations.")
-        return []
+def get_past_session_tags_by_mentee(mentee_id: str) -> list:
+    """
+    Fetches distinct expertise tags from mentors whom the mentee has attended completed sessions with.
+    """
     try:
+        conn = psycopg2.connect(**DB_CONFIG)
+        cursor = conn.cursor()
+        query = """
+            SELECT DISTINCT t.tag_name
+            FROM "ZenSchema"."MentorSession" ms
+            JOIN "ZenSchema"."SessionBooking" sb ON ms.id = sb.session_id
+            JOIN "ZenSchema"."_MentorTags" mt ON ms.mentor_id = "mt"."A"
+            JOIN "ZenSchema"."tags" t ON "mt"."B" = t.tag_id
+            WHERE sb.user_id = (SELECT user_id FROM "ZenSchema"."mentee" WHERE id = %s)
+            AND sb.status::text = 'completed'
+        """
+        cursor.execute(query, (mentee_id,))
+        res = cursor.fetchall()
+        tags = [r[0] for r in res]
+        return list(set(tags))
+    except Exception as e:
+        logging.error(f"Error fetching past session tags: {e}")
+        return []
+    finally:
+        cursor.close()
+        conn.close()
+
+def initialize_rf_model():
+    """Initialize and save a new Random Forest model if it doesn't exist"""
+    try:
+        # Create a basic RF model with default parameters
+        rf_model = RandomForestRegressor(
+            n_estimators=100,
+            random_state=42
+        )
+        
+        # Initialize scaler with default range of values
+        scaler = MinMaxScaler()
+        # Fit scaler with sample data covering possible ranges
+        sample_data = np.array([
+            [0, 0, 0, 0],  # min values
+            [5, 100, 1000, 1]  # max values: rating, mentees, sessions, completion_ratio
+        ])
+        scaler.fit(sample_data)
+        
+        # Save initialized model and fitted scaler
+        saved_data = {
+            "model": rf_model,
+            "scaler": scaler
+        }
+        
+        # Save to a specific directory path
+        model_path = os.path.join(os.path.dirname(__file__), "mentor_rf_model.pkl")
+        with open(model_path, "wb") as f:
+            pickle.dump(saved_data, f)
+            
+        return saved_data
+    except Exception as e:
+        logging.error(f"Error initializing RF model: {e}")
+        raise
+
+def generate_recommendations_rf(
+    input_tags: list,
+    role_id: str,
+    current_language: str,
+    mentee_id: str = None,  # Required if user_type is mentee; used for past session tags
+    exclude_current: bool = False
+):
+    """
+    Retrieves candidates from layer-1 (FAISS), then re-ranks them by combining
+    the Random Forest predicted score with language match bonus and 
+    past session expertise similarity.
+    
+    Assumes that the RF model was trained on the four features:
+        [rating, number_of_mentees_mentored, number_of_sessions, completion_ratio]
+    """
+    try:
+        # Get candidates from FAISS-based retrieval (layer 1)
         all_tags = list(set(fetch_all_tags().values()))
         mentor_list = fetch_mentor_data()
         if exclude_current:
@@ -264,52 +312,112 @@ def generate_recommendations_rf(input_tags: list, role_id: str, current_language
         if not all_tags or not mentor_list:
             return []
         
-        session_metrics = get_session_metrics()
+        # Build a MultiLabelBinarizer for candidate expertise tags
         mlb = MultiLabelBinarizer(classes=all_tags)
         mentor_skills_list = [mentor["skills"] for mentor in mentor_list]
         mlb.fit(mentor_skills_list)
         
-        input_encoded = mlb.transform([input_tags])
-        mentor_encoded = mlb.transform(mentor_skills_list)
-        cos_sim_matrix = cosine_similarity(input_encoded, mentor_encoded)
+        # Encode input expertise (from layer-1) using the same binarizer
+        input_encoded = mlb.transform([input_tags]).astype('float32')
+        mentor_encoded = mlb.transform(mentor_skills_list).astype('float32')
         
-        experience_years = [mentor["experience_years"] for mentor in mentor_list]
-        scaler = MinMaxScaler()
-        normalized_experience = scaler.fit_transform(np.array(experience_years).reshape(-1, 1))
+        # Normalize and build FAISS index (using inner product which approximates cosine similarity)
+        def safe_normalize(matrix):
+            norms = np.linalg.norm(matrix, axis=1, keepdims=True)
+            norms[norms == 0] = 1
+            return matrix / norms
         
-        initial_scores = []
-        for idx, score in enumerate(cos_sim_matrix[0]):
-            weighted_score = 0.7 * score + 0.3 * normalized_experience[idx][0] if score > 0.5 else 0
-            initial_scores.append(weighted_score)
+        input_norm = safe_normalize(input_encoded)
+        mentor_norm = safe_normalize(mentor_encoded)
         
-        # Filter candidates with initial score > 0.5 and take top 10
-        mentor_candidates = list(zip(mentor_list, initial_scores))
-        filtered_candidates = [item for item in mentor_candidates if item[1] > 0.5]
-        top_candidates = [item[0] for item in sorted(filtered_candidates, key=lambda x: x[1], reverse=True)[:10]]
+        d = mentor_norm.shape[1]
+        index = faiss.IndexFlatIP(d)
+        index.add(mentor_norm)
+        D, I = index.search(input_norm, len(mentor_list))
         
-        features = np.array([build_candidate_features(candidate, mlb, input_encoded, session_metrics, current_language) for candidate in top_candidates])
-        feature_scaler = MinMaxScaler()
-        features_normalized = feature_scaler.fit_transform(features)
+        # Filter candidates with a basic similarity threshold (e.g. > 0.6)
+        layer1_candidates = []
+        for dist, idx in zip(D[0], I[0]):
+            if dist > 0.6:
+                layer1_candidates.append(mentor_list[idx])
         
-        # Composite target using weights for each feature
-        weights = np.array([0.10,0.10,0.10,0.20,0.15,0.10,0.25])
-        composite_target = features_normalized.dot(weights)
+        # Load the trained RF model and scaler
+        try:
+            # Try to load the trained RF model and scaler
+            model_path = os.path.join(os.path.dirname(__file__), "mentor_rf_model.pkl")
+            with open(model_path, "rb") as f:
+                saved_data = pickle.load(f)
+            rf_model = saved_data["model"]
+            scaler = saved_data["scaler"]
+        except FileNotFoundError:
+            # If model doesn't exist, initialize a new one
+            logging.info("RF model not found. Initializing new model...")
+            saved_data = initialize_rf_model()
+            rf_model = saved_data["model"]
+            scaler = saved_data["scaler"]
+        except Exception as e:
+            logging.error(f"Error loading RF model: {e}")
+            raise
         
-        rf_model = RandomForestRegressor(n_estimators=120,random_state=50)
-        rf_model.fit(features_normalized, composite_target)
-        importances = rf_model.feature_importances_
-        logging.info("Feature importances from RF model:")
-        for name, imp in zip(["rating", "number_of_mentees_mentored", "number_of_sessions",
-                              "session_completion_ratio", "mentor_availability", "language_feature", "similarity"], importances):
-            logging.info(f"{name}: {imp}")
+        # If the user is a mentee, fetch past session tags
+        past_session_tags = []
+        if mentee_id is not None:
+            past_session_tags = get_past_session_tags_by_mentee(mentee_id)
         
-        refined_scores = rf_model.predict(features_normalized)
-        candidates = [{"mentor_id": candidate["mentor_id"], "rf_score": score} for candidate, score in zip(top_candidates, refined_scores)]
-        recommendations = sorted(candidates, key=lambda x: x["rf_score"], reverse=True)[:top_n]
-        logging.info(f"Final recommendations: {recommendations}")
+        # Build a binarizer for past session tags if available (use same schema as candidate skills)
+        past_mlb = None
+        if past_session_tags:
+            past_mlb = MultiLabelBinarizer(classes=all_tags)
+            past_mlb.fit([past_session_tags])
+            past_vector = past_mlb.transform([past_session_tags]).astype('float32')
+            past_vector_norm = safe_normalize(past_vector)
+        else:
+            past_vector_norm = None
+        
+        recommendations = []
+        for candidate in layer1_candidates:
+            # Build the RF features vector (same order as training: rating, mentees_mentored, sessions, completion_ratio)
+            rf_features = np.array([
+                candidate.get("rating", 0),
+                candidate.get("number_of_mentees_mentored", 0),
+                candidate.get("number_of_sessions", 0),
+                # For completion_ratio, you may look up session metrics or set a default (0)
+                0  # Replace 0 with a function to calculate candidate's completion_ratio if available
+            ]).reshape(1, -1)
+            
+            # Normalize and predict with the RF model
+            rf_features_scaled = scaler.transform(rf_features)
+            rf_score = rf_model.predict(rf_features_scaled)[0]
+            
+            # Language bonus: add a small bonus (e.g., 0.1) if languages match.
+            candidate_language = candidate.get("language", "")
+            language_bonus = 0.1 if candidate_language and current_language and candidate_language.lower() == current_language.lower() else 0
+            
+            # Past session similarity: compare candidate skills with past session tags
+            past_similarity = 0
+            if past_vector_norm is not None:
+                candidate_skills = candidate.get("skills", [])
+                candidate_vector = mlb.transform([candidate_skills]).astype('float32')
+                candidate_vector_norm = safe_normalize(candidate_vector)
+                past_similarity = cosine_similarity(past_vector_norm, candidate_vector_norm)[0][0]
+            
+            # Compute final score by combining RF prediction, language bonus, and past session similarity weight (e.g., 0.5)
+            final_score = rf_score + language_bonus + (0.5 * past_similarity)
+            
+            recommendations.append({
+                "mentor_id": candidate["mentor_id"],
+                "final_score": final_score,
+                "rf_score": float(rf_score),
+                "language_bonus": language_bonus,
+                "past_similarity": past_similarity
+            })
+        
+        # Sort recommendations by final_score descending
+        recommendations.sort(key=lambda x: x["final_score"], reverse=True)
         return recommendations
+        
     except Exception as e:
-        logging.error(f"Error generating RF-based recommendations: {e}")
+        logging.error(f"Error generating recommendations with RF adjustments: {e}")
         raise
 
 if __name__ == "__main__":
@@ -325,7 +433,7 @@ if __name__ == "__main__":
             mentee_id = get_role_id_by_user_id(user_id, 'mentee')
             mentee_language = get_language_by_role_id(mentee_id, 'mentee')
             interests = get_interests_by_mentee_id(mentee_id)
-            recommendations = generate_recommendations_rf(interests, mentee_id, mentee_language)
+            recommendations = generate_recommendations_rf(interests, mentee_id, mentee_language, mentee_id=mentee_id)
             print(json.dumps({"recommendations": recommendations}, indent=4))
         elif user_type == 'mentor':
             mentor_id = get_role_id_by_user_id(user_id, 'mentor')
@@ -338,3 +446,4 @@ if __name__ == "__main__":
     except Exception as e:
         logging.error(f"Error in main execution: {e}")
         print(json.dumps({"error": str(e)}))
+        sys.exit(1)
