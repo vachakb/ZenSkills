@@ -248,7 +248,7 @@ exports.bookSession = async (req, res) => {
       await prisma.Transaction.create({
         data: {
           amount: session.price,
-          type: "PURCHASE",
+          type: "SPENT",
           user_id: user.id,
           session_id: session.id,
         },
@@ -547,6 +547,26 @@ exports.updateBookingStatus = async (req, res) => {
       //   await prisma.user.update({
       //     where: { id: booking.session.mentor.User.id },
       //     data: { coins: { decrement: booking.session.price } },
+      //   });
+
+      //   // Add transaction for user
+      //   await prisma.Transaction.create({
+      //     data: {
+      //       amount: session.price,
+      //       type: "REFUND",
+      //       user_id: user.id,
+      //       session_id: session.id,
+      //     },
+      //   });
+
+      //   // Add transaction for mentor
+      //   await prisma.Transaction.create({
+      //     data: {
+      //       amount: session.price,
+      //       type: "RETURN",
+      //       user_id: mentor.id,
+      //       session_id: session.id,
+      //     },
       //   });
       // }
 

@@ -164,3 +164,20 @@ exports.getImage = async (req, res) => {
     },
   });
 };
+
+exports.getCoins = async(req,res) => {
+  try{
+      const user = await prisma.user.findUnique({
+          where: {
+              id: req.user.id,
+          },
+          select: {
+              coins: true,
+          }
+      });
+      res.json({ coins: user.coins });
+  } catch(error){
+      console.error("Error fetching coins", error);
+      res.status(500).json({ error: "Error fetching coins" });
+  }
+}

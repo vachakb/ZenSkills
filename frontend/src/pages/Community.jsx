@@ -243,15 +243,7 @@ export default function Community() {
                 style={{ cursor: "pointer" }}
               >
                 <div className="card-body">
-                  <h5 className="card-title mb-3">{question.question}</h5>
-                  {question.question_tag && question.question_tag.length > 0 && (
-                    <div className="mb-3">
-                      <span className="badge bg-light text-primary border border-primary">
-                        {question.question_tag[0].tag_name}
-                      </span>
-                    </div>
-                  )}
-                  <div className="d-flex justify-content-between align-items-center">
+                  <div className="d-flex justify-content-between align-items-center mb-3">
                     <div className="d-flex align-items-center">
                       <img
                         src={question.user.image || `${DEFAULT_AVATAR}${encodeURIComponent(question.user.name || 'User')}`}
@@ -266,12 +258,16 @@ export default function Community() {
                       />
                       <div className="ms-2">
                         <div className="d-flex align-items-center">
-                          <span className="fw-semibold">{question.user.username}</span>
+                          <span className="fw-semibold text-primary">{question.user.name}</span>
                           {question.user.role === "mentor" && (
-                            <span className="badge bg-success ms-2">Mentor</span>
+                            <span className="badge bg-success-subtle text-success ms-2">
+                              <i className="fas fa-check-circle me-1"></i>Mentor
+                            </span>
                           )}
                         </div>
-                        <small className="text-muted">{question.user.profession}</small>
+                        <small className="text-muted">
+                          {question.user.mentor?.mentor_job_title || question.user.mentee?.mentee_title || 'Community Member'}
+                        </small>
                       </div>
                     </div>
                     <div className="text-end">
@@ -280,10 +276,22 @@ export default function Community() {
                       </small>
                       <small className="text-primary">
                         <i className="fas fa-comment-alt me-1"></i>
-                        {question.answers} answers
+                        {question.CommunityAnswer?.length || 0} answers
                       </small>
                     </div>
                   </div>
+                  <h5 className="card-title mb-3">{question.question}</h5>
+                  
+                  {/* Add tags display */}
+                  {question.question_tag && question.question_tag.length > 0 && (
+                    <div className="mt-3">
+                      <span className="badge bg-primary-subtle text-primary rounded-pill px-3 py-2">
+                        <i className="fas fa-tag me-2"></i>
+                        {question.question_tag[0].tag_name}
+                      </span>
+                    </div>
+                  )}
+                  {/* End of card content */}
                 </div>
               </div>
             </div>

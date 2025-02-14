@@ -91,7 +91,8 @@ function MentorStats() {
                     { name: 'Completed', value: response.data.completed, color: '#198754' },
                     { name: 'Pending', value: response.data.pending, color: '#ffc107' },
                     { name: 'Rescheduled', value: response.data.rescheduled, color: '#0dcaf0' },
-                    { name: 'Rejected', value: response.data.rejected, color: '#dc3545' }
+                    { name: 'Rejected', value: response.data.rejected, color: '#dc3545' },
+                    { name: 'Cancelled', value: response.data.cancelled, color: '#ff6e00' }
                 ];
                 setSessionData(data);
             } catch (error) {
