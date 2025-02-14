@@ -163,7 +163,7 @@ function Login() {
                 </div>
 
                 <div className="align-self-center">
-                  <Button >{/*onClick={() => googleLogin()*/}
+                  <Button onClick={() => googleLogin()}>
                     Login with Google
                   </Button>
                 </div>
