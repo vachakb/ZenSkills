@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Container, Nav, Tab, Spinner, Button, Modal } from "react-bootstrap";
+import { Container, Nav, Tab, Spinner, Button, Modal, Badge, Card, Row, Col } from "react-bootstrap";
 import ReactPaginate from "react-paginate";
 import SessionCard from "../components/SessionCard";
 import { getAllUserSessions } from "../apis/session";
@@ -74,7 +74,7 @@ const Sessions = () => {
     };
   }, [statusFilters]);
 
-  const downloadMeetingRecording = async (token, roomId) =>  {
+  const downloadMeetingRecording = async (token, roomId) => {
     const meetingRecording = await getMeetingRecording(token, roomId);
 
     const a = document.createElement("a");
@@ -90,6 +90,18 @@ const Sessions = () => {
     setCurrentPage(selectedPage.selected + 1);
   };
 
+  const getStatusIcon = (status) => {
+    const icons = {
+      pending: "clock",
+      accepted: "check-circle",
+      rejected: "times-circle",
+      rescheduled: "sync",
+      cancelled: "ban",
+      completed: "star"
+    };
+    return icons[status] || "circle";
+  };
+
   if (isProfileLoading) {
     return (
       <div className="d-flex h-100 w-100 justify-content-center align-items-center">
@@ -98,78 +110,237 @@ const Sessions = () => {
     );
   }
 
+  const statusColors = {
+    pending: { bg: "#FFF3CD", text: "#856404", border: "#FFEEBA" },
+    accepted: { bg: "#D4EDDA", text: "#155724", border: "#C3E6CB" },
+    rejected: { bg: "#F8D7DA", text: "#721C24", border: "#F5C6CB" },
+    rescheduled: { bg: "#E2E3E5", text: "#383D41", border: "#D6D8DB" },
+    cancelled: { bg: "#F8D7DA", text: "#721C24", border: "#F5C6CB" },
+    completed: { bg: "#CCE5FF", text: "#004085", border: "#B8DAFF" }
+  };
+
   return (
     <>
+      {/* Recordings Modal */}
       <Modal
         size="xl"
         show={showRecordingsModal}
         centered
         onHide={() => setShowRecordingsModal(false)}
       >
-        <Modal.Header closeButton>
-          <Modal.Title>Recordings</Modal.Title>
+        <Modal.Header closeButton className="bg-light">
+          <Modal.Title>
+            <i className="fas fa-video me-2"></i>
+            Session Recordings
+          </Modal.Title>
         </Modal.Header>
-        <Modal.Body className="d-flex flex-column gap-2">
-          <h5>Select a meeting to download its recording</h5>
-          <div className="d-flex gap-2">
+        <Modal.Body className="d-flex flex-column gap-3 p-4">
+          <h5 className="text-muted">Select a session to download its recording</h5>
+          <div className="d-flex flex-wrap gap-3">
             {recordingSessions.map(value => (
-              <Button
-                onClick={async () => {
-                  const tokenRes = await getToken();
-                  const token = tokenRes.data.token;
-                  downloadMeetingRecording(token, value.room_id);
-                }}
+              <Card
+                key={value.room_id}
+                className="recording-card hover-shadow"
+                style={{ minWidth: '280px' }}
               >
-                {value.session.name} - Room ID: {value.room_id}
-              </Button>
+                <Card.Body>
+                  <h6>{value.session.name}</h6>
+                  <small className="text-muted">Room ID: {value.room_id}</small>
+                  <Button
+                    variant="outline-primary"
+                    className="w-100 mt-3"
+                    onClick={async () => {
+                      const tokenRes = await getToken();
+                      downloadMeetingRecording(tokenRes.data.token, value.room_id);
+                    }}
+                  >
+                    <i className="fas fa-download me-2"></i>
+                    Download Recording
+                  </Button>
+                </Card.Body>
+              </Card>
             ))}
           </div>
         </Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={() => setShowRecordingsModal(false)}>Close</Button>
-        </Modal.Footer>
       </Modal>
-      <Container className="d-flex flex-column gap-4">
-        <div className="d-flex align-items-center gap-2">
-          <h3 className="m-0">Sessions</h3>
-          {profile.isMentor && <Button onClick={() => navigate("/createsession_1")}>Create session</Button>}
-          <Button onClick={() => setShowFilters(!showFilters)}>Filters{statusFilters.length > 0 && ` ${statusFilters.length}`}</Button>
-          {!profile.isMentor && <Button onClick={() => setShowRecordingsModal(true)}>Show recordings</Button>}
-        </div>
-        {showFilters &&
-          <div className="d-flex gap-2">
-            {statuses.map(status => (
-              <Button style={{
-                backgroundColor: statusFilters.includes(status)
-                  ? "#07d100"
-                  : "rgb(233, 236, 239)",
-                borderColor: statusFilters.includes(status)
-                  ? "#07d100"
-                  : "rgb(233, 236, 239)"
-              }} key={status} onClick={() => {
-                if (statusFilters.includes(status)) {
-                  setStatusFilters(statusFilters.filter(value => value !== status));
-                } else {
-                  setStatusFilters([...statusFilters, status])
-                }
-              }}>{status}</Button>
-            ))}
-          </div>
-        }
+
+      <Container fluid className="py-4 px-4">
+        {/* Dashboard Stats */}
+        <Row className="mb-4">
+          <Col md={3}>
+            <Card className="shadow-sm h-100">
+              <Card.Body>
+                <div className="d-flex justify-content-between align-items-center">
+                  <div>
+                    <h6 className="text-muted mb-2">Total Sessions</h6>
+                    <h3 className="mb-0">{totalSessions}</h3>
+                  </div>
+                  <div className="bg-primary bg-opacity-10 p-3 rounded">
+                    <i className="fas fa-calendar-alt text-primary fa-2x"></i>
+                  </div>
+                </div>
+              </Card.Body>
+            </Card>
+          </Col>
+          <Col md={3}>
+            <Card className="shadow-sm h-100">
+              <Card.Body>
+                <div className="d-flex justify-content-between align-items-center">
+                  <div>
+                    <h6 className="text-muted mb-2">Upcoming</h6>
+                    <h3 className="mb-0">
+                      {sessions.filter(s => s.status === "accepted").length}
+                    </h3>
+                  </div>
+                  <div className="bg-success bg-opacity-10 p-3 rounded">
+                    <i className="fas fa-clock text-success fa-2x"></i>
+                  </div>
+                </div>
+              </Card.Body>
+            </Card>
+          </Col>
+          <Col md={3}>
+            <Card className="shadow-sm h-100">
+              <Card.Body>
+                <div className="d-flex justify-content-between align-items-center">
+                  <div>
+                    <h6 className="text-muted mb-2">Completed</h6>
+                    <h3 className="mb-0">
+                      {sessions.filter(s => s.status === "completed").length}
+                    </h3>
+                  </div>
+                  <div className="bg-info bg-opacity-10 p-3 rounded">
+                    <i className="fas fa-check-circle text-info fa-2x"></i>
+                  </div>
+                </div>
+              </Card.Body>
+            </Card>
+          </Col>
+          <Col md={3}>
+            <Card className="shadow-sm h-100">
+              <Card.Body>
+                <div className="d-flex justify-content-between align-items-center">
+                  <div>
+                    <h6 className="text-muted mb-2">Cancelled</h6>
+                    <h3 className="mb-0">
+                      {sessions.filter(s => s.status === "cancelled").length}
+                    </h3>
+                  </div>
+                  <div className="bg-danger bg-opacity-10 p-3 rounded">
+                    <i className="fas fa-times-circle text-danger fa-2x"></i>
+                  </div>
+                </div>
+              </Card.Body>
+            </Card>
+          </Col>
+        </Row>
+
+        {/* Header Section with improved styling */}
+        <Card className="mb-4 shadow-sm border-0">
+          <Card.Body>
+            <div className="d-flex justify-content-between align-items-center flex-wrap gap-3">
+              <div className="d-flex align-items-center gap-3">
+                <h3 className="m-0">
+                  <i className="fas fa-calendar-check text-primary me-2"></i>
+                  My Sessions
+                </h3>
+              </div>
+              <div className="d-flex gap-2 flex-wrap">
+                {profile.isMentor && (
+                  <Button
+                    variant="primary"
+                    className="d-flex align-items-center gap-2"
+                    onClick={() => navigate("/createsession_1")}
+                  >
+                    <i className="fas fa-plus"></i>
+                    Create Session
+                  </Button>
+                )}
+                <Button
+                  variant={showFilters ? "secondary" : "outline-secondary"}
+                  className="d-flex align-items-center gap-2"
+                  onClick={() => setShowFilters(!showFilters)}
+                >
+                  <i className="fas fa-filter"></i>
+                  Filters
+                  {statusFilters.length > 0 && (
+                    <Badge bg="primary" pill>{statusFilters.length}</Badge>
+                  )}
+                </Button>
+                {!profile.isMentor && (
+                  <Button
+                    variant="info"
+                    className="d-flex align-items-center gap-2 text-white"
+                    onClick={() => setShowRecordingsModal(true)}
+                  >
+                    <i className="fas fa-video"></i>
+                    Recordings
+                  </Button>
+                )}
+              </div>
+            </div>
+
+            {/* Enhanced Filters Section */}
+            {showFilters && (
+              <div className="mt-4 border-top pt-4">
+                <small className="text-muted text-uppercase fw-bold">Filter by status</small>
+                <div className="d-flex flex-wrap gap-2 mt-2">
+                  {statuses.map(status => (
+                    <Button
+                      key={status}
+                      variant={statusFilters.includes(status) ? "light" : "outline-light"}
+                      className="d-flex align-items-center gap-2 text-capitalize"
+                      style={{
+                        backgroundColor: statusFilters.includes(status) ? statusColors[status].bg : 'transparent',
+                        color: statusColors[status].text,
+                        borderColor: statusColors[status].border,
+                      }}
+                      onClick={() => {
+                        if (statusFilters.includes(status)) {
+                          setStatusFilters(statusFilters.filter(value => value !== status));
+                        } else {
+                          setStatusFilters([...statusFilters, status])
+                        }
+                      }}
+                    >
+                      <i className={`fas fa-${getStatusIcon(status)}`}></i>
+                      {status}
+                    </Button>
+                  ))}
+                </div>
+              </div>
+            )}
+          </Card.Body>
+        </Card>
+
+        {/* Sessions List */}
         {isLoading ? (
           <div className="text-center my-5">
             <Spinner animation="border" variant="primary" />
           </div>
         ) : (
-          <div className="d-flex flex-column">
-            {sessions.map((session) => (
-              <SessionCard session={session} profile={profile} onAction={() => onLoad()} key={session.id} />
-            ))}
+          <div className="d-flex flex-column gap-3">
+            {sessions.length === 0 ? (
+              <div className="text-center py-5 text-muted">
+                <i className="fas fa-calendar-times fa-3x mb-3"></i>
+                <h5>No sessions found</h5>
+                <p>Try adjusting your filters or create a new session</p>
+              </div>
+            ) : (
+              sessions.map((session) => (
+                <SessionCard
+                  session={session}
+                  profile={profile}
+                  onAction={onLoad}
+                  key={session.id}
+                />
+              ))
+            )}
           </div>
         )}
 
-        {/* Shared Pagination */}
-        {!isLoading && (
+        {/* Pagination */}
+        {!isLoading && sessions.length > 0 && (
           <ReactPaginate
             previousLabel={"Previous"}
             nextLabel={"Next"}
@@ -178,16 +349,16 @@ const Sessions = () => {
             marginPagesDisplayed={2}
             pageRangeDisplayed={3}
             onPageChange={handlePageChange}
-            containerClassName={"pagination justify-content-center mt-4"}
-            pageClassName={"page-item"}
-            pageLinkClassName={"page-link"}
-            previousClassName={"page-item"}
-            previousLinkClassName={"page-link"}
-            nextClassName={"page-item"}
-            nextLinkClassName={"page-link"}
-            breakClassName={"page-item"}
-            breakLinkClassName={"page-link"}
-            activeClassName={"active"}
+            containerClassName="pagination justify-content-center mt-4 gap-2"
+            pageClassName="page-item rounded"
+            pageLinkClassName="page-link rounded"
+            previousClassName="page-item rounded"
+            previousLinkClassName="page-link rounded"
+            nextClassName="page-item rounded"
+            nextLinkClassName="page-link rounded"
+            breakClassName="page-item rounded"
+            breakLinkClassName="page-link rounded"
+            activeClassName="active"
           />
         )}
       </Container>
