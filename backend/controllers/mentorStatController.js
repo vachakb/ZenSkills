@@ -208,6 +208,100 @@ const newMenteesMentoredPerMonth = async (req, res) => {
     }
   };
 
+// Controller to calculate total revenue earned by the mentor
+const totalRevenueEarned = async (req, res) => {
+  const userId = req.user.id;
+  try {
+    const totalEarned = await prisma.Transaction.aggregate({
+      _sum: {
+        amount: true,
+      },
+      where: {
+        user_id: userId,
+        type: "EARN",
+      },
+    });
+
+    const totalRefunded = await prisma.Transaction.aggregate({
+      _sum: {
+        amount: true,
+      },
+      where: {
+        user_id: userId,
+        type: "RETURN",
+      },
+    });
+
+    const totalRevenue = (totalEarned._sum.amount || 0) - (totalRefunded._sum.amount || 0);
+
+    res.json({ totalRevenue });
+  } catch (error) {
+    console.error("Error fetching total revenue earned:", error);
+    res.status(500).json({ error: "Error fetching total revenue earned" });
+  }
+};
+
+// Controller to calculate monthly revenue trend for the mentor
+const monthlyRevenueTrend = async (req, res) => {
+  const userId = req.user.id;
+  try {
+    const earnedTransactions = await prisma.Transaction.groupBy({
+      by: ['created_at'],
+      _sum: {
+        amount: true,
+      },
+      where: {
+        user_id: userId,
+        type: "EARN",
+      },
+      orderBy: {
+        _sum: {
+          amount: 'asc',
+        },
+      },
+    });
+
+    const refundedTransactions = await prisma.Transaction.groupBy({
+      by: ['created_at'],
+      _sum: {
+        amount: true,
+      },
+      where: {
+        user_id: userId,
+        type: "RETURN",
+      },
+      orderBy: {
+        _sum: {
+          amount: 'asc',
+        },
+      },
+    });
+
+    const monthlyRevenue = {};
+
+    earnedTransactions.forEach((transaction) => {
+      const month = transaction.created_at.toISOString().slice(0, 7); // YYYY-MM format
+      if (!monthlyRevenue[month]) {
+        monthlyRevenue[month] = 0;
+      }
+      monthlyRevenue[month] += transaction._sum.amount;
+    });
+
+    refundedTransactions.forEach((transaction) => {
+      const month = transaction.created_at.toISOString().slice(0, 7); // YYYY-MM format
+      if (!monthlyRevenue[month]) {
+        monthlyRevenue[month] = 0;
+      }
+      monthlyRevenue[month] -= transaction._sum.amount;
+    });
+
+    res.json({ monthlyRevenue });
+  } catch (error) {
+    console.error("Error fetching monthly revenue trend:", error);
+    res.status(500).json({ error: "Error fetching monthly revenue trend" });
+  }
+};
+
 module.exports = {
   totalMenteeMentored,
   totalSessionsConducted,
@@ -215,4 +309,6 @@ module.exports = {
   mentorRating,
   sessionDistribution,
   newMenteesMentoredPerMonth,
+  totalRevenueEarned,
+  monthlyRevenueTrend,
 };

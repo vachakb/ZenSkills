@@ -134,11 +134,12 @@ exports.getUserAnalytics = async (req, res) => {
     });
 
     res.json({
-      totalMentors,
-      totalMentees,
-      pendingVerifications,
-      monthlyGrowth: userGrowth,
-      monthlyGrowthData: monthlyGrowthData,
+      statistics: {
+        totalUsers: totalMentors + totalMentees,
+        totalMentors,
+        activeUsers: totalMentors + totalMentees - pendingVerifications,
+      },
+      monthlyGrowth: monthlyGrowthData,
     });
   } catch (error) {
     console.error("Error fetching user analytics:", error);
@@ -182,11 +183,18 @@ exports.getSessionAnalytics = async (req, res) => {
     });
 
     res.json({
-      totalSessions,
-      completedSessions,
-      upcomingSessions,
-      recentSessions,
-      completionRate: ((completedSessions / totalSessions) * 100).toFixed(2),
+      statistics: {
+        totalSessions,
+        completedSessions,
+        pendingSessions: totalSessions - completedSessions - upcomingSessions,
+        cancelledSessions: 0, // Assuming no cancelled sessions for now
+      },
+      recentSessions: recentSessions.map((session) => ({
+        date: session.date,
+        mentor: {
+          name: session.session.mentor.User.name,
+        },
+      })),
     });
   } catch (error) {
     console.error("Error fetching session analytics:", error);
@@ -234,17 +242,24 @@ exports.getWorkshopAnalytics = async (req, res) => {
       },
     });
 
+    // Get status distribution
+    const statusDistribution = await prisma.workshops.groupBy({
+      by: ['status'],
+      _count: {
+        status: true
+      }
+    });
+
     // Return workshop analytics
     res.json({
       statistics: {
         totalWorkshops,
         activeWorkshops,
-        totalParticipants: participantCount,
-        averageAttendance:
-          totalWorkshops > 0
-            ? (participantCount / totalWorkshops).toFixed(2)
-            : 0,
       },
+      statusDistribution: statusDistribution.map((status) => ({
+        status: status.status,
+        count: status._count.status,
+      })),
       popularWorkshops: popularWorkshops.map((workshop) => ({
         id: workshop.id,
         title: workshop.title,
