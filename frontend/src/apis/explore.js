@@ -33,14 +33,25 @@ export async function fetchMentors(
 // mentors by AI
 export async function fetchMentorsbyAI(query) {
   try {
-    return await axiosInstance.post("/mentors/recommendations/extract-skills", {
+    const response = await axiosInstance.post("/mentors/recommendations/extract-skills", {
       query: {
         message: query,
       },
     });
+    
+    if (!response.data.mentors) {
+      throw new Error("No mentors found in response");
+    }
+    
+    return response;
   } catch (error) {
-    console.log("Error fetching recommendations:", error);
-    throw error;
+    console.error("Error fetching recommendations:", error);
+    if (error.message === "No mentors found in response") {
+      throw new Error("No mentors found matching your requirements");
+    } else {
+      // Network or other errors
+      throw new Error("Failed to fetch recommendations. Please try again.");
+    }
   }
 }
 
