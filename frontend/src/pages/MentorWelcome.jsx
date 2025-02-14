@@ -162,7 +162,7 @@ export default function MentorWelcome({ events_ }) {
             )}
           </>
 
-          <div>
+          {/*<div>
             <h3 className="fw-bold">Events</h3>
             <h6 style={{ color: "#436DA7" }} className="m-0">
               To help you connect and grow.
@@ -179,7 +179,7 @@ export default function MentorWelcome({ events_ }) {
             ) : (
               <p>No events available.</p>
             )}
-          </div>
+          </div>*/}
         </div>
 
 
