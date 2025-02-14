@@ -12,7 +12,7 @@ import { Button, Form } from "react-bootstrap";
 import ReactPlayer from "react-player";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import classNames from "classnames";
-import { createRoom, getToken } from "../apis/meeting";
+import { createRoom, getToken, startRecording, stopRecording } from "../apis/meeting";
 import {
   PiVideoCameraFill,
   PiVideoCameraSlashFill,
@@ -368,6 +368,7 @@ function Controls({
         color="#E4E6E8"
         onClick={onToggleChat}
       />
+      {/*
       <ControlButton
         src={recordingState === "RECORDING_STARTING" || recordingState === "RECORDING_STARTED" ? <PiRecordFill /> : <PiRecord />}
         label={recordingState === "RECORDING_STARTING" || recordingState === "RECORDING_STARTED" ? "Stop\nrecording" : "Start\nrecording"}
@@ -379,7 +380,7 @@ function Controls({
             startRecording();
           }
         }}
-      />
+      /> */}
       { userListAvailable &&
       <ControlButton
         src={<PiUserFill />}
@@ -658,7 +659,7 @@ function JoinMeeting({
   );
 }
 
-function Room({ meetingId, roomType, isHost, onMeetingEnded }) {
+function Room({ meetingId, roomType, isHost, onMeetingEnded, token }) {
   const { _, participants, localParticipant, mainParticipant } = useMeeting();
 
   const [openChat, setOpenChat] = useState(false);
@@ -666,6 +667,15 @@ function Room({ meetingId, roomType, isHost, onMeetingEnded }) {
   const [openUserList, setOpenUserList] = useState(false);
 
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (isHost) {
+      setTimeout(() => startRecording(token, meetingId)
+        .then(() => console.log("Recording started"))
+        .catch(error => console.error(error)),
+                 1000)
+    }
+  }, [])
 
   if (!localParticipant) {
     setTimeout(() => {
@@ -689,10 +699,7 @@ function Room({ meetingId, roomType, isHost, onMeetingEnded }) {
       style={{ backgroundColor: "#303438", overflow: "hidden" }}
       className="d-flex justify-content-center align-items-center vw-100 vh-100"
     >
-        <UserList
-
-        open={openUserList}
-        participants={participants} />
+      <UserList open={openUserList} participants={participants} />
       <div className="d-flex flex-column h-100 p-4 flex-grow-1">
         <div className="d-flex flex-wrap justify-content-evenly align-items-center flex-grow-1 gap-4">
           {[...participants.keys()].map((participantId) => {
@@ -748,6 +755,10 @@ function Meeting() {
         .then((res) => console.log(res.data))
         .catch((err) => console.error(err));
     }
+
+    stopRecording(token, roomId)
+      .then(() => console.log("Recording stopped"))
+      .catch(error => console.error(error));
   };
 
   return (
@@ -766,11 +777,14 @@ function Meeting() {
           roomType={roomType}
           isHost={isHost}
           onMeetingEnded={isHost ? () => completeMeeting() : undefined}
+          token={token}
         />
       ) : (
         <JoinMeeting
           meetingId={roomId}
-          onJoined={() => setJoined(true)}
+          onJoined={() => {
+            setJoined(true);
+          }}
           name={name}
           onNameChange={setName}
           cameraEnabled={cameraEnabled}

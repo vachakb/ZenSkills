@@ -85,8 +85,8 @@ exports.createSession = async (req, res) => {
     sessionDuration,
     selectedTopics,
     // availability,
-    type = type,
-    price = price,
+    type,
+    price,
   } = req.body;
 
   try {
@@ -159,7 +159,7 @@ exports.createSession = async (req, res) => {
                 if (bookingEndTime > endTime) break;
 
                 bookings.push({
-                  status: "available",
+                  status: "pending",
                   start_time: currentTime.toJSDate(),
                   end_time: bookingEndTime.toJSDate(),
                   date: date.toJSDate(),
@@ -201,7 +201,6 @@ exports.bookSession = async (req, res) => {
         id: bookingId,
       },
       data: {
-        status: "pending",
         user: {
           connect: {
             id: req.user.id,
@@ -561,7 +560,15 @@ exports.updateBookingStatus = async (req, res) => {
         data: {
           status,
         },
-      });
+      })
+      const newMenteeCnt = await prisma.mentor.update({
+        where: { id: booking.session.mentor },
+        data: {
+          number_of_sessions: {
+            increment: 1
+          }
+        }
+      })
     }
     res.status(200).json(updatedBooking);
   } catch (error) {
