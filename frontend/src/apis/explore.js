@@ -14,7 +14,7 @@ export async function fetchMentors(
   currentPage,
   itemsPerPage,
   searchTerm,
-  selectedTags,
+  selectedTags
 ) {
   try {
     return await axiosInstance.get(`/mentors`, {
@@ -33,11 +33,14 @@ export async function fetchMentors(
 // mentors by AI
 export async function fetchMentorsbyAI(query) {
   try {
-    return await axiosInstance.post("/mentors/filter-ai", {
-      query,
+    return await axiosInstance.post("/mentors/recommendations/extract-skills", {
+      query: {
+        message: query,
+      },
     });
   } catch (error) {
-    console.log("Error fetching tags: ", error);
+    console.log("Error fetching recommendations:", error);
+    throw error;
   }
 }
 
@@ -49,7 +52,7 @@ export async function fetchJobs(
   minSalary,
   maxSalary,
   currentPage,
-  itemsPerPage,
+  itemsPerPage
 ) {
   try {
     return await axiosInstance.get("/jobs", {
