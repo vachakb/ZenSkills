@@ -159,8 +159,6 @@ const getAIRecommendations = async (req, res) => {
     res.status(500).json({
       error: "Failed to process the message with AI service",
     });
-  } finally {
-    await prisma.$disconnect();
   }
 };
 
