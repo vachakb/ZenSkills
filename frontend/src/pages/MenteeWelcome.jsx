@@ -70,7 +70,7 @@ function MenteeWelcome({ mentors_, events_ }) {
   // Fetch mentors and events
   useEffect(() => {
     async function fetchData() {
-      try { 
+      try {
         const [mentorsResponse, eventsResponse] = await Promise.all([
           axios.post(`${API_URL}/api/mentors/recommendations`, {}, { withCredentials: true }),
           // axios.get(`${API_URL}/api/events`, { withCredentials: true }),
@@ -174,12 +174,14 @@ function MenteeWelcome({ mentors_, events_ }) {
             className="d-flex flex-wrap justify-content-start flex-row"
             style={{
               maxHeight: "500px",
-              columnGap: "70px",
-              rowGap: "20px"
+              columnGap: "77px",
+              rowGap: "40px",
+              maxWidth: "100%",
+
             }}
           >
             {mentors.length > 0 ? (
-              mentors.map((mentor) => <MentorCard key={mentor.mentor_id} mentor={mentor} />)
+              mentors.map((mentor) => <MentorCard mentor={mentor} width_={"250px"} />)
             ) : (
               <p>No mentors available.</p>
             )}
