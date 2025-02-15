@@ -97,7 +97,19 @@ export default function ExploreMentor({ mentors_ }) {
     }
     setSelectedTags([...selectedTags, tag]);
   }
-
+  useEffect(() => {
+    const shouldOpenModal = localStorage.getItem('openAIModal');
+    if (shouldOpenModal === 'true') {
+      localStorage.removeItem('openAIModal');
+      setTimeout(() => {
+        const aiModal = document.getElementById('aiFilterQueryModal');
+        if (aiModal) {
+          const modal = new Modal(aiModal);
+          modal.show();
+        }
+      }, 100);
+    }
+  }, []);
   return (
     <div className="container-fluid px-4 mt-4">
       {/* Existing content */}

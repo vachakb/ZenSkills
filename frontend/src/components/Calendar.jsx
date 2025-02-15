@@ -68,7 +68,8 @@ function Calendar({ profile }) {
       bg="white"
       border="primary"
       style={{
-        width: "320px",
+        width: "400px",
+        height: "275px",
         boxShadow: "4px 4px 10px gray",
       }}
     >
@@ -182,31 +183,31 @@ function Calendar({ profile }) {
           >
             {selectedDateBookings.length > 0
               ? selectedDateBookings.map((booking) => (
-                  <div className="d-flex flex-column gap-2" key={booking.id}>
-                    <div className="d-flex gap-2 align-items-center">
-                      <h6 className="m-0">At {DateTime.fromISO(booking.start_time).toFormat("h:mm a")}</h6>
-                      <div
-                        style={{ borderRadius: "24px" }}
-                        className={classNames({
-                          "px-2 py-1 text-white": true,
-                          "bg-secondary": true,
-                          "bg-success": booking.status === "accepted",
-                          "bg-warning": booking.status === "pending",
-                          "bg-primary": booking.status === "completed",
-                          "bg-danger": booking.status === "cancelled",
-                        })}
-                      >
-                        <span>{booking.status}</span>
-                      </div>
-                    </div>
-
-                    <div className="d-flex">
-                      <h6 className="m-0">
-                        <b>{booking.session.name}</b> - {booking.session.mentor.User.name}
-                      </h6>
+                <div className="d-flex flex-column gap-2" key={booking.id}>
+                  <div className="d-flex gap-2 align-items-center">
+                    <h6 className="m-0">At {DateTime.fromISO(booking.start_time).toFormat("h:mm a")}</h6>
+                    <div
+                      style={{ borderRadius: "24px" }}
+                      className={classNames({
+                        "px-2 py-1 text-white": true,
+                        "bg-secondary": true,
+                        "bg-success": booking.status === "accepted",
+                        "bg-warning": booking.status === "pending",
+                        "bg-primary": booking.status === "completed",
+                        "bg-danger": booking.status === "cancelled",
+                      })}
+                    >
+                      <span>{booking.status}</span>
                     </div>
                   </div>
-                ))
+
+                  <div className="d-flex">
+                    <h6 className="m-0">
+                      <b>{booking.session.name}</b> - {booking.session.mentor.User.name}
+                    </h6>
+                  </div>
+                </div>
+              ))
               : null}
           </div>
           <div className="d-flex flex-column align-items-start">

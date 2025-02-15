@@ -24,11 +24,63 @@ import useProfile from "../hooks/useProfile";
 import Calendar from "../components/Calendar";
 import { axiosInstance } from "../apis/commons";
 import { fetchMentors } from "../apis/explore";
+import { getAllWorkshops } from '../apis/workshops';
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" />
 
 const API_URL = "http://localhost:5000";
 
+const DUMMY_WORKSHOPS = [
+  {
+    id: 1,
+    title: "Web Development",
+    date: new Date("2024-03-01"),
+    description: "Learn the basics of HTML, CSS, and JavaScript in this comprehensive workshop designed for beginners. Build your first responsive website from scratch!",
+    instructor: "John Doe",
+    duration: "2 hours",
+    image: "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3"
+  },
+  {
+    id: 2,
+    title: "React.js for Beginners",
+    date: new Date("2024-03-15"),
+    description: "Master the fundamentals of React.js, including components, state management, and hooks. Perfect for those looking to build modern web applications.",
+    instructor: "Jane Smith",
+    duration: "3 hours",
+    image: "https://images.unsplash.com/photo-1633356122544-f134324a6cee?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3"
+  },
+  {
+    id: 3,
+    title: "Data Structures & Algorithms",
+    date: new Date("2024-03-20"),
+    description: "Deep dive into essential data structures and algorithms. Improve your problem-solving skills and ace technical interviews.",
+    instructor: "Mike Johnson",
+    duration: "4 hours",
+    image: "https://images.unsplash.com/photo-1509228627152-72ae9ae6848d?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3"
+  },
+  {
+    id: 4,
+    title: "UI/UX Design Principles",
+    date: new Date("2024-03-25"),
+    description: "Learn the core principles of user interface and user experience design. Create beautiful, intuitive designs that users will love.",
+    instructor: "Sarah Williams",
+    duration: "2.5 hours",
+    image: "https://images.unsplash.com/photo-1561070791-2526d30994b5?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3"
+  },
+  {
+    id: 5,
+    title: "Machine Learning Basics",
+    date: new Date("2024-04-01"),
+    description: "Introduction to machine learning concepts and practical applications. Build your first ML model using Python and popular libraries.",
+    instructor: "David Chen",
+    duration: "3 hours",
+    image: "https://images.unsplash.com/photo-1527474305487-b87b222841cc?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3"
+  }
+];
+
 function MenteeWelcome({ mentors_, events_ }) {
   const [mentors, setMentors] = useState(mentors_);
+  const [workshops, setWorkshops] = useState(DUMMY_WORKSHOPS);
 
   const { profile, isProfileLoading } = useProfile();
 
@@ -71,33 +123,19 @@ function MenteeWelcome({ mentors_, events_ }) {
   useEffect(() => {
     async function fetchData() {
       try {
-        const [mentorsResponse, eventsResponse] = await Promise.all([
-          axios.post(`${API_URL}/api/mentors/recommendations`, {}, { withCredentials: true }),
-          // axios.get(`${API_URL}/api/events`, { withCredentials: true }),
-        ]);
+        const mentorsResponse = await axios.post(
+          `${API_URL}/api/mentors/recommendations`,
+          {},
+          { withCredentials: true }
+        );
         setMentors(mentorsResponse.data.mentors || []);
-        // setEvents(eventsResponse.data.events || []);
+        // Workshop fetch removed since we're using dummy data
       } catch (error) {
         console.error("Error fetching data: ", error);
       }
     }
     fetchData();
   }, []);
-
-  // async function getMentors(){
-  //   try{
-  //     const responce = await axiosInstance.get("");
-  //     if(responce.status===200 || responce.status===201){
-  //       console.log("extracted: ", responce.data.mentors)
-  //     }
-  //   }catch(error){
-  //     console.log("error extractibg recommanded mentors: ", error)
-  //   }
-  // }
-
-  // useEffect(()=>{
-  //   setMentors(getMentors())
-  // }, [])
 
   if (isProfileLoading) {
     return (
@@ -108,7 +146,7 @@ function MenteeWelcome({ mentors_, events_ }) {
   }
 
   return (
-    <Container className="d-flex flex-column gap-4 px-md-4" fluid>
+    <Container className="d-flex flex-column gap-4 px-md-4 " fluid>
       {/* Greeting Section */}
       <div className="pt-0">
         <div className="d-flex align-items-center gap-2 flex-wrap">
@@ -124,11 +162,139 @@ function MenteeWelcome({ mentors_, events_ }) {
         </div>
       </div>
 
+      <div className="d-flex gap-4 mb-4" >
+        {/* Tour Guide Section - Left Side */}
+        <div className="flex-grow-1" style={{ marginRight: "100px", width: "800px" }}>
+          <div
+            className="d-grid gap-4"
+            style={{
+              gridTemplateColumns: 'repeat(2, 1fr)'
+            }}
+          >
+            {/* AI-Powered Search Card */}
+            <Card
+              className="h-100 border-0 shadow-sm hover-lift"
+              style={{
+                background: "linear-gradient(135deg, #e3f2fd, #bbdefb)",
+                transition: "transform 0.2s",
+                cursor: "pointer",
+              }}
+              onClick={() => {
+                localStorage.setItem('openAIModal', 'true');
+                navigate("/explore");
+              }}
+            >
+              <Card.Body className="d-flex flex-column gap-2 p-4">
+                <div className="d-flex align-items-center gap-3">
+                  <div
+                    className="rounded-circle p-3"
+                    style={{ background: "rgba(25, 118, 210, 0.2)" }}
+                  >
+                    <i className="bi bi-robot fs-4" style={{ color: "#1976d2" }}></i>
+                  </div>
+                  <div>
+                    <h4 className="fw-bold mb-1">AI-Powered Mentor Search</h4>
+                    <p className="text-muted mb-0">Find the perfect mentor using our intelligent AI assistant</p>
+                  </div>
+                </div>
+              </Card.Body>
+            </Card>
+
+            {/* Community Card */}
+            <Card
+              className="h-100 border-0 shadow-sm hover-lift"
+              style={{
+                background: "linear-gradient(135deg, #f8e5ff, #ecd6ff)",
+                transition: "transform 0.2s",
+                cursor: "pointer",
+              }}
+              onClick={() => navigate("/community")}
+            >
+              <Card.Body className="d-flex flex-column gap-2 p-4">
+                <div className="d-flex align-items-center gap-3">
+                  <div
+                    className="rounded-circle p-3"
+                    style={{ background: "rgba(147, 51, 234, 0.2)" }}
+                  >
+                    <i className="bi bi-people-fill fs-4" style={{ color: "#9333ea" }}></i>
+                  </div>
+                  <div>
+                    <h4 className="fw-bold mb-1">Community</h4>
+                    <p className="text-muted mb-0">Connect with peers and share experiences</p>
+                  </div>
+                </div>
+              </Card.Body>
+            </Card>
+
+            {/* Workshops Card */}
+            <Card
+              className="h-100 border-0 shadow-sm hover-lift"
+              style={{
+                background: "linear-gradient(135deg, #f3f9f1, #e7f4e4)",
+                transition: "transform 0.2s",
+                cursor: "pointer",
+              }}
+              onClick={() => navigate("/workshops")}
+            >
+              <Card.Body className="d-flex flex-column gap-2 p-4">
+                <div className="d-flex align-items-center gap-3">
+                  <div
+                    className="rounded-circle p-3"
+                    style={{ background: "rgba(3, 127, 125, 0.2)" }}
+                  >
+                    <i className="bi bi-laptop fs-4" style={{ color: "#037f7d" }}></i>
+                  </div>
+                  <div>
+                    <h4 className="fw-bold mb-1">Workshops</h4>
+                    <p className="text-muted mb-0">Join interactive learning sessions</p>
+                  </div>
+
+                </div>
+
+              </Card.Body>
+            </Card>
+
+            {/* Sessions Card */}
+            <Card
+              className="h-100 border-0 shadow-sm hover-lift"
+              style={{
+                background: "linear-gradient(135deg, #fff7e6, #fff0cc)",
+                transition: "transform 0.2s",
+                cursor: "pointer",
+              }}
+              onClick={() => navigate("/sessions")}
+            >
+              <Card.Body className="d-flex flex-column gap-2 p-4">
+                <div className="d-flex align-items-center gap-3">
+                  <div
+                    className="rounded-circle p-3"
+                    style={{ background: "rgba(255, 164, 38, 0.2)" }}
+                  >
+                    <i className="bi bi-calendar-event fs-4" style={{ color: "#ffa426" }}></i>
+                  </div>
+                  <div>
+                    <h4 className="fw-bold mb-1">Sessions</h4>
+                    <p className="text-muted mb-0">Schedule and manage your mentoring sessions</p>
+                  </div>
+                </div>
+              </Card.Body>
+            </Card>
+          </div>
+        </div>
+
+        {/* Calendar Section - Right Side */}
+        <div style={{ width: '400px', flexShrink: 0 }}>
+          <Calendar profile={profile} />
+        </div>
+      </div>
+
+      {/* Then continue with the Recommendations sections */}
+
       <Row>
-        {/* Main Content Section */}
+
         <Col md={8} className="d-flex flex-column gap-4">
-          {/* Progress Card */}
-          {isVisible && (
+
+          {/* {isVisible && (
             <Card className="shadow-sm">
               <Card.Body className="d-flex flex-column gap-3">
                 <div className="d-flex">
@@ -161,33 +327,122 @@ function MenteeWelcome({ mentors_, events_ }) {
                 ))}
               </Card.Body>
             </Card>
-          )}
+          )}*/}
 
-          {/* Mentors Section */}
-          <div>
+          {/* Recommended Mentors Section */}
+          <div >
             <h3 className="fw-bold">Recommended Mentors</h3>
             <h6 style={{ color: "#436DA7" }} className="m-0">
               Find the right mentor for your goals—handpicked by our AI, perfectly tailored to your needs!
             </h6>
           </div>
-          <div
-            className="d-flex flex-wrap justify-content-start flex-row"
-            style={{
-              maxHeight: "500px",
-              columnGap: "77px",
-              rowGap: "40px",
-              maxWidth: "100%",
 
+          {/* Mentors Horizontal Scroll */}
+          <div
+            className="d-flex overflow-auto pb-3"
+            style={{
+              gap: "1rem",
+              scrollbarWidth: "thin",
+              scrollBehavior: "smooth",
+              msOverflowStyle: "none",
+              "&::-webkit-scrollbar": { display: "none" },
+              width: "89vw"
             }}
           >
             {mentors.length > 0 ? (
-              mentors.map((mentor) => <MentorCard mentor={mentor} width_={"250px"} />)
+              mentors.map((mentor) => (
+                <div
+                  key={mentor.id}
+                  style={{
+                    flex: "0 0 auto",
+                    width: "300px"
+                  }}
+                >
+                  <MentorCard mentor={mentor} width_={"100%"} />
+                </div>
+              ))
             ) : (
               <p>No mentors available.</p>
             )}
           </div>
 
-          {/* Events Section */}
+          {/* Recommended Workshops Section */}
+          <div>
+            <h3 className="fw-bold">Recommended Workshops</h3>
+            <h6 style={{ color: "#436DA7" }} className="m-0">
+              Enhance your skills with our curated workshops
+            </h6>
+          </div>
+
+          {/* Workshops Horizontal Scroll */}
+          <div
+            className="d-flex overflow-auto pb-3"
+            style={{
+              gap: "1rem",
+              scrollbarWidth: "thin",
+              scrollBehavior: "smooth",
+              msOverflowStyle: "none",
+              "&::-webkit-scrollbar": { display: "none" },
+              width:"89vw"
+            }}
+          >
+            {workshops.length > 0 ? (
+              workshops.map((workshop) => (
+                <div
+                  key={workshop.id}
+                  style={{
+                    flex: "0 0 auto",
+                    width: "300px"
+                  }}
+                >
+                  <Card className="h-100 shadow-sm">
+                    <Card.Img
+                      variant="top"
+                      src={workshop.image}
+                      style={{
+                        height: '160px',
+                        objectFit: 'cover',
+                        borderTopLeftRadius: 'calc(0.375rem - 1px)',
+                        borderTopRightRadius: 'calc(0.375rem - 1px)'
+                      }}
+                    />
+                    <Card.Body>
+                      <div className="d-flex justify-content-between align-items-start mb-2">
+                        <Card.Title className="mb-0">{workshop.title}</Card.Title>
+                      </div>
+                      <div className="d-flex gap-2 mb-2">
+                        <small className="text-muted">
+                          <i className="bi bi-calendar me-1"></i>
+                          {new Date(workshop.date).toLocaleDateString()}
+                        </small>
+                        <small className="text-muted">
+                          <i className="bi bi-clock me-1"></i>
+                          {workshop.duration}
+                        </small>
+                      </div>
+                      <Card.Text className="mb-2" style={{ fontSize: '0.9rem' }}>
+                        {workshop.description.length > 100
+                          ? `${workshop.description.substring(0, 100)}...`
+                          : workshop.description}
+                      </Card.Text>
+                      <div className="mt-auto">
+                        <Button
+                          variant="outline-primary"
+                          onClick={() => navigate(`/workshops/${workshop.id}`)}
+                          className="w-100"
+                        >
+                          View Details
+                        </Button>
+                      </div>
+                    </Card.Body>
+                  </Card>
+                </div>
+              ))
+            ) : (
+              <p>No workshops available.</p>
+            )}
+          </div>
+
           {/* <div>
             <h3 className="fw-bold">Events</h3>
             <h6 style={{ color: "#436DA7" }} className="m-0">
@@ -207,11 +462,8 @@ function MenteeWelcome({ mentors_, events_ }) {
         </Col>
 
         {/* Sidebar Section */}
-        <Col md={4} className="d-flex flex-column gap-4">
-          <div className="flex-grow-0 ms-auto" style={{ right: '15px' }}>
 
-            <Calendar profile={profile} />
-            <Card
+        {/* <Card
               text="primary"
               bg="white"
               border="primary"
@@ -224,7 +476,7 @@ function MenteeWelcome({ mentors_, events_ }) {
                 <Card.Text className="mx-3 mt-2" style={{ fontSize: "13px", textAlign: 'center' }}>
                   Share profile, get more bookings
                 </Card.Text>
-                <div className="d-flex justify-content-center">
+                  <div className="d-flex justify-content-center">
                   <Button
                     className="custom-hover-button"
                     style={{
@@ -240,9 +492,9 @@ function MenteeWelcome({ mentors_, events_ }) {
                   </Button>
                 </div>
               </Card.Body>
-            </Card>
-          </div>
-        </Col>
+            </Card>*/}
+
+
       </Row>
     </Container >
 
