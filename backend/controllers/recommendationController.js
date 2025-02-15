@@ -12,7 +12,7 @@ const getRecommendations = (req, res) => {
     "recommendation_model.py",
   );
 
-  const pythonProcess = spawn("python3", [pythonScriptPath, userType, userId]);
+  const pythonProcess = spawn("python", [pythonScriptPath, userType, userId]);
 
   pythonProcess.stdout.on("data", async (data) => {
     try {

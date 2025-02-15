@@ -12,7 +12,7 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(
 DB_CONFIG = {
     "dbname": "SIH",
     "user": "postgres",
-    "password": "Ificouldfly",
+    "password": "2580",
     "host": "localhost",
     "port": "5432"
 }
@@ -114,52 +114,65 @@ def generate_question_recommendations(input_tags: list, top_n: int = 5):
     logging.info(f"Generating question recommendations for input tags: {input_tags}")
     
     try:
+        # Check if input tags are empty
+        if not input_tags:
+            logging.warning("No input tags provided")
+            return []
+
         all_tags = list(set(fetch_all_tags().values()))
-        
-        # Fetch questions from the database
         question_list = fetch_question_data()
         
         if not all_tags or not question_list:
             logging.warning("Insufficient data to generate recommendations.")
             return []
 
+        # Create and fit the binarizer on all possible tags first
         mlb = MultiLabelBinarizer(classes=all_tags)
+        mlb.fit([all_tags])  # Fit on all possible tags
         
-        # Encode input and questions' tags
-        input_encoded = mlb.fit_transform([input_tags])
+        # Filter out questions with empty tags
+        valid_questions = [q for q in question_list if q["tags"] and any(tag for tag in q["tags"] if tag)]
         
-        # Transform the questions' tags into a binary format
-        question_encoded = mlb.transform([question["tags"] for question in question_list])
+        if not valid_questions:
+            logging.warning("No valid questions with tags found.")
+            return []
+
+        # Transform both inputs using the fitted binarizer
+        input_encoded = mlb.transform([input_tags])
+        question_encoded = mlb.transform([q["tags"] for q in valid_questions])
         
         logging.info("Encoded input and question tags using MultiLabelBinarizer.")
         
-        # Calculate cosine similarity between input and questions' tags
+        # Calculate cosine similarity
         cos_sim_matrix = cosine_similarity(input_encoded, question_encoded)
-        
-        logging.info(f"Calculated cosine similarity matrix: {cos_sim_matrix}")
-        
         similarity_scores = cos_sim_matrix[0]
         
         recommendations = []
         
-        # Create recommendations based on similarity scores
+        # Create recommendations with more detailed logging
         for idx, score in enumerate(similarity_scores):
-            if score > 0.5:  # Threshold can be adjusted as needed
+            if score > 0:  # Changed threshold to include more recommendations
                 recommendations.append({
-                    "question_id": question_list[idx]["id"],
-                    "question": question_list[idx]["question"],
-                    "score": score
+                    "question_id": valid_questions[idx]["id"],
+                    "question": valid_questions[idx]["question"],
+                    "tags": valid_questions[idx]["tags"],
+                    "score": float(score)  # Convert numpy float to Python float for JSON serialization
                 })
+                logging.debug(f"Added recommendation: Question ID {valid_questions[idx]['id']} with score {score}")
         
-        logging.info(f"Generated recommendations: {recommendations}")
-        
-        return sorted(recommendations, key=lambda x: x["score"], reverse=True)[:top_n]
+        if not recommendations:
+            logging.warning("No recommendations met the similarity threshold.")
+            return []
+
+        sorted_recommendations = sorted(recommendations, key=lambda x: x["score"], reverse=True)[:top_n]
+        logging.info(f"Generated {len(sorted_recommendations)} recommendations")
+        return sorted_recommendations
     
     except Exception as e:
         logging.error(f"Error generating recommendations: {e}")
         raise
 
-if _name_ == "_main_":
+if __name__ == "__main__":
     if len(sys.argv) < 3:
        print(json.dumps({"error": "Invalid usage"}))
        sys.exit(1)
