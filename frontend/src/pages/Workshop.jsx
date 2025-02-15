@@ -159,6 +159,8 @@ const WorkshopsPage = ({ demoTags }) => {
   const [selectedWorkshop, setSelectedWorkshop] = useState();
   const [showWorkshopDetails, setShowWorkshopDetails] = useState(false);
 
+  const [showSuccessfulRegistrationModal, setShowSuccessfulRegistrationModal] = useState(false);
+
   // Fetch workshops from the server
   const fetchWorkshops = async (page, query, status) => {
     try {
@@ -325,6 +327,20 @@ const WorkshopsPage = ({ demoTags }) => {
           </Modal.Body>
         </Modal>
       )}
+      <Modal
+        show={showSuccessfulRegistrationModal}
+        onHide={() => setShowSuccessfulRegistrationModal(false)}
+        centered>
+        <Modal.Header closeButton>
+          <Modal.Title>Workshop Registration Successful</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <h5>Registered successfully</h5>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button onClick={() => setShowSuccessfulRegistrationModal(false)}>Close</Button>
+        </Modal.Footer>
+      </Modal>
       <div className="container my-4">
         {/* Header Section */}
         <div className="d-flex flex-column flex-md-row justify-content-between align-items-center mb-4">
@@ -527,6 +543,7 @@ const WorkshopsPage = ({ demoTags }) => {
                         onClick={() => {
                           bookWorkshop(workshop.id).then(() => {
                             fetchWorkshops(currentPage, search, activeTab === "all" ? "" : activeTab);
+                            setShowSuccessfulRegistrationModal(true);
                           })
                         }}
                       >
