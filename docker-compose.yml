@@ -19,17 +19,17 @@ services:
     volumes:
       - ./frontend:/frontend
   backend:
-    image: node:lts-bookworm
+    # image: node:lts-bookworm
     ports:
       - "5000:5000"
     environment:
       DATABASE_URL: "postgresql://test:test@db:5432/test?schema=public"
     depends_on:
       - db
-    working_dir: /backend
-    command: npm run dev
-    # build:
-      # context: ./backend
-      # dockerfile: Dockerfile-env
+    # working_dir: /backend
+    # command: npm run dev
+    build:
+      context: ./backend
+      dockerfile: Dockerfile-env
     volumes:
       - ./backend:/backend

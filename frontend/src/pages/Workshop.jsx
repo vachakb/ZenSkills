@@ -159,6 +159,8 @@ const WorkshopsPage = ({ demoTags }) => {
   const [selectedWorkshop, setSelectedWorkshop] = useState();
   const [showWorkshopDetails, setShowWorkshopDetails] = useState(false);
 
+  const [showSuccessfulRegistrationModal, setShowSuccessfulRegistrationModal] = useState(false);
+
   // Fetch workshops from the server
   const fetchWorkshops = async (page, query, status) => {
     try {
@@ -167,7 +169,7 @@ const WorkshopsPage = ({ demoTags }) => {
         workshop.title.toLowerCase().includes(query.toLowerCase()),
       );
 
-      filteredWorkshops.map((workshop) => {
+      filteredWorkshops.forEach((workshop) => {
         workshop.owner = workshop.mentor.User.id === profile.id;
         workshop.participant = workshop.WorkshopBooking.some(
           (booking) => booking.user_id === profile.id,
@@ -200,6 +202,10 @@ const WorkshopsPage = ({ demoTags }) => {
     let roomId = workshop.room_id;
 
     if (!roomId) {
+      if (!profile.isMentor) {
+        alert("The mentor has not started the workshop yet.");
+        window.location.reload(false);
+      }
       const roomRes = await createRoom(token);
       roomId = roomRes.data.roomId;
       await setWorkshopRoomId(workshop.id, roomId);
@@ -232,9 +238,11 @@ const WorkshopsPage = ({ demoTags }) => {
   }, [activeTab]);
 
   useEffect(() => {
-    fetchWorkshops(currentPage, search, activeTab === "all" ? "" : activeTab);
+    if (profile) {
+      fetchWorkshops(currentPage, search, activeTab === "all" ? "" : activeTab);
+    }
     // fetchRegisteredWorkshops();
-  }, [currentPage, search, activeTab]);
+  }, [currentPage, search, activeTab, profile]);
 
   const handleSearch = (e) => {
     setSearch(e.target.value);
@@ -319,6 +327,20 @@ const WorkshopsPage = ({ demoTags }) => {
           </Modal.Body>
         </Modal>
       )}
+      <Modal
+        show={showSuccessfulRegistrationModal}
+        onHide={() => setShowSuccessfulRegistrationModal(false)}
+        centered>
+        <Modal.Header closeButton>
+          <Modal.Title>Workshop Registration Successful</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <h5>Registered successfully</h5>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button onClick={() => setShowSuccessfulRegistrationModal(false)}>Close</Button>
+        </Modal.Footer>
+      </Modal>
       <div className="container my-4">
         {/* Header Section */}
         <div className="d-flex flex-column flex-md-row justify-content-between align-items-center mb-4">
@@ -519,7 +541,10 @@ const WorkshopsPage = ({ demoTags }) => {
                     ) : (
                       <Button
                         onClick={() => {
-                          bookWorkshop(workshop.id);
+                          bookWorkshop(workshop.id).then(() => {
+                            fetchWorkshops(currentPage, search, activeTab === "all" ? "" : activeTab);
+                            setShowSuccessfulRegistrationModal(true);
+                          })
                         }}
                       >
                         Register
