@@ -1,10 +1,9 @@
 import { useEffect, useState } from "react";
 import MentorCard from "../components/MentorCard";
 import ReactPaginate from "react-paginate";
-import axios from "axios";
 import { fetchTags, fetchMentors, fetchMentorsbyAI } from "../apis/explore";
 import classNames from "classnames";
-import "../styles/style.css"
+import { FaSearch, FaFilter, FaRobot, FaExclamationTriangle } from 'react-icons/fa';
 import { Modal } from 'bootstrap';
 
 export default function ExploreMentor({ mentors_ }) {
@@ -12,29 +11,31 @@ export default function ExploreMentor({ mentors_ }) {
   const [searchTerm, setSearchTerm] = useState("");
   const [allTags, setAllTags] = useState([]);
   const [selectedTags, setSelectedTags] = useState([]);
-  const [aiFilterQuery, setAiFilterQuery] = useState(""); // For AI input
+  const [aiFilterQuery, setAiFilterQuery] = useState("");
   const [currentPage, setCurrentpage] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
-  const [filterDropdownVisibility, setFilterDropdownVisibility] =
-    useState(false);
-  const [aiError, setAiError] = useState(""); // Add new state for AI error message
-  const [isLoading, setIsLoading] = useState(false); // Add new state after other useState declarations
-  const itemsPerPage = 4;
+  const [filterDropdownVisibility, setFilterDropdownVisibility] = useState(false);
+  const [aiError, setAiError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const itemsPerPage = 1;
 
   // Fetch tags and mentors
   useEffect(() => {
-    (async () => {
+    const fetchData = async () => {
       const tagsResponse = await fetchTags();
       setAllTags(tagsResponse?.data?.tags || []);
       const mentorsResponse = await fetchMentors(currentPage, itemsPerPage, searchTerm, selectedTags);
       setMentors(mentorsResponse?.data?.mentors || mentors_);
       setTotalPages(Math.ceil((mentorsResponse?.data?.totalMentorsCount || 0) / itemsPerPage));
-    })(); // IIFE: Immediately invoked function expression
-  }, []);
+    };
+
+    fetchData();
+  }, [currentPage, searchTerm, selectedTags]); // Add currentPage, searchTerm, and selectedTags as dependencies
 
   async function handleSearchButtonClick() {
+    setCurrentpage(0); // Reset to first page on search
     const response = await fetchMentors(
-      currentPage,
+      0, // Fetch from page 0
       itemsPerPage,
       searchTerm,
       selectedTags
@@ -81,11 +82,10 @@ export default function ExploreMentor({ mentors_ }) {
     }
   }
 
-  function handlePageChange(selectedItem) {
+  async function handlePageChange(selectedItem) {
     setCurrentpage(selectedItem.selected);
   }
 
-  // TODO handle this better
   function handleTagClick(tag) {
     for (let i = 0; i < selectedTags.length; i++) {
       if (selectedTags[i].tag_id === tag.tag_id) {
