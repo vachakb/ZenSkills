@@ -521,7 +521,9 @@ const WorkshopsPage = ({ demoTags }) => {
                     ) : (
                       <Button
                         onClick={() => {
-                          bookWorkshop(workshop.id);
+                          bookWorkshop(workshop.id).then(() => {
+                            fetchWorkshops(currentPage, search, activeTab === "all" ? "" : activeTab);
+                          })
                         }}
                       >
                         Register
