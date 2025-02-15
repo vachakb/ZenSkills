@@ -180,12 +180,11 @@ exports.googleCallback = async (req, done) => {
       },
     });
 
-    if (user.role === "mentor" && !user.credentialsVerified) {
-      done("Credentials verification process still ongoing.", false);
-      return;
-    }
-
     if (role === "mentor" && user.mentor) {
+      if (!user.credentialsVerified) {
+        done("Credentials verification process still ongoing.", false);
+        return;
+      }
       req.isRegistered = true;
     } else if (role === "mentee" && user.mentee) {
       req.isRegistered = true;
