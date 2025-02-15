@@ -200,6 +200,10 @@ const WorkshopsPage = ({ demoTags }) => {
     let roomId = workshop.room_id;
 
     if (!roomId) {
+      if (!profile.isMentor) {
+        alert("The mentor has not started the workshop yet.");
+        window.location.reload(false);
+      }
       const roomRes = await createRoom(token);
       roomId = roomRes.data.roomId;
       await setWorkshopRoomId(workshop.id, roomId);
