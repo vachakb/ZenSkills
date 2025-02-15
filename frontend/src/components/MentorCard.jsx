@@ -20,7 +20,7 @@ export default function MentorCard({ mentor, width_ }) {
   return (
     <div
       style={{ cursor: "pointer", width: width_ !== null ? width_ : null }}
-      className="card h-100 shadow-sm p-3 d-flex flex-column "
+      className=" h-100 card shadow-sm p-3 d-flex flex-column "
       onClick={() => {
         navigate("/mentee_exploring/" + mentor.id);
       }}

@@ -17,7 +17,7 @@ export default function ExploreMentor({ mentors_ }) {
   const [filterDropdownVisibility, setFilterDropdownVisibility] = useState(false);
   const [aiError, setAiError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const itemsPerPage = 1;
+  const itemsPerPage = 8;
 
   // Fetch tags and mentors
   useEffect(() => {
